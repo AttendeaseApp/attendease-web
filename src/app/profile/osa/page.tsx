@@ -1,7 +1,11 @@
+// "use client";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+// import { useRouter } from "next/navigation";
 
 export default function osaProfilePage() {
+  // const router = useRouter();
   const accountDetails = {
     id: "20210000",
     email: "john.doe@example.com",
@@ -28,8 +32,9 @@ export default function osaProfilePage() {
           {accountDetails.firstName} {accountDetails.middleName}{" "}
           {accountDetails.lastName}
         </Label>
-        <Button className="rounded-sm">Update Account Details</Button>
+        <Button className="rounded-sm" >Update Account Details</Button>
       </div>
+      {/* onClick={() => router.push("/profile/osa/update")} para pag lilipat ng page not used for now*/}
 
       {/* Role under name */}
       <Label className="block mb-10 text-2xl text-slate-600">
