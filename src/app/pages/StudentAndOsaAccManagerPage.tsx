@@ -43,19 +43,18 @@ export default function ViewAndUpdate() {
         Make changes to this account here. Click save when you're done.
       </Label>
 
-      {/* Toggle Group */}
-      <div className="mb-6">
-        <ToggleGroup
-          type="single"
-          value={activeSection}
-          onValueChange={(value) => setActiveSection(value)}
-          className="flex space-x-2"
-        >
-          <ToggleGroupItem value="account">ACCOUNT</ToggleGroupItem>
-          <ToggleGroupItem value="facial">FACIAL DATA</ToggleGroupItem>
-          <ToggleGroupItem value="password">PASSWORD</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+    <ToggleGroup
+  type="single"
+  value={activeSection}
+  onValueChange={(value: string | null) => {
+    if (value) setActiveSection(value);
+      }}
+  className="flex space-x-2"
+>
+  <ToggleGroupItem value="account">ACCOUNT</ToggleGroupItem>
+  <ToggleGroupItem value="facial">FACIAL DATA</ToggleGroupItem>
+  <ToggleGroupItem value="password">PASSWORD</ToggleGroupItem>
+</ToggleGroup>
 
       {/* ACCOUNT Section */}
       {activeSection === "account" && (
