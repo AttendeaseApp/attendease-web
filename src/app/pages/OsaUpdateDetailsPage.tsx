@@ -1,6 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 export default function osaUpdateProfilePage() {
   const accountDetails = {
@@ -9,12 +14,14 @@ export default function osaUpdateProfilePage() {
     firstName: "John",
     middleName: "Cruz",
     lastName: "Doe",
-    birthday: "06/12/1990",
+    birthday: "",
     contact: "0123456789",
     userType: "OSA",
     address: "534 Spear Street San Francisco, CA 94105 United States",
     accountCreated: "25-06-2020",
   };
+
+  const [date, setDate] = useState<Date | undefined>(new Date(accountDetails.birthday));
 
   return (
     <div className="min-h-screen p-8 font-sans bg-slate-50">
@@ -80,13 +87,31 @@ export default function osaUpdateProfilePage() {
               className="border border-sky-300 focus:border-sky-500"
             />
           </div>
+
+          {/* Date of Birth with Calendar Popover */}
           <div>
             <Label className="block font-semibold text-black mb-1">Date of Birth</Label>
-            <Input
-              defaultValue={accountDetails.birthday}
-              className="border border-sky-300 focus:border-sky-500"
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal border border-sky-300 focus:border-sky-500"
+                >
+                  {date
+                    ? date.toLocaleDateString()
+                    : accountDetails.birthday}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
+
           <div>
             <Label className="block font-semibold text-black mb-1">Contact Number</Label>
             <Input
