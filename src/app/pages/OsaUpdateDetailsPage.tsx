@@ -88,7 +88,7 @@ export default function osaUpdateProfilePage() {
             />
           </div>
 
-          {/* Date of Birth with Calendar Popover */}
+          {/* Date of Birth */}
           <div>
             <Label className="block font-semibold text-black mb-1">Date of Birth</Label>
             <Popover>
