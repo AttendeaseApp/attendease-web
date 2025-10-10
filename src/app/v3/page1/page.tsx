@@ -1,0 +1,97 @@
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { ChevronDown } from "lucide-react"
+import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table"
+import {DropdownMenu,DropdownMenuCheckboxItem,DropdownMenuContent,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
+
+export default function RetrieveAllUsers() {
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen">
+      
+      {/* Row 1 Buttons */}
+      <div className="w-full max-w-6xl mx-auto mb-4 flex justify-end space-x-2">
+        <Button className="rounded-sm">Manually Add Account</Button>
+        <Button className="rounded-sm">Import Student Accounts</Button>
+       
+            <Button variant="outline" className="rounded-sm">
+              More Settings <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+         
+      </div>
+
+  {/* Row 2 */}
+<div className="w-full max-w-6xl mx-auto mb-4 flex items-center justify-between flex-wrap mt-8">
+  {/* search and toggle */}
+  <div className="flex items-center space-x-2">
+    <Input
+      className="w-64 border border-gray-200"
+      placeholder="Search..."
+    />
+    <ToggleGroup type="single" className="flex space-x-2">
+      <ToggleGroupItem value="all">ALL</ToggleGroupItem>
+      <ToggleGroupItem value="osa">OSA</ToggleGroupItem>
+      <ToggleGroupItem value="student">STUDENT</ToggleGroupItem>
+    </ToggleGroup>
+  </div>
+
+  {/* filter buttons */}
+  <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+    <Button variant="outline" className="rounded-sm">
+      GRADE LEVEL
+    </Button>
+    <Button variant="outline" className="rounded-sm">
+      SECTION
+    </Button>
+    <Button variant="outline" className="rounded-sm">
+      COURSE
+    </Button>
+    <Button variant="outline" className="rounded-sm">
+      ACCOUNT STATUS
+    </Button>
+  </div>
+</div>
+
+
+      {/* Table */}
+      <div className="w-full max-w-6xl mx-auto overflow-hidden rounded-md border bg-white shadow mt-7">
+        <Table>
+         <TableHeader>
+  <TableRow className="h-16">
+    <TableHead className="w-1/7 py-4 px-6">Full Name</TableHead>       
+    <TableHead className="w-1/12 py-4 px-6">User Type</TableHead>
+    <TableHead className="w-1/12 py-4 px-6">Cluster</TableHead>
+    <TableHead className="w-1/12 py-4 px-6">Course</TableHead>
+    <TableHead className="w-1/12 py-4 px-6">Grade Level</TableHead>
+    <TableHead className="w-1/12 py-4 px-6">Email</TableHead>
+    <TableHead className="w-1/12 py-4 px-6">Contact Number</TableHead>
+    <TableHead className="w-1/12 py-4 px-6">View and Update</TableHead> 
+  </TableRow>
+</TableHeader>
+
+          <TableBody>
+            <TableRow>
+              <TableCell
+                colSpan={8}
+                className="h-24 text-center text-gray-500"
+              >
+                No data yet.
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+      
+      {/* next back button*/}
+      <div className="w-full max-w-6xl mx-auto flex justify-end items-center space-x-2 mt-8">
+    <Button variant="outline" className="rounded-sm">
+      Previous
+    </Button>
+    <Button variant="outline" className="rounded-sm">
+      Next
+    </Button>
+  
+  </div>
+    </div>
+  )
+}
