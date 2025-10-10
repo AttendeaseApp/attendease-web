@@ -1,17 +1,19 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ChevronDown } from "lucide-react"
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table"
-import {DropdownMenu,DropdownMenuCheckboxItem,DropdownMenuContent,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
+
 
 export default function ViewAllEvents() {
+
+
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      
      <div className="w-full max-w-6xl mx-auto mb-4 flex items-center justify-between">
+
   {/*Event History Label */}
-  <label className="text-sm font-medium text-slate-700">Event History</label>
+    <label className="text-sm font-medium text-slate-700">Event History</label>
 
   {/* more settings Button */}
   <div className="flex space-x-2">
@@ -23,7 +25,7 @@ export default function ViewAllEvents() {
 
   {/* Row 2 */}
 <div className="w-full max-w-6xl mx-auto mb-4 flex items-center justify-between flex-wrap mt-8">
-  {/* search and toggle */}
+  {/* search bar */}
   <div className="flex items-center space-x-2">
     <Input
       className="w-64 border border-gray-200"

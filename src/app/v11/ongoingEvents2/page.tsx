@@ -1,20 +1,30 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ChevronDown } from "lucide-react"
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table"
-import {DropdownMenu,DropdownMenuCheckboxItem,DropdownMenuContent,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 
-export default function ViewAllEvents() {
+
+export default function OngoingAttendanceMonitoringV2() {
+
+  
+    const EventName ={
+    eventName:"Celestial Night"
+  }
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       
      <div className="w-full max-w-6xl mx-auto mb-4 flex items-center justify-between">
   {/*Event History Label */}
-  <label className="text-sm font-medium text-slate-700">Event History</label>
+    <label className="text-sm font-medium">
+  <span className="text-[#71717A]">Student Logs{" "}-</span>{" "}
+  <span className="text-black">{EventName.eventName}</span>
+</label>
+  
 
   {/* more settings Button */}
   <div className="flex space-x-2">
+     <Button className="rounded-sm">Export</Button>
     <Button variant="outline" className="rounded-sm">
       More Settings <ChevronDown className="ml-2 h-4 w-4" />
     </Button>
@@ -23,7 +33,7 @@ export default function ViewAllEvents() {
 
   {/* Row 2 */}
 <div className="w-full max-w-6xl mx-auto mb-4 flex items-center justify-between flex-wrap mt-8">
-  {/* search and toggle */}
+  {/* search bar */}
   <div className="flex items-center space-x-2">
     <Input
       className="w-64 border border-gray-200"
@@ -44,7 +54,7 @@ export default function ViewAllEvents() {
       COURSE <ChevronDown className="ml-2 h-4 w-4" />
     </Button>
      <Button variant="outline" className="rounded-sm">
-      ATTENDANCE STATUS <ChevronDown className="ml-2 h-4 w-4" />
+      ATTENDANCE  <ChevronDown className="ml-2 h-4 w-4" />
     </Button>
   </div>
 </div>
@@ -59,7 +69,7 @@ export default function ViewAllEvents() {
     <TableHead className="w-1/12 py-4 px-6">CLUSTER</TableHead>
     <TableHead className="w-1/12 py-4 px-6">COURSE</TableHead>
     <TableHead className="w-1/12 py-4 px-6">GRADE LEVEL</TableHead>
-    <TableHead className="w-1/12 py-4 px-6">Attendance</TableHead>
+    <TableHead className="w-1/12 py-4 px-6">Attendance Log</TableHead>
 
   </TableRow>
 </TableHeader>
