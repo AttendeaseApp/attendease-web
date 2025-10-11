@@ -13,69 +13,19 @@ import {
 export default function CreateOSAAccountPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white/60 border-r border-slate-200 p-6">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold">
-            A
-          </div>
-          <div className="text-sm font-semibold">ATTENDEASE</div>
-        </div>
+      <div className="w-64" />
 
-        <nav className="space-y-2 text-slate-600 text-sm">
-          <a
-            href="/"
-            className="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700"
-          >
-            Dashboard
-          </a>
-          <a
-            href="/account/create-osa-account"
-            className="block px-3 py-2 rounded-lg hover:bg-slate-100"
-          >
-            Manage Users
-          </a>
-          <a
-            href="/account/create-student-account"
-            className="block px-3 py-2 rounded-lg hover:bg-slate-100"
-          >
-            Manage Students
-          </a>
-          <a
-            href="/account/import-student-account"
-            className="block px-3 py-2 rounded-lg hover:bg-slate-100"
-          >
-            Import Students
-          </a>
-          <div className="mt-6 border-t pt-4 text-xs text-slate-400">OTHERS</div>
-          <a
-            href="#"
-            className="block px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"
-          >
-            Settings
-          </a>
-          <a
-            href="#"
-            className="block px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"
-          >
-            Accounts
-          </a>
-        </nav>
-      </aside>
-
-      {/* Main content */}
       <main className="flex-1 p-10">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-2xl font-semibold text-slate-800 mb-2">
             Create a new OSA account
           </h1>
           <p className="text-sm text-slate-500 mb-6">
-            Create new user account here. Click register when you're done.
+            Create a new user account here. Click register when you're done.
           </p>
 
-          <Card>
+          <Card className="shadow-md border-slate-200 bg-white/80 backdrop-blur">
             <CardContent className="p-8 space-y-6">
-              {/* User Type */}
               <div>
                 <Label>Select User Type</Label>
                 <Select defaultValue="OSA">
@@ -89,8 +39,7 @@ export default function CreateOSAAccountPage() {
                 </Select>
               </div>
 
-              {/* Name Fields */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label>First Name</Label>
                   <Input placeholder="Enter First Name" />
@@ -105,20 +54,17 @@ export default function CreateOSAAccountPage() {
                 </div>
               </div>
 
-              {/* Date of Birth */}
               <div>
                 <Label>Date of Birth</Label>
-                <Input placeholder="dd/mm/yyyy" />
+                <Input type="date" />
               </div>
 
-              {/* Email */}
               <div>
                 <Label>Email Address</Label>
                 <Input placeholder="Enter Onpassive Email ID" />
               </div>
 
-              {/* Passwords */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Password</Label>
                   <Input type="password" placeholder="Password" />
@@ -129,15 +75,15 @@ export default function CreateOSAAccountPage() {
                 </div>
               </div>
 
-              {/* Contact */}
               <div>
                 <Label>Contact No.</Label>
                 <Input placeholder="Contact No." />
               </div>
 
-              {/* Submit Button */}
               <div className="flex justify-end">
-                <Button className="bg-black text-white">Register</Button>
+                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6">
+                  Register
+                </Button>
               </div>
             </CardContent>
           </Card>
