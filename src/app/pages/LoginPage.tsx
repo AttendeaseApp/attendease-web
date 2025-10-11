@@ -1,17 +1,23 @@
-import Link from "next/link"
-import { Card } from "../../components/ui/card"
-import { Label } from "../../components/ui/label"
-import { Input } from "../../components/ui/input"
-import { Button } from "../../components/ui/button"
-import { Checkbox } from "../../components/ui/checkbox"
-import { Poppins } from "next/font/google"
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { Card } from "../../components/ui/card";
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Poppins } from "next/font/google";
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-})
+});
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={`flex h-screen ${poppins.className}`}>
       <div className="flex-[7] flex items-center justify-center bg-white">
@@ -26,9 +32,27 @@ export default function Login() {
             <Input id="email" type="email" placeholder="Enter Email ID" />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="Password" />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between mb-4">
@@ -54,5 +78,5 @@ export default function Login() {
 
       <div className="flex-[3] bg-[#27548A] flex items-center justify-center" />
     </div>
-  )
+  );
 }
