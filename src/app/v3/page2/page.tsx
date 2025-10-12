@@ -43,13 +43,9 @@ export default function ViewAndUpdate() {
         Make changes to this account here. Click save when you're done.
       </Label>
 
-    <ToggleGroup
-  type="single"
-  value={activeSection}
-  onValueChange={(value: string | null) => {
-    if (value) setActiveSection(value);
-      }}
-  className="flex space-x-2"
+    <ToggleGroup type="single" value={activeSection} onValueChange={(value: string | null) => {
+    if (value) setActiveSection(value); }}
+        className="flex space-x-2"
 >
   <ToggleGroupItem value="account">ACCOUNT</ToggleGroupItem>
   <ToggleGroupItem value="facial">FACIAL DATA</ToggleGroupItem>
@@ -119,12 +115,10 @@ export default function ViewAndUpdate() {
             </div>
           </div>
 
-          {/* Update Button */}
+          {/* confirm and deact buttons */}
           <div className="flex justify-end mt-6 space-x-2">
-              <Button className="rounded-sm">
-          Confirm Changes
-        </Button>
-        <Button variant="outline" className="rounded-sm bg-white text-black border border-slate-300">Deactivate Account</Button>
+              <Button className="rounded-sm">Confirm Changes </Button>
+              <Button variant="outline" className="rounded-sm bg-white text-black border border-slate-300">Deactivate Account</Button>
         
           </div>
         </div>
@@ -133,8 +127,9 @@ export default function ViewAndUpdate() {
       {/* FACIAL DATA Section */}
       {activeSection === "facial" && (
         <div className="flex flex-col space-y-4">
-            
+            <button>fxvx</button>
         </div>
+        
       )}
 
       {/* PASSWORD Section */}
@@ -145,27 +140,26 @@ export default function ViewAndUpdate() {
           <Label className="block font-semibold text-black mb-1">Old Password</Label>
           <Input
             defaultValue={ChangePassword.oldPassword}
-            className="w-full border border-sky-300 focus:border-sky-500"placeholder="Enter Old Password"
+            className="w-full border border-sky-300 focus:border-sky-500"  type="password" placeholder="Enter Old Password"
           />
         </div>
         <div>
           <Label className="block font-semibold text-black mb-1">New Password</Label>
           <Input
             defaultValue={ChangePassword.newPassword}
-            className="w-full border border-sky-300 focus:border-sky-500"placeholder="Enter New Password"
+            className="w-full border border-sky-300 focus:border-sky-500" type="password" placeholder="Enter New Password"
           />
         </div>
         <div>
           <Label className="block font-semibold text-black mb-1">Confirm Password</Label>
           <Input
             defaultValue={ChangePassword.confirmPassword}
-            className="w-full border border-sky-300 focus:border-sky-500"placeholder="Enter Confirm Password"
+            className="w-full border border-sky-300 focus:border-sky-500"  type="password" placeholder="Enter Confirm Password"
           />
         </div>
+        {/* cancel and reset password buttons */}
         <div className="flex justify-end gap-3 mt-6">
-        <Button variant="outline" className="rounded-sm bg-white text-black border border-slate-300">
-          Cancel
-        </Button>
+        <Button variant="outline" className="rounded-sm bg-white text-black border border-slate-300"> Cancel</Button>
         <Button className="rounded-sm">Reset Password</Button>
       </div>
       </div>
