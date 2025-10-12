@@ -27,21 +27,21 @@ export default function osaChangePasswordPage() {
           <Label className="block font-semibold text-black mb-1">Old Password</Label>
           <Input
             defaultValue={password.newPassword}
-            className="w-full border border-sky-300 focus:border-sky-500"placeholder="Enter Old Pasword"
+            className="w-full border border-sky-300 focus:border-sky-500" type="password" placeholder="Enter Old Password"
           />
         </div>
         <div>
           <Label className="block font-semibold text-black mb-1">New Password</Label>
           <Input
             defaultValue={password.newPassword}
-            className="w-full border border-sky-300 focus:border-sky-500"placeholder="Enter New Pasword"
+           className="w-full border border-sky-300 focus:border-sky-500" type="password" placeholder="Enter New Password"
           />
         </div>
         <div>
           <Label className="block font-semibold text-black mb-1">Confirm Password</Label>
           <Input
             defaultValue={password.confirmPassword}
-            className="w-full border border-sky-300 focus:border-sky-500"placeholder="Enter Confirm Pasword"
+         className="w-full border border-sky-300 focus:border-sky-500" type="password" placeholder="Enter Confirm Password"
           />
         </div>
       </div>
