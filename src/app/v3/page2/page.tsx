@@ -37,7 +37,7 @@ export default function ViewAndUpdate() {
 
   return (
     <div className="min-h-screen p-8 font-sans bg-slate-50">
-      {/* Name Section */}
+      {/* Name header */}
       <div className="flex items-center justify-between mb-0">
         <Label className="text-2xl font-semibold text-slate-800">
           Update Account for {accountDetails.firstName} {accountDetails.middleName}{" "}
@@ -61,7 +61,7 @@ export default function ViewAndUpdate() {
       {/* ACCOUNT Section */}
       {activeSection === "account" && (
         <div className="flex flex-col space-y-4">
-          {/* Row 1 - 4 inputs */}
+          {/* Row 1 inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4">
             <div>
               <Label className="block font-semibold text-black mb-1">User ID</Label>
@@ -81,7 +81,7 @@ export default function ViewAndUpdate() {
             </div>
           </div>
 
-          {/* Row 2 - 3 inputs */}
+          {/* Row 2 inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
             <div>
               <Label className="block font-semibold text-black mb-1">First Name</Label>
@@ -97,7 +97,7 @@ export default function ViewAndUpdate() {
             </div>
           </div>
 
-
+           {/* Row 3 input */}
            <div>
             <Label className="block font-semibold text-black mb-1">Date of Birth</Label>
             <Popover>
@@ -121,13 +121,13 @@ export default function ViewAndUpdate() {
             </Popover>
           </div>
 
-          {/* Row 4 - 1 input */}
+          {/* Row 4 input */}
           <div>
             <Label className="block font-semibold text-black mb-1">Contact Number</Label>
             <Input defaultValue={accountDetails.contact} className="border border-sky-300 focus:border-sky-500" />
           </div>
 
-          {/* Row 5 - 2 inputs */}
+          {/* Row 5 inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
             <div>
               <Label className="block font-semibold text-black mb-1">Address</Label>
