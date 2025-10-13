@@ -4,7 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
+
 
 export default function ViewAndUpdate() {
   const [activeSection, setActiveSection] = useState("account");
@@ -15,7 +18,7 @@ export default function ViewAndUpdate() {
     firstName: "John",
     middleName: "Cruz",
     lastName: "Doe",
-    birthday: "06/12/1990",
+    birthday: "",
     contact: "0123456789",
     userType: "STUDENT",
     address: "534 Spear Street San Francisco, CA 94105 United States",
@@ -23,11 +26,14 @@ export default function ViewAndUpdate() {
     status: "ACTIVE",
   };
 
+      const [date, setDate] = useState<Date | undefined>(new Date(accountDetails.birthday));
+
   const ChangePassword ={
     oldPassword: "",
     newPassword:"",
     confirmPassword:"",
   }
+
 
   return (
     <div className="min-h-screen p-8 font-sans bg-slate-50">
@@ -91,10 +97,28 @@ export default function ViewAndUpdate() {
             </div>
           </div>
 
-          {/* Row 3 - 1 input */}
-          <div>
+
+           <div>
             <Label className="block font-semibold text-black mb-1">Date of Birth</Label>
-            <Input defaultValue={accountDetails.birthday} className="border border-sky-300 focus:border-sky-500" />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal border border-sky-300 focus:border-sky-500"
+                >
+                  {date
+                    ? date.toLocaleDateString()
+                    : accountDetails.birthday}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Row 4 - 1 input */}
@@ -127,7 +151,20 @@ export default function ViewAndUpdate() {
       {/* FACIAL DATA Section */}
       {activeSection === "facial" && (
         <div className="flex flex-col space-y-4">
-            <button>fxvx</button>
+<Button
+  variant="outline"
+  className="flex flex-col items-start justify-center gap-1 rounded-md bg-white text-red-500 mt-9 py-4 px-6 h-auto"
+>
+  <span className="text-sm font-semibold leading-none">
+    Permanently Delete Facial Data
+  </span>
+  <span className="text-xs text-black leading-tight">
+  This action cannot be undone. This will permanently delete all facial data from our database. The student will be required to registered its facial data again. 
+  </span>
+</Button>
+
+
+          
         </div>
         
       )}
