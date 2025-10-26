@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ChevronDown } from "lucide-react";
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
 
-// ✅ Define your user data structure
+
 type User = {
   userId: number;
   firstName: string;
@@ -56,7 +56,7 @@ export default function RetrieveAllUsers() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Top Buttons */}
+      {/* top buttons */}
       <div className="w-full max-w-6xl mx-auto mb-4 flex justify-end space-x-2">
         <Button className="rounded-sm">Manually Add Account</Button>
         <Button className="rounded-sm">Import Student Accounts</Button>
@@ -65,7 +65,7 @@ export default function RetrieveAllUsers() {
         </Button>
       </div>
 
-      {/* Search + Filters */}
+      {/* search and filter buttons */}
       <div className="w-full max-w-6xl mx-auto mb-4 flex items-center justify-between flex-wrap mt-8">
         <div className="flex items-center space-x-2">
           <Input
@@ -81,21 +81,21 @@ export default function RetrieveAllUsers() {
 
         <div className="flex items-center space-x-2 mt-2 sm:mt-0">
           <Button variant="outline" className="rounded-sm">
-            GRADE LEVEL
+            GRADE LEVEL <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
           <Button variant="outline" className="rounded-sm">
-            SECTION
+            SECTION <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
           <Button variant="outline" className="rounded-sm">
-            COURSE
+            COURSE <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
           <Button variant="outline" className="rounded-sm">
-            ACCOUNT STATUS
+            ACCOUNT STATUS <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* Table */}
+      {/* table */}
       <div className="w-full max-w-6xl mx-auto overflow-hidden rounded-md border bg-white shadow mt-7">
         <Table>
           <TableHeader>
@@ -132,7 +132,7 @@ export default function RetrieveAllUsers() {
                   <TableCell>{user.contactNumber || "N/A"}</TableCell>
                   <TableCell>
                     <Button variant="outline" className="rounded-sm">
-                      View / Update
+                      Update 
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -148,7 +148,7 @@ export default function RetrieveAllUsers() {
         </Table>
       </div>
 
-      {/* Pagination Buttons */}
+      {/* back and next buttons */}
       <div className="w-full max-w-6xl mx-auto flex justify-end items-center space-x-2 mt-8">
         <Button variant="outline" className="rounded-sm">
           Previous
