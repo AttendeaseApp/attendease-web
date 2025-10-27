@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ChevronDown } from "lucide-react";
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
+import { RETRIEVE_ALL_USERS } from "@/constants/api";
+
 
 
 type User = {
@@ -27,12 +29,11 @@ export default function RetrieveAllUsers() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const response = await fetch(
-          "https://attendease-backend-latest.onrender.com/api/users/management",
+        const response = await fetch (RETRIEVE_ALL_USERS,
           {
             headers: {
               "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OGM5ODk2OThkNDVjOWQxM2E1ZTJjNGMiLCJlbWFpbCI6ImZpbC5zeW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiT1NBIiwiaWF0IjoxNzYxNDgwMzEyLCJleHAiOjE3NjE5MTIzMTJ9.8Ie-blTCndaHh6m0naldOpmckTRrjjC-HOn8yvHdV6E", // token
-            },
+            }, //hardcoded pa
           }
         );
 
