@@ -26,24 +26,41 @@ export default function Login() {
 
   /** login function */
   const handleLogin = async () => {
-    /** checks if email and pass is not empty */
+    /** checks if email and password are not empty */
     if (!email || !password) {
       alert("Please fill in both email and password.");
       return;
     }
 
     setLoading(true); /** disables the button while logging in */
+
     try {
       /** calls the API using fetch (via services/auth.ts) */
       const response = await login(email, password); /** endpoint handled in login() */
 
       console.log("Login response:", response);
 
-      /** gets the user info and token from response */
-      const token = typeof response === "string" ? response : response.token;
-      const user = typeof response === "string" ? null : response.user;
+      /** handle both plain token and JSON response */
+      const token = typeof response === "string" ? response : response?.token;
+      const user = typeof response === "string" ? null : response?.user;
+      const success =
+        typeof response === "object" && response?.success !== undefined
+          ? response.success
+          : !!token; // fallback if backend doesn't send "success" flag
 
-      /** saves token to use for next API calls */
+      /** check if login succeeded */
+      if (!token || success === false) {
+        const errorMessage =
+          typeof response === "string"
+            ? response // if backend returned plain text
+            : response?.message || "Invalid email or password.";
+
+        alert(errorMessage);
+
+        return; /** stop here — no redirect */
+      }
+
+      /** saves token for next API calls */
       localStorage.setItem("token", token);
 
       /** alert and redirect after successful login */
@@ -51,8 +68,8 @@ export default function Login() {
       router.push("/dashboard");
     } catch (error: any) {
       /** shows error message if incorrect credentials or error in backend */
-      console.error(error.message);
-      alert("Invalid email or password.");
+      console.error("Login error:", error.message);
+      alert("Login failed. Please try again.");
     } finally {
       setLoading(false); /** enable the button again */
     }
