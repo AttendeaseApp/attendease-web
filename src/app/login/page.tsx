@@ -35,7 +35,7 @@ export default function Login() {
     setLoading(true); /** disables the button while logging in */
 
     try {
-      /** calls the API using fetch (via services/auth.ts) */
+      /** calls the API using fetch */
       const response = await login(email, password); /** endpoint handled in login() */
 
       console.log("Login response:", response);
@@ -46,18 +46,18 @@ export default function Login() {
       const success =
         typeof response === "object" && response?.success !== undefined
           ? response.success
-          : !!token; // fallback if backend doesn't send "success" flag
+          : !!token; 
 
       /** check if login succeeded */
       if (!token || success === false) {
         const errorMessage =
           typeof response === "string"
-            ? response // if backend returned plain text
+            ? response
             : response?.message || "Invalid email or password.";
 
         alert(errorMessage);
 
-        return; /** stop here — no redirect */
+        return; 
       }
 
       /** saves token for next API calls */

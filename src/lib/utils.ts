@@ -16,13 +16,13 @@ export async function apiFetch<T>(
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  /** Build headers (force type to Record<string, string> to avoid TS errors) */
+  /** Build headers */
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
 
-  /** Skip adding token for public endpoints (login/register) */
+  /** Skip adding token for public endpoints */
   if (
     token &&
     !endpoint.includes("/auth/login") &&
