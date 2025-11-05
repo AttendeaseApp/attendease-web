@@ -8,8 +8,6 @@ import { ChevronDown } from "lucide-react";
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
 import { RETRIEVE_ALL_USERS } from "@/constants/api";
 
-
-
 type User = {
   userId: number;
   firstName: string;
@@ -24,24 +22,27 @@ type User = {
 
 export default function RetrieveAllUsers() {
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
 
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const response = await fetch (RETRIEVE_ALL_USERS,
-          {
-            headers: {
-              "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OGM5ODk2OThkNDVjOWQxM2E1ZTJjNGMiLCJlbWFpbCI6ImZpbC5zeW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiT1NBIiwiaWF0IjoxNzYxNDgwMzEyLCJleHAiOjE3NjE5MTIzMTJ9.8Ie-blTCndaHh6m0naldOpmckTRrjjC-HOn8yvHdV6E", // token
-            }, //hardcoded pa
-          }
-        );
+        const response = await fetch(RETRIEVE_ALL_USERS, {
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OGM5ODk2OThkNDVjOWQxM2E1ZTJjNGMiLCJlbWFpbCI6ImZpbC5zeW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiT1NBIiwiaWF0IjoxNzYyMzQ4MDQxLCJleHAiOjE3NjI3ODAwNDF9.o5AorU1ZXXodzvA3V1IpkvVslme03J13nFNVr1s1XlI",
+          },
+        });
 
         const data = await response.json();
         console.log("Fetched users:", data);
 
         if (response.ok) {
           setUsers(data);
+          setFilteredUsers(data); 
         } else {
           console.error("Error fetching users:", data);
         }
@@ -54,6 +55,29 @@ export default function RetrieveAllUsers() {
 
     fetchUsers();
   }, []);
+
+  
+   {/* SEARCH and FILTERING  */}
+  useEffect(() => {
+    const lowerSearch = searchTerm.toLowerCase();
+
+    const filtered = users.filter((user) => {
+      const matchesSearch =
+        user.firstName?.toLowerCase().includes(lowerSearch) ||
+        user.lastName?.toLowerCase().includes(lowerSearch) ||
+        user.email?.toLowerCase().includes(lowerSearch) ||
+        user.course?.toLowerCase().includes(lowerSearch) ||
+        user.studentNumber?.toLowerCase().includes(lowerSearch);
+
+      const matchesType =
+        selectedType === "all" ||
+        user.userType?.toLowerCase() === selectedType.toLowerCase();
+
+      return matchesSearch && matchesType;
+    });
+
+    setFilteredUsers(filtered);
+  }, [searchTerm, selectedType, users]);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -72,8 +96,10 @@ export default function RetrieveAllUsers() {
           <Input
             className="w-64 border border-gray-200"
             placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <ToggleGroup type="single" className="flex space-x-2">
+          <ToggleGroup type="single" value={selectedType} onValueChange={(value) => setSelectedType(value || "all")}className="flex space-x-2">
             <ToggleGroupItem value="all">ALL</ToggleGroupItem>
             <ToggleGroupItem value="osa">OSA</ToggleGroupItem>
             <ToggleGroupItem value="student">STUDENT</ToggleGroupItem>
@@ -119,8 +145,8 @@ export default function RetrieveAllUsers() {
                   Loading...
                 </TableCell>
               </TableRow>
-            ) : users.length > 0 ? (
-              users.map((user) => (
+            ) : filteredUsers.length > 0 ? (
+              filteredUsers.map((user) => (
                 <TableRow key={user.userId}>
                   <TableCell>
                     {`${user.firstName || ""} ${user.lastName || ""}`}
@@ -133,15 +159,15 @@ export default function RetrieveAllUsers() {
                   <TableCell>{user.contactNumber || "N/A"}</TableCell>
                   <TableCell>
                     <Button variant="outline" className="rounded-sm">
-                      Update 
+                      Update
                     </Button>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center text-gray-500">
-                  No data yet.
+                <TableCell colSpan={8}className="h-24 text-center text-gray-500">
+                  No users found.
                 </TableCell>
               </TableRow>
             )}
