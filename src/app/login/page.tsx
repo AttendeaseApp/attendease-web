@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -8,9 +7,8 @@ import { Card } from "../../components/ui/card";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
-import { Checkbox } from "../../components/ui/checkbox";
 import { Poppins } from "next/font/google";
-import { login } from "@/services/auth"; 
+import { login } from "@/services/auth";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,47 +29,19 @@ export default function Login() {
       alert("Please fill in both email and password.");
       return;
     }
-
     setLoading(true); /** disables the button while logging in */
 
     try {
-      /** calls the API using fetch */
-      const response = await login(email, password); /** endpoint handled in login() */
-
-      console.log("Login response:", response);
-
-      /** handle both plain token and JSON response */
-      const token = typeof response === "string" ? response : response?.token;
-      const user = typeof response === "string" ? null : response?.user;
-      const success =
-        typeof response === "object" && response?.success !== undefined
-          ? response.success
-          : !!token; 
-
-      /** check if login succeeded */
-      if (!token || success === false) {
-        const errorMessage =
-          typeof response === "string"
-            ? response
-            : response?.message || "Invalid email or password.";
-
-        alert(errorMessage);
-
-        return; 
+      const result = await login(email, password);
+      if (result.success) {
+        router.push("/dashboard");
+      } else {
+        alert("Login failed: " + result.message);
       }
-
-      /** saves token for next API calls */
-      localStorage.setItem("token", token);
-
-      /** alert and redirect after successful login */
-      alert(`Welcome, ${user?.name || "OSA user"}!`);
-      router.push("/dashboard");
-    } catch (error: any) {
-      /** shows error message if incorrect credentials or error in backend */
-      console.error("Login error:", error.message);
-      alert("Login failed. Please try again.");
+    } catch (error) {
+      alert("Error: Something went wrong. Please try again. " + String(error));
     } finally {
-      setLoading(false); /** enable the button again */
+      setLoading(false);
     }
   };
 
@@ -81,7 +51,8 @@ export default function Login() {
         <Card className="w-full max-w-md p-8 shadow-lg">
           <h1 className="text-2xl font-bold mb-2">OSA Login</h1>
           <p className="text-gray-600 mb-6">
-            Welcome back <br />Please enter your OSA credentials.
+            Welcome back <br />
+            Please enter your OSA credentials.
           </p>
 
           <div className="mb-4">
@@ -121,16 +92,6 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember">Remember me</Label>
-            </div>
-            <Link href="#" className="text-sm text-blue-600 hover:underline">
-              Forgot Password?
-            </Link>
-          </div>
-
           <Button
             className="w-full mb-4"
             onClick={handleLogin}
@@ -138,13 +99,6 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "LOGIN"}
           </Button>
-
-          <p className="text-sm text-center text-gray-600">
-            Don’t have an account?{" "}
-            <Link href="#" className="text-blue-600 hover:underline">
-              Register here
-            </Link>
-          </p>
         </Card>
       </div>
 

@@ -1,23 +1,44 @@
-import { apiFetch } from "@/lib/utils";
+import { LoginResponse } from "@/interface/auth-interface";
+import { LOGIN } from "@/constants/api";
 
-/** Defines the possible structure of the login response */
-interface LoginResponse {
-  token?: string;
-  user?: {
-    name?: string;
-    [key: string]: any;
-  };
-  success?: boolean;
-  message?: string;
-}
-
-/** Login function (POST /auth/login) */
+/**
+ * Logs in a user with the provided email and password.
+ * On success, stores the auth token in local storage.
+ *
+ * @param email User's email address
+ * @param password User's password
+ * @returns An object indicating success or failure, along with relevant data.
+ */
 export async function login(
   email: string,
   password: string
-): Promise<LoginResponse | string> {
-  return apiFetch<LoginResponse | string>("/api/auth/osa/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  });
+): Promise<LoginResponse> {
+  try {
+    const response = await fetch(LOGIN, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.token) {
+      await localStorage.setItem("authToken", data.token);
+      return {
+        success: true,
+        email: data.email,
+        token: data.token,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Invalid credentials",
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: "Network error. Please try again.",
+    };
+  }
 }
