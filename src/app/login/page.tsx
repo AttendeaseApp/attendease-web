@@ -1,49 +1,49 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
-import { Card } from "../../components/ui/card";
-import { Label } from "../../components/ui/label";
-import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
-import { Poppins } from "next/font/google";
-import { login } from "@/services/auth";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Eye, EyeOff } from "lucide-react"
+import { Card } from "../../components/ui/card"
+import { Label } from "../../components/ui/label"
+import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
+import { Poppins } from "next/font/google"
+import { login } from "@/services/auth"
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-});
+})
 
 export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const router = useRouter(); /** page redirection */
+  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const router = useRouter() /** page redirection */
 
   /** login function */
   const handleLogin = async () => {
     /** checks if email and password are not empty */
     if (!email || !password) {
-      alert("Please fill in both email and password.");
-      return;
+      alert("Please fill in both email and password.")
+      return
     }
-    setLoading(true); /** disables the button while logging in */
+    setLoading(true) /** disables the button while logging in */
 
     try {
-      const result = await login(email, password);
+      const result = await login(email, password)
       if (result.success) {
-        router.push("/dashboard");
+        router.push("/dashboard")
       } else {
-        alert("Login failed: " + result.message);
+        alert("Login failed: " + result.message)
       }
     } catch (error) {
-      alert("Error: Something went wrong. Please try again. " + String(error));
+      alert("Error: Something went wrong. Please try again. " + String(error))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className={`flex h-screen ${poppins.className}`}>
@@ -83,20 +83,12 @@ export default function Login() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
           </div>
 
-          <Button
-            className="w-full mb-4"
-            onClick={handleLogin}
-            disabled={loading}
-          >
+          <Button className="w-full mb-4" onClick={handleLogin} disabled={loading}>
             {loading ? "Logging in..." : "LOGIN"}
           </Button>
         </Card>
@@ -104,5 +96,5 @@ export default function Login() {
 
       <div className="flex-[3] bg-[#27548A] flex items-center justify-center" />
     </div>
-  );
+  )
 }

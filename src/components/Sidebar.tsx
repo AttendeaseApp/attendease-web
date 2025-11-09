@@ -1,4 +1,4 @@
-import { Calendar, Home, Users, User, Settings } from "lucide-react";
+import { Calendar, Home, Users, User, Settings } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -8,7 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar"
 
 // menu items.
 const menu = [
@@ -27,7 +27,7 @@ const menu = [
     url: "/manage-events",
     icon: Calendar,
   },
-];
+]
 
 const others = [
   {
@@ -40,7 +40,7 @@ const others = [
     url: "/account",
     icon: User,
   },
-];
+]
 
 export function AppSidebar() {
   return (
@@ -81,5 +81,5 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  );
+  )
 }
