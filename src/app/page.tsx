@@ -1,18 +1,18 @@
-import Image from "next/image";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/Sidebar"
-import Header from "@/components/Header";
+"use client"
 
-export default function Home({ children }: { children: React.ReactNode }) {
-  return (
-    <main>
-    <SidebarProvider>
-      <AppSidebar />
-        <SidebarTrigger />
-        {children}
-    </SidebarProvider>
-    <Header />
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
-    </main>
-  );
+export default function Home() {
+  const router = useRouter()
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken")
+    if (token) {
+      router.push("/dashboard")
+    } else {
+      router.push("/login")
+    }
+  }, [router])
+  return null
 }

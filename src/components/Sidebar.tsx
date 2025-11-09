@@ -9,39 +9,39 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
- 
-// Menu items.
+
+// menu items.
 const menu = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/dashboard",
     icon: Home,
   },
   {
-    title: "Manage User",
-    url: "#", //to be followed
+    title: "Manage Users",
+    url: "/manage-users",
     icon: Users,
   },
   {
-    title: "Manage Event",
-    url: "#", //to be followed
+    title: "Manage Events",
+    url: "/manage-events",
     icon: Calendar,
-  }
+  },
 ]
 
 const others = [
   {
     title: "Settings",
-    url: "#", //to be followed
+    url: "/settings",
     icon: Settings,
   },
   {
-    title: "Accounts",
-    url: "#", //to be followed
+    title: "Account",
+    url: "/account",
     icon: User,
   },
 ]
- 
+
 export function AppSidebar() {
   return (
     <Sidebar>
@@ -78,7 +78,6 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-          
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
