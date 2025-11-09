@@ -34,6 +34,12 @@ interface CreateEventDialogProps {
 
 type DateFields = "timeInRegistrationStartDateTime" | "startDateTime" | "endDateTime"
 
+/**
+ * CreateEventDialog component for creating a new event session.
+ *
+ * @param param0 as CreateEventDialogProps
+ * @returns JSX.Element The CreateEventDialog component.
+ */
 export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDialogProps) {
   const now = new Date()
   const [formData, setFormData] = useState({

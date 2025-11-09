@@ -32,6 +32,12 @@ interface EditEventDialogProps {
   onClose: () => void
 }
 
+/**
+ * EditEventDialog component for editing an existing event session.
+ *
+ * @param param0 as EditEventDialogProps
+ * @returns JSX.Element The EditEventDialog component.
+ */
 export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventDialogProps) {
   const [formData, setFormData] = useState({
     eventName: event.eventName,

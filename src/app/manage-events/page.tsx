@@ -13,6 +13,11 @@ import { EventSession } from "@/interface/event-interface"
 import { EditEventDialog } from "@/components/manage-events/EditEventDialog"
 import { CreateEventDialog } from "@/components/manage-events/CreateEventDialog"
 
+/**
+ * ManageEventsPage component for managing event sessions(CREATE, READ, UPDATE, DELETE).
+ *
+ * @returns JSX.Element The ManageEventsPage component.
+ */
 export default function ManageEventsPage() {
   const [events, setEvents] = useState<EventSession[]>([])
   const [loading, setLoading] = useState(true)

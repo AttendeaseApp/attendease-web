@@ -21,6 +21,12 @@ export const getAllEvents = async (): Promise<EventSession[]> => {
   }
 }
 
+/**
+ * Update an event by sending a PATCH request to the API.
+ * @param id Event ID
+ * @param updatedData Partial event data to update
+ * @returns data as EventSession
+ */
 export const updateEvent = async (
   id: string,
   updatedData: Partial<EventSession>
@@ -56,6 +62,12 @@ export const updateEvent = async (
   }
 }
 
+/**
+ * Update an event by sending a POST request to the API.
+ *
+ * @param newEventData
+ * @returns data as EventSession
+ */
 export const createEvent = async (
   newEventData: Partial<EventSession> & { eventLocationId: string }
 ): Promise<EventSession> => {

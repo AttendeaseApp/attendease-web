@@ -1,3 +1,6 @@
+/**
+ * EventStatus enum representing the status of an event.
+ */
 export enum EventStatus {
   UPCOMING = "UPCOMING",
   REGISTRATION = "REGISTRATION",
@@ -7,16 +10,25 @@ export enum EventStatus {
   FINALIZED = "FINALIZED",
 }
 
+/**
+ * EligibilityCriteria interface representing eligibility criteria for an event.
+ */
 export interface EligibilityCriteria {
   [key: string]: string | undefined
 }
 
+/**
+ * EventLocation interface representing an event location.
+ */
 export interface EventLocation {
   id?: string
   name?: string
   [key: string]: string | undefined
 }
 
+/**
+ * EventSession interface representing an event session.
+ */
 export interface EventSession {
   eventId: string
   eventName: string

@@ -5,6 +5,9 @@ export const API_BASE = "https://attendease-backend-latest.onrender.com"
  */
 export const LOGIN = `${API_BASE}/api/auth/osa/login`
 
+/**
+ * All event management related API endpoints.
+ */
 export const EVENT_MANAGEMENT_API_ENDPOINTS = {
   GET_ALL_EVENTS: `${API_BASE}/api/events`,
   CREATE_EVENT: `${API_BASE}/api/events`,

@@ -27,6 +27,12 @@ interface EventTableProps {
   onDelete: (event: EventSession) => void
 }
 
+/**
+ * EventTable component for displaying a table of event sessions.
+ *
+ * @param param0 as EventTableProps
+ * @returns JSX.Element The EventTable component.
+ */
 export function EventTable({ events, loading, onEdit, onDelete }: EventTableProps) {
   const handleEdit = (event: EventSession, e: React.MouseEvent) => {
     e.preventDefault()
