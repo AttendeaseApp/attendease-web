@@ -9,12 +9,15 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Plus, Search } from "lucide-react"
 import { getAllEvents } from "@/services/event-sessions"
 import { EventSession } from "@/interface/event-interface"
+import { EditEventDialog } from "@/components/manage-events/EditEventDialog"
 
 export default function ManageEventsPage() {
   const [events, setEvents] = useState<EventSession[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState<EventSession | null>(null)
 
   const loadEvents = async () => {
     try {
@@ -37,6 +40,23 @@ export default function ManageEventsPage() {
   const filteredEvents = events.filter((event) =>
     event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const handleEdit = (event: EventSession) => {
+    setSelectedEvent(event)
+    setIsEditOpen(true)
+  }
+
+  const handleEditClose = () => {
+    setIsEditOpen(false)
+    setSelectedEvent(null)
+  }
+
+  const handleEditUpdate = () => {
+    setIsEditOpen(false)
+    setSelectedEvent(null)
+    loadEvents()
+  }
+
   return (
     <ProtectedLayout>
       <div className="flex flex-col w-full h-full min-w-0 gap-6">
@@ -77,9 +97,18 @@ export default function ManageEventsPage() {
               </div>
             )}
 
-            <EventTable events={filteredEvents} loading={loading} />
+            <EventTable events={filteredEvents} loading={loading} onEdit={handleEdit} />
           </CardContent>
         </Card>
+
+        {selectedEvent && (
+          <EditEventDialog
+            event={selectedEvent}
+            isOpen={isEditOpen}
+            onClose={handleEditClose}
+            onUpdate={handleEditUpdate}
+          />
+        )}
       </div>
     </ProtectedLayout>
   )

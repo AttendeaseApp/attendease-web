@@ -1,3 +1,5 @@
+"use client"
+
 import { EventSession, EventStatus } from "@/interface/event-interface"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -9,15 +11,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal, Pencil } from "lucide-react"
 
 interface EventTableProps {
   events: EventSession[]
   loading: boolean
+  onEdit: (event: EventSession) => void
 }
 
-export function EventTable({ events, loading }: EventTableProps) {
+export function EventTable({ events, loading, onEdit }: EventTableProps) {
+  const handleEdit = (event: EventSession, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onEdit(event)
+  }
+
   return (
     <Table>
       <TableHeader>
@@ -67,6 +81,7 @@ export function EventTable({ events, loading }: EventTableProps) {
                   {event.eventStatus}
                 </span>
               </TableCell>
+
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -75,6 +90,12 @@ export function EventTable({ events, loading }: EventTableProps) {
                       <span className="sr-only">Open menu</span>
                     </Button>
                   </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={(e) => handleEdit(event, e)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
             </TableRow>
