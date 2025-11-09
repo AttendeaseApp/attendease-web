@@ -46,7 +46,7 @@ export default function ViewAndUpdate() {
       </div>
 
       <Label className="block mb-4 text-slate-600">
-        Make changes to this account here. Click save when you're done.
+        Make changes to this account here. Click save when you are done.
       </Label>
 
     <ToggleGroup type="single" value={activeSection} onValueChange={(value: string | null) => {
