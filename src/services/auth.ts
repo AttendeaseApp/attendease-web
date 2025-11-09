@@ -38,7 +38,7 @@ export async function login(
   } catch (error) {
     return {
       success: false,
-      message: "Network error. Please try again.",
+      message: "Network error. Please try again. " + String(error),
     };
   }
 }
