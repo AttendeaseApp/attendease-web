@@ -1,11 +1,11 @@
 export interface LoginResponse {
-  token?: string;
-  email?: string;
-  success?: boolean;
-  message?: string;
+  token?: string
+  email?: string
+  success?: boolean
+  message?: string
 }
 
 export interface LoginRequest {
-  email?: string;
-  password?: string;
+  email?: string
+  password?: string
 }

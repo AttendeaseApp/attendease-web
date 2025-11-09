@@ -1,22 +1,18 @@
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/Sidebar";
-import Header from "@/components/Header";
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/Sidebar"
+import Header from "@/components/Header"
 
-export default function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const router = useRouter();
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken")
     if (!token) {
-      router.push("/login");
+      router.push("/login")
     }
-  }, [router]);
+  }, [router])
 
   return (
     <SidebarProvider>
@@ -30,5 +26,5 @@ export default function ProtectedLayout({
         </div>
       </div>
     </SidebarProvider>
-  );
+  )
 }

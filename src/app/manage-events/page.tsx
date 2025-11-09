@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -10,9 +10,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import ProtectedLayout from "@/components/layouts/ProtectedLayout";
-import { Plus, Search } from "lucide-react";
+} from "@/components/ui/table"
+import ProtectedLayout from "@/components/layouts/ProtectedLayout"
+import { Plus, Search } from "lucide-react"
 
 export default function ManageEventsPage() {
   return (
@@ -22,9 +22,7 @@ export default function ManageEventsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold md:text-3xl">Manage Events</h1>
-            <p className="text-muted-foreground mt-1">
-              Create and manage your events here.
-            </p>
+            <p className="text-muted-foreground mt-1">Create and manage your events here.</p>
           </div>
           <Button className="sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
@@ -88,5 +86,5 @@ export default function ManageEventsPage() {
         </Card>
       </div>
     </ProtectedLayout>
-  );
+  )
 }

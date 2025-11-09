@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ProtectedLayout from "@/components/layouts/ProtectedLayout";
-import { Calendar, Users, ArrowUpRight, Bell } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import ProtectedLayout from "@/components/layouts/ProtectedLayout"
+import { Calendar, Users, ArrowUpRight, Bell } from "lucide-react"
 
 export default function DashboardPage() {
   return (
@@ -10,18 +10,14 @@ export default function DashboardPage() {
       <div className="flex flex-col w-full h-full min-w-0 gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold md:text-3xl">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome to your dashboard overview.
-          </p>
+          <p className="text-muted-foreground">Welcome to your dashboard overview.</p>
         </div>
 
         {/* stats grid */}
         <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">
-                Total Events
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">Total Events</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -35,9 +31,7 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">
-                Upcoming Events
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -56,13 +50,11 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p className="text-muted-foreground">
-                No recent events to display.
-              </p>
+              <p className="text-muted-foreground">No recent events to display.</p>
             </div>
           </CardContent>
         </Card>
       </div>
     </ProtectedLayout>
-  );
+  )
 }
