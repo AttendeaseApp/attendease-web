@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Plus, Search } from "lucide-react"
 import { getAllEvents } from "@/services/event-sessions"
+import { deleteEvent } from "@/services/event-sessions"
 import { EventSession } from "@/interface/event-interface"
 import { EditEventDialog } from "@/components/manage-events/EditEventDialog"
 import { CreateEventDialog } from "@/components/manage-events/CreateEventDialog"
@@ -66,6 +67,17 @@ export default function ManageEventsPage() {
     loadEvents()
   }
 
+  const handleDelete = async (event: EventSession) => {
+    try {
+      await deleteEvent(event.eventId)
+      setEvents((prev) => prev.filter((e) => e.eventId !== event.eventId))
+      alert("Event deleted successfully!")
+    } catch (error) {
+      console.error("Delete failed:", error)
+      alert("Failed to delete event. Please try again.")
+    }
+  }
+
   return (
     <ProtectedLayout>
       <div className="flex flex-col w-full h-full min-w-0 gap-6">
@@ -106,7 +118,12 @@ export default function ManageEventsPage() {
               </div>
             )}
 
-            <EventTable events={filteredEvents} loading={loading} onEdit={handleEdit} />
+            <EventTable
+              events={filteredEvents}
+              loading={loading}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           </CardContent>
         </Card>
 

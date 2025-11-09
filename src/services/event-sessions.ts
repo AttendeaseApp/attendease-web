@@ -101,3 +101,32 @@ export const createEvent = async (
     throw error
   }
 }
+
+/**
+ * Delete an event by ID from the API.
+ * @param id The ID of the event to delete
+ * @returns Promise<void>
+ */
+export const deleteEvent = async (id: string): Promise<void> => {
+  try {
+    const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.DELETE_EVENT(id), {
+      method: "DELETE",
+    })
+    if (!res.ok) {
+      let errorMsg = `Failed to delete event: ${res.status}`
+      try {
+        const errorBody = await res.json()
+        errorMsg =
+          errorBody.error ||
+          errorBody.message ||
+          (Array.isArray(errorBody.errors) ? errorBody.errors[0]?.defaultMessage : errorBody)
+      } catch (parseErr) {
+        errorMsg = res.statusText || errorMsg
+      }
+      throw new Error(errorMsg)
+    }
+  } catch (error) {
+    console.error("Error deleting event:", error)
+    throw error
+  }
+}

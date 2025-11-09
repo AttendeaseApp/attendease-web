@@ -17,19 +17,33 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 
 interface EventTableProps {
   events: EventSession[]
   loading: boolean
   onEdit: (event: EventSession) => void
+  onDelete: (event: EventSession) => void
 }
 
-export function EventTable({ events, loading, onEdit }: EventTableProps) {
+export function EventTable({ events, loading, onEdit, onDelete }: EventTableProps) {
   const handleEdit = (event: EventSession, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     onEdit(event)
+  }
+
+  const handleDelete = (event: EventSession, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (
+      confirm(
+        `Are you sure you want to delete the event "${event.eventName}"? This action cannot be undone.`
+      )
+    ) {
+      onDelete(event)
+    }
   }
 
   return (
@@ -95,6 +109,11 @@ export function EventTable({ events, loading, onEdit }: EventTableProps) {
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => handleDelete(event, e)}>
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
