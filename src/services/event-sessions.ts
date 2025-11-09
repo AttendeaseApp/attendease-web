@@ -55,3 +55,49 @@ export const updateEvent = async (
     throw error
   }
 }
+
+export const createEvent = async (
+  newEventData: Partial<EventSession> & { eventLocationId: string }
+): Promise<EventSession> => {
+  try {
+    const payload = { ...newEventData }
+    if (payload.timeInRegistrationStartDateTime) {
+      payload.timeInRegistrationStartDateTime = format(
+        new Date(payload.timeInRegistrationStartDateTime),
+        "yyyy-MM-dd HH:mm:ss"
+      )
+    }
+    if (payload.startDateTime) {
+      payload.startDateTime = format(new Date(payload.startDateTime), "yyyy-MM-dd HH:mm:ss")
+    }
+    if (payload.endDateTime) {
+      payload.endDateTime = format(new Date(payload.endDateTime), "yyyy-MM-dd HH:mm:ss")
+    }
+
+    const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.CREATE_EVENT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      let errorMsg = `Failed to create event: ${res.status}`
+      try {
+        const errorBody = await res.json()
+        errorMsg =
+          errorBody.error ||
+          errorBody.message ||
+          (Array.isArray(errorBody.errors) ? errorBody.errors[0]?.defaultMessage : errorBody)
+      } catch (parseErr) {
+        errorMsg = res.statusText || errorMsg
+      }
+      throw new Error(errorMsg)
+    }
+
+    const data = await res.json()
+    return data as EventSession
+  } catch (error) {
+    console.error("Error creating event:", error)
+    throw error
+  }
+}

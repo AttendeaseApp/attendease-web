@@ -10,6 +10,7 @@ import { Plus, Search } from "lucide-react"
 import { getAllEvents } from "@/services/event-sessions"
 import { EventSession } from "@/interface/event-interface"
 import { EditEventDialog } from "@/components/manage-events/EditEventDialog"
+import { CreateEventDialog } from "@/components/manage-events/CreateEventDialog"
 
 export default function ManageEventsPage() {
   const [events, setEvents] = useState<EventSession[]>([])
@@ -18,6 +19,7 @@ export default function ManageEventsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<EventSession | null>(null)
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
 
   const loadEvents = async () => {
     try {
@@ -57,6 +59,13 @@ export default function ManageEventsPage() {
     loadEvents()
   }
 
+  const handleCreateOpen = () => setIsCreateOpen(true)
+  const handleCreateClose = () => setIsCreateOpen(false)
+  const handleCreateSuccess = () => {
+    setIsCreateOpen(false)
+    loadEvents()
+  }
+
   return (
     <ProtectedLayout>
       <div className="flex flex-col w-full h-full min-w-0 gap-6">
@@ -65,7 +74,7 @@ export default function ManageEventsPage() {
             <h1 className="text-2xl font-bold md:text-3xl">Manage Events</h1>
             <p className="text-muted-foreground mt-1">Create and manage your events here.</p>
           </div>
-          <Button className="sm:w-auto">
+          <Button className="sm:w-auto" onClick={handleCreateOpen}>
             <Plus className="mr-2 h-4 w-4" />
             Create Event
           </Button>
@@ -109,6 +118,12 @@ export default function ManageEventsPage() {
             onUpdate={handleEditUpdate}
           />
         )}
+
+        <CreateEventDialog
+          isOpen={isCreateOpen}
+          onClose={handleCreateClose}
+          onCreate={handleCreateSuccess}
+        />
       </div>
     </ProtectedLayout>
   )
