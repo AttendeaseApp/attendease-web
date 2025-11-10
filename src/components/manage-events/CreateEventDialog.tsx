@@ -25,6 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { createEvent } from "@/services/event-sessions"
+import { getAllLocations } from "@/services/locations-service"
+import { EventLocation } from "@/interface/location-interface"
 
 interface CreateEventDialogProps {
   isOpen: boolean
@@ -52,6 +54,24 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
   })
   const [error, setError] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [locations, setLocations] = useState<EventLocation[]>([])
+  const [loadingLocations, setLoadingLocations] = useState(true)
+
+  useEffect(() => {
+    const loadLocations = async () => {
+      try {
+        setLoadingLocations(true)
+        const data = await getAllLocations()
+        setLocations(data)
+      } catch (err) {
+        console.error("Failed to load locations:", err)
+      } finally {
+        setLoadingLocations(false)
+      }
+    }
+
+    loadLocations()
+  }, [])
 
   useEffect(() => {
     if (isOpen) {
@@ -427,15 +447,25 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="locationId">Location ID</Label>
-            <Input
-              id="locationId"
-              type="text"
+            <Label htmlFor="eventLocationId">Location</Label>
+            <Select
               value={formData.eventLocationId}
-              onChange={(e) => handleInputChange("eventLocationId", e.target.value)}
-              placeholder="Enter location ID (e.g., 699be4f7c3f0f0b5a35)"
-              required
-            />
+              onValueChange={(value) => handleInputChange("eventLocationId", value)}
+              disabled={loadingLocations}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={loadingLocations ? "Loading locations..." : "Select a location"}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {locations.map((loc) => (
+                  <SelectItem key={loc.locationId} value={loc.locationId}>
+                    {loc.locationName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {error && (

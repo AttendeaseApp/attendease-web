@@ -15,3 +15,9 @@ export const EVENT_MANAGEMENT_API_ENDPOINTS = {
   CANCEL_EVENT: (id: string) => `${API_BASE}/api/events/${id}/cancel`,
   DELETE_EVENT: (id: string) => `${API_BASE}/api/events/${id}`,
 }
+
+export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
+  GET_ALL_LOCATIONS: `${API_BASE}/api/locations`,
+  CREATE_LOCATION: `${API_BASE}/api/locations`,
+  DELETE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
+}
