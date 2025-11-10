@@ -75,42 +75,46 @@ export default function CreateLocationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-7xl">
         <DialogHeader>
           <DialogTitle>Create New Location</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          <Input
-            placeholder="Location Name"
-            value={locationName}
-            onChange={(e) => setLocationName(e.target.value)}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left column: Inputs and selects */}
+          <div className="flex flex-col gap-4">
+            <Input
+              placeholder="Location Name"
+              value={locationName}
+              onChange={(e) => setLocationName(e.target.value)}
+            />
 
-          <select
-            className="border rounded-md px-3 py-2"
-            value={locationType}
-            onChange={(e) => setLocationType(e.target.value)}
-          >
-            <option value="INDOOR">Indoor</option>
-            <option value="OUTDOOR">Outdoor</option>
-          </select>
+            <select
+              className="border rounded-md px-3 py-2"
+              value={locationType}
+              onChange={(e) => setLocationType(e.target.value)}
+            >
+              <option value="INDOOR">Indoor</option>
+              <option value="OUTDOOR">Outdoor</option>
+            </select>
 
-          <div className="h-[400px]">
-            <LocationMap onCreated={onCreated} onDeleted={onDeleted} tileType={tileType} />
+            <label className="font-medium">Map Options</label>
+            <select
+              className="border rounded-md px-3 py-2"
+              value={tileType}
+              onChange={(e) => setTileType(e.target.value as "esri" | "osm")}
+            >
+              <option value="esri">Esri Satellite + Labels</option>
+              <option value="osm">OpenStreetMap</option>
+            </select>
+
+            {error && <div className="text-red-500 text-sm">{error}</div>}
           </div>
 
-          <label>Map Options</label>
-          <select
-            className="border rounded-md px-3 py-2"
-            value={tileType}
-            onChange={(e) => setTileType(e.target.value as "esri" | "osm")}
-          >
-            <option value="esri">Esri Satellite + Labels</option>
-            <option value="osm">OpenStreetMap</option>
-          </select>
-
-          {error && <div className="text-red-500 text-sm">{error}</div>}
+          {/* Right column: Map */}
+          <div className="h-[500px]">
+            <LocationMap onCreated={onCreated} onDeleted={onDeleted} tileType={tileType} />
+          </div>
         </div>
 
         <DialogFooter>
