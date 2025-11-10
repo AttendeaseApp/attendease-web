@@ -15,3 +15,11 @@ export const EVENT_MANAGEMENT_API_ENDPOINTS = {
   CANCEL_EVENT: (id: string) => `${API_BASE}/api/events/${id}/cancel`,
   DELETE_EVENT: (id: string) => `${API_BASE}/api/events/${id}`,
 }
+
+export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
+  GET_ALL_COURSES: `${API_BASE}/api/courses`,
+  GET_ALL_CLUSTERS: `${API_BASE}/api/clusters`,
+  CREATE_COURSE: (id: string) => `${API_BASE}/api/courses?clusterId=${id}`,
+  DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
+  CREATE_CLUSTER: `${API_BASE}/api/clusters`
+}
