@@ -1,65 +1,72 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { ChevronDown } from "lucide-react";
-import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
-import { RETRIEVE_ALL_USERS } from "@/constants/api";
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { ChevronDown } from "lucide-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { RETRIEVE_ALL_USERS } from "@/constants/api"
 
 type User = {
-  userId: number;
-  firstName: string;
-  lastName: string;
-  userType?: string;
-  section?: string;
-  course?: string;
-  studentNumber?: string;
-  email?: string;
-  contactNumber?: string;
-};
+  userId: number
+  firstName: string
+  lastName: string
+  userType?: string
+  section?: string
+  course?: string
+  studentNumber?: string
+  email?: string
+  contactNumber?: string
+}
 
 export default function RetrieveAllUsers() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState("all");
+  const [users, setUsers] = useState<User[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedType, setSelectedType] = useState("all")
 
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("authToken")
 
         const response = await fetch(RETRIEVE_ALL_USERS, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        })
 
-        const data = await response.json();
-        console.log("Fetched users:", data);
+        const data = await response.json()
+        console.log("Fetched users:", data)
 
         if (response.ok) {
-          setUsers(data);
-          setFilteredUsers(data);
+          setUsers(data)
+          setFilteredUsers(data)
         } else {
-          console.error("Error fetching users:", data);
+          console.error("Error fetching users:", data)
         }
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("Fetch error:", err)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchUsers();
-  }, []);
+    fetchUsers()
+  }, [])
 
   // SEARCH and FILTERING
   useEffect(() => {
-    const lowerSearch = searchTerm.toLowerCase();
+    const lowerSearch = searchTerm.toLowerCase()
 
     const filtered = users.filter((user) => {
       const matchesSearch =
@@ -67,17 +74,16 @@ export default function RetrieveAllUsers() {
         user.lastName?.toLowerCase().includes(lowerSearch) ||
         user.email?.toLowerCase().includes(lowerSearch) ||
         user.course?.toLowerCase().includes(lowerSearch) ||
-        user.studentNumber?.toLowerCase().includes(lowerSearch);
+        user.studentNumber?.toLowerCase().includes(lowerSearch)
 
       const matchesType =
-        selectedType === "all" ||
-        user.userType?.toLowerCase() === selectedType.toLowerCase();
+        selectedType === "all" || user.userType?.toLowerCase() === selectedType.toLowerCase()
 
-      return matchesSearch && matchesType;
-    });
+      return matchesSearch && matchesType
+    })
 
-    setFilteredUsers(filtered);
-  }, [searchTerm, selectedType, users]);
+    setFilteredUsers(filtered)
+  }, [searchTerm, selectedType, users])
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -153,9 +159,7 @@ export default function RetrieveAllUsers() {
             ) : filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <TableRow key={user.userId}>
-                  <TableCell>
-                    {`${user.firstName || ""} ${user.lastName || ""}`}
-                  </TableCell>
+                  <TableCell>{`${user.firstName || ""} ${user.lastName || ""}`}</TableCell>
                   <TableCell>{user.userType || "N/A"}</TableCell>
                   <TableCell>{user.section || "N/A"}</TableCell>
                   <TableCell>{user.course || "N/A"}</TableCell>
@@ -171,10 +175,7 @@ export default function RetrieveAllUsers() {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="h-24 text-center text-gray-500"
-                >
+                <TableCell colSpan={8} className="h-24 text-center text-gray-500">
                   No users found.
                 </TableCell>
               </TableRow>
@@ -193,5 +194,5 @@ export default function RetrieveAllUsers() {
         </Button>
       </div>
     </div>
-  );
+  )
 }
