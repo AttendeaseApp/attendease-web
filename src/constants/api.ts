@@ -21,3 +21,9 @@ export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
   CREATE_LOCATION: `${API_BASE}/api/locations`,
   DELETE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
 }
+
+export const USER_MANAGEMENT_API_ENDPOINTS = {
+  RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
+  IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
+  RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
+}
