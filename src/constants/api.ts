@@ -5,8 +5,6 @@ export const API_BASE = "https://attendease-backend-latest.onrender.com"
  */
 export const LOGIN = `${API_BASE}/api/auth/osa/login`
 
-export const RETRIEVE_ALL_USERS = `${API_BASE}/api/users/management`
-
 /**
  * All event management related API endpoints.
  */
@@ -22,4 +20,10 @@ export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
   GET_ALL_LOCATIONS: `${API_BASE}/api/locations`,
   CREATE_LOCATION: `${API_BASE}/api/locations`,
   DELETE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
+}
+
+export const USER_MANAGEMENT_API_ENDPOINTS = {
+  RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
+  IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
+  RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
 }

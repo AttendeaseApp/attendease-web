@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Plus, Search } from "lucide-react"
@@ -70,35 +69,28 @@ export default function ManageLocationsPage() {
           </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Events</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search events..."
-                  className="pl-8"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button variant="outline" size="sm" onClick={loadLocations}>
-                Refresh
-              </Button>
-            </div>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search events..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Button variant="outline" size="sm" onClick={loadLocations}>
+            Refresh
+          </Button>
+        </div>
 
-            {error && (
-              <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
-                {error}
-              </div>
-            )}
+        {error && (
+          <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
+            {error}
+          </div>
+        )}
 
-            <LocationsTable locations={filteredEvents} loading={loading} onDelete={handleDelete} />
-          </CardContent>
-        </Card>
+        <LocationsTable locations={filteredEvents} loading={loading} onDelete={handleDelete} />
 
         <CreateLocationDialog
           open={openDialog}
