@@ -23,3 +23,14 @@ export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
   DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
   CREATE_CLUSTER: `${API_BASE}/api/clusters`
 }
+export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
+  GET_ALL_LOCATIONS: `${API_BASE}/api/locations`,
+  CREATE_LOCATION: `${API_BASE}/api/locations`,
+  DELETE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
+}
+
+export const USER_MANAGEMENT_API_ENDPOINTS = {
+  RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
+  IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
+  RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
+}
