@@ -9,6 +9,7 @@ import { Plus, Search } from "lucide-react"
 import { LocationsTable } from "@/components/manage-locations/LocationsTable"
 import { EventLocation } from "@/interface/location-interface"
 import { getAllLocations } from "@/services/locations-service"
+import CreateLocationDialog from "@/components/manage-locations/CreateLocationDialog"
 
 /**
  * ManageLocationsPage component for managing event locations(CREATE, READ, UPDATE, DELETE).
@@ -20,8 +21,9 @@ export default function ManageLocationsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [openDialog, setOpenModal] = useState(false)
 
-  const loadEvents = async () => {
+  const loadLocations = async () => {
     try {
       setLoading(true)
       setError(null)
@@ -36,7 +38,7 @@ export default function ManageLocationsPage() {
   }
 
   useEffect(() => {
-    loadEvents()
+    loadLocations()
   }, [])
 
   const filteredEvents = locations.filter((location) =>
@@ -51,7 +53,7 @@ export default function ManageLocationsPage() {
             <h1 className="text-2xl font-bold md:text-3xl">Manage Events</h1>
             <p className="text-muted-foreground mt-1">Create and manage your events here.</p>
           </div>
-          <Button className="sm:w-auto">
+          <Button className="sm:w-auto" onClick={() => setOpenModal(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Create Location
           </Button>
@@ -72,7 +74,7 @@ export default function ManageLocationsPage() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Button variant="outline" size="sm" onClick={loadEvents}>
+              <Button variant="outline" size="sm" onClick={loadLocations}>
                 Refresh
               </Button>
             </div>
@@ -86,6 +88,12 @@ export default function ManageLocationsPage() {
             <LocationsTable locations={filteredEvents} loading={loading} />
           </CardContent>
         </Card>
+
+        <CreateLocationDialog
+          open={openDialog}
+          onClose={() => setOpenModal(false)}
+          onSuccess={loadLocations}
+        />
       </div>
     </ProtectedLayout>
   )
