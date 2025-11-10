@@ -4,6 +4,12 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/Sidebar"
 import Header from "@/components/Header"
 
+/**
+ * ProtectedLayout component that ensures only authenticated users can access its children.
+ *
+ * @param param0 as { children: React.ReactNode }
+ * @returns JSX.Element The ProtectedLayout component.
+ */
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
