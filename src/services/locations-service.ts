@@ -43,3 +43,27 @@ export const createLocation = async (payload: EventLocationRequest): Promise<Eve
     throw error
   }
 }
+
+export const deleteLocation = async (id: string): Promise<void> => {
+  try {
+    const res = await authFetch(LOCATION_MANAGEMENT_API_ENDPOINTS.DELETE_LOCATION(id), {
+      method: "DELETE",
+    })
+    if (!res.ok) {
+      let errorMsg = `Failed to delete location: ${res.status}`
+      try {
+        const errorBody = await res.json()
+        errorMsg =
+          errorBody.error ||
+          errorBody.message ||
+          (Array.isArray(errorBody.errors) ? errorBody.errors[0]?.defaultMessage : errorBody)
+      } catch (parseErr) {
+        errorMsg = res.statusText || errorMsg
+      }
+      throw new Error(errorMsg)
+    }
+  } catch (error) {
+    console.error("Error deleting location:", error)
+    throw error
+  }
+}

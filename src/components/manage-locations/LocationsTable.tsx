@@ -22,6 +22,7 @@ import { EventLocation } from "@/interface/location-interface"
 interface LocationsTableProps {
   locations: EventLocation[]
   loading: boolean
+  onDelete: (location: EventLocation) => void
 }
 
 /**
@@ -30,7 +31,18 @@ interface LocationsTableProps {
  * @param param0 as LocationsTableProps
  * @returns JSX.Element The LocationsTable component.
  */
-export function LocationsTable({ locations, loading }: LocationsTableProps) {
+export function LocationsTable({ locations, loading, onDelete }: LocationsTableProps) {
+  const handleDelete = (location: EventLocation, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (
+      confirm(
+        `Are you sure you want to delete the location "${location.locationName}"? This action cannot be undone.`
+      )
+    ) {
+      onDelete(location)
+    }
+  }
   return (
     <Table>
       <TableHeader>
@@ -59,7 +71,7 @@ export function LocationsTable({ locations, loading }: LocationsTableProps) {
             <TableRow key={eventLocation.locationId}>
               <TableCell className="font-medium">{eventLocation.locationName}</TableCell>
               <TableCell>{eventLocation.locationType}</TableCell>
-              <TableCell>{eventLocation.createdAt}</TableCell>
+              <TableCell>{new Date(eventLocation.createdAt).toLocaleString()}</TableCell>
 
               <TableCell className="text-right">
                 <DropdownMenu>
@@ -70,7 +82,7 @@ export function LocationsTable({ locations, loading }: LocationsTableProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => handleDelete(eventLocation, e)}>
                       <Trash className="mr-2 h-4 w-4" />
                       Delete
                     </DropdownMenuItem>

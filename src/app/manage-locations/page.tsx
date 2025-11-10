@@ -8,7 +8,7 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Plus, Search } from "lucide-react"
 import { LocationsTable } from "@/components/manage-locations/LocationsTable"
 import { EventLocation } from "@/interface/location-interface"
-import { getAllLocations } from "@/services/locations-service"
+import { deleteLocation, getAllLocations } from "@/services/locations-service"
 import CreateLocationDialog from "@/components/manage-locations/CreateLocationDialog"
 
 /**
@@ -44,6 +44,17 @@ export default function ManageLocationsPage() {
   const filteredEvents = locations.filter((location) =>
     location.locationName.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const handleDelete = async (location: EventLocation) => {
+    try {
+      await deleteLocation(location.locationId)
+      setLocations((prev) => prev.filter((e) => e.locationId !== location.locationId))
+      alert("Location deleted successfully!")
+    } catch (error) {
+      console.error("Delete failed:", error)
+      alert("Failed to delete location. Please try again.")
+    }
+  }
 
   return (
     <ProtectedLayout>
@@ -85,7 +96,7 @@ export default function ManageLocationsPage() {
               </div>
             )}
 
-            <LocationsTable locations={filteredEvents} loading={loading} />
+            <LocationsTable locations={filteredEvents} loading={loading} onDelete={handleDelete} />
           </CardContent>
         </Card>
 
