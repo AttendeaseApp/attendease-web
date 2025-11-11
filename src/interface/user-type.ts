@@ -1,5 +1,5 @@
 export interface UserType {
-  OSA: "OSA"
-  STUDENT: "STUDENT"
-  SYSTEM: "SYSTEM"
+     OSA: "OSA"
+     STUDENT: "STUDENT"
+     SYSTEM: "SYSTEM"
 }

@@ -7,38 +7,38 @@
  * @returns The fetch Response object
  */
 export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  try {
-    const token = localStorage.getItem("authToken")
+     try {
+          const token = localStorage.getItem("authToken")
 
-    const headers: Record<string, string> = {
-      ...(options.headers instanceof Headers
-        ? Object.fromEntries(options.headers.entries())
-        : (options.headers as Record<string, string>) || {}),
-    }
+          const headers: Record<string, string> = {
+               ...(options.headers instanceof Headers
+                    ? Object.fromEntries(options.headers.entries())
+                    : (options.headers as Record<string, string>) || {}),
+          }
 
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`
-    }
+          if (token) {
+               headers["Authorization"] = `Bearer ${token}`
+          }
 
-    if (!(options.body instanceof FormData)) {
-      headers["Content-Type"] = "application/json"
-    }
+          if (!(options.body instanceof FormData)) {
+               headers["Content-Type"] = "application/json"
+          }
 
-    console.log("Making request to:", url)
-    console.log("Has token:", !!token)
-    console.log("Is FormData:", options.body instanceof FormData)
+          console.log("Making request to:", url)
+          console.log("Has token:", !!token)
+          console.log("Is FormData:", options.body instanceof FormData)
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    })
+          const response = await fetch(url, {
+               ...options,
+               headers,
+          })
 
-    console.log("Response status:", response.status)
-    console.log("Response ok:", response.ok)
+          console.log("Response status:", response.status)
+          console.log("Response ok:", response.ok)
 
-    return response
-  } catch (error) {
-    console.error("authFetch error:", error)
-    throw error
-  }
+          return response
+     } catch (error) {
+          console.error("authFetch error:", error)
+          throw error
+     }
 }
