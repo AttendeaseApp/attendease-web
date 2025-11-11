@@ -60,14 +60,14 @@ export default function ManageLocationsPage() {
       <div className="flex flex-col w-full h-full min-w-0 gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold md:text-3xl">Manage Locations</h1>
+            <h1 className="text-2xl font-bold md:text-3xl">Manage Venues</h1>
             <p className="text-muted-foreground mt-1">
-              Create and manage your event locations here.
+              Define physical locations available for future events.
             </p>
           </div>
           <Button className="sm:w-auto" onClick={() => setOpenModal(true)}>
             <Plus className="mr-2 h-4 w-4" />
-            Create Location
+            Add New Location
           </Button>
         </div>
 

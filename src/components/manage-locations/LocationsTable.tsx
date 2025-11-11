@@ -45,12 +45,12 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
   }
   return (
     <Table>
-      <TableHeader>
+      <TableHeader className="bg-gray-100">
         <TableRow>
-          <TableHead>Location Name</TableHead>
-          <TableHead>Location Type</TableHead>
-          <TableHead>Created At</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          <TableHead className="font-semibold text-gray-900">Location Name</TableHead>
+          <TableHead className="font-semibold text-gray-900">Location Type</TableHead>
+          <TableHead className="font-semibold text-gray-900">Created At</TableHead>
+          <TableHead className="text-right font-semibold text-gray-900">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

@@ -88,7 +88,9 @@ export default function ManageEventsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold md:text-3xl">Manage Events</h1>
-            <p className="text-muted-foreground mt-1">Create and manage your events here.</p>
+            <p className="text-muted-foreground mt-1">
+              View, schedule, and edit all event details.
+            </p>
           </div>
           <Button className="sm:w-auto" onClick={handleCreateOpen}>
             <Plus className="mr-2 h-4 w-4" />
