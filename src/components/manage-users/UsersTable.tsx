@@ -19,17 +19,17 @@ interface UsersTableProps {
 export default function UsersTable({ users, loading }: UsersTableProps) {
   return (
     <Table>
-      <TableHeader>
-        <TableRow className="h-16">
-          <TableHead>Full Name</TableHead>
-          <TableHead>User Type</TableHead>
-          <TableHead>Section</TableHead>
-          <TableHead>Course</TableHead>
-          <TableHead>Student No.</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Contact Number</TableHead>
-          <TableHead>Account Status</TableHead>
-          <TableHead>View / Update</TableHead>
+      <TableHeader className="bg-gray-100">
+        <TableRow>
+          <TableHead className="font-semibold text-gray-900">Full Name</TableHead>
+          <TableHead className="font-semibold text-gray-900">User Type</TableHead>
+          <TableHead className="font-semibold text-gray-900">Section</TableHead>
+          <TableHead className="font-semibold text-gray-900">Course</TableHead>
+          <TableHead className="font-semibold text-gray-900">Student No.</TableHead>
+          <TableHead className="font-semibold text-gray-900">Email</TableHead>
+          <TableHead className="font-semibold text-gray-900">Contact Number</TableHead>
+          <TableHead className="font-semibold text-gray-900">Account Status</TableHead>
+          <TableHead className="font-semibold text-gray-900">View / Update</TableHead>
         </TableRow>
       </TableHeader>
 

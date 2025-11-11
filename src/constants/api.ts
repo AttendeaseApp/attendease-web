@@ -27,3 +27,9 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
   IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
   RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
 }
+
+export const EVENT_MONITORING_API_ENDPOINTS = {
+  GET_ALL_EVENTS_FOR_MONITORING: `${API_BASE}/api/events/monitoring/all`,
+  GET_REGISTERED_ATTENDEES: (id: string) =>
+    `${API_BASE}/api/events/monitoring/attendees/registered/${id}`,
+}

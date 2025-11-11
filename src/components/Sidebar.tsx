@@ -1,4 +1,4 @@
-import { Calendar, Home, Users, User, Settings, LocationEditIcon } from "lucide-react"
+import { Calendar, Home, Users, User, Settings, LocationEditIcon, TicketCheck } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +18,11 @@ const menu = [
     icon: Home,
   },
   {
+    title: "Monitor Events",
+    url: "/monitor-events",
+    icon: TicketCheck,
+  },
+  {
     title: "Manage Users",
     url: "/manage-users",
     icon: Users,
@@ -28,7 +33,7 @@ const menu = [
     icon: Calendar,
   },
   {
-    title: "Manage Locations",
+    title: "Manage Venues",
     url: "/manage-locations",
     icon: LocationEditIcon,
   },

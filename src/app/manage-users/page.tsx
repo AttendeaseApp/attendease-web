@@ -104,20 +104,11 @@ export default function RetrieveAllUsers() {
             <ToggleGroupItem value="osa">OSA</ToggleGroupItem>
             <ToggleGroupItem value="student">STUDENT</ToggleGroupItem>
           </ToggleGroup>
-        </div>
-
-        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-          <Button variant="outline" className="rounded-sm">
-            GRADE LEVEL <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-          <Button variant="outline" className="rounded-sm">
+          <Button variant="outline" size="sm">
             SECTION <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
-          <Button variant="outline" className="rounded-sm">
+          <Button variant="outline" size="sm">
             COURSE <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-          <Button variant="outline" className="rounded-sm">
-            ACCOUNT STATUS <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         </div>
 
