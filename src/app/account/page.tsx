@@ -5,12 +5,18 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { UserStudentResponse } from "@/interface/user-interface"
 import { getOSAProfile } from "@/services/user-management-services"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function OsaProfilePage() {
      const [user, setUser] = useState<UserStudentResponse | null>(null)
      const [loading, setLoading] = useState<boolean>(false)
      const [error, setError] = useState<string | null>(null)
+
+     const router = useRouter()
+       const  GoTochangePassword = async () => {
+     router.push("/change-password")
+    }
 
      const loadProfile = async () => {
           try {
@@ -48,7 +54,7 @@ export default function OsaProfilePage() {
                               <p className="text-muted-foreground text-lg mt-1">{user?.userType}</p>
                          </div>
 
-                         <Button className="rounded-sm self-start"> Change Password</Button>
+                         <Button className="rounded-sm self-start" onClick={GoTochangePassword}> Change Password</Button>
                     </div>
 
                     {/* osa account details  */}
