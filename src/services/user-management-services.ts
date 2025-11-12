@@ -21,17 +21,16 @@ export const getAllUsers = async (): Promise<[UserStudentResponse]> => {
      }
 }
 
-
 export const getOSAProfile = async (): Promise<UserStudentResponse> => {
-  try {
-    const res = await authFetch(OSA_PROFILE_ENDPOINT.GET_OSA_PROFILE)
-    if (!res.ok) {
-      throw new Error(`Failed to fetch Profile Data: ${res.status}`)
-    }
-    const data = await res.json()
-    return data as UserStudentResponse
-  } catch (error) {
-    console.error("Error fetching Profile Data", error)
-    throw error
-  }
+     try {
+          const res = await authFetch(OSA_PROFILE_ENDPOINT.GET_OSA_PROFILE)
+          if (!res.ok) {
+               throw new Error(`Failed to fetch Profile Data: ${res.status}`)
+          }
+          const data = await res.json()
+          return data as UserStudentResponse
+     } catch (error) {
+          console.error("Error fetching Profile Data", error)
+          throw error
+     }
 }

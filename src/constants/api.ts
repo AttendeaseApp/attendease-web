@@ -35,5 +35,5 @@ export const EVENT_MONITORING_API_ENDPOINTS = {
 }
 
 export const OSA_PROFILE_ENDPOINT = {
-  GET_OSA_PROFILE: `${API_BASE}/api/profile/user-osa/me`,
+     GET_OSA_PROFILE: `${API_BASE}/api/profile/user-osa/me`,
 }
