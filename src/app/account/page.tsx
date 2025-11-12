@@ -14,9 +14,9 @@ export default function OsaProfilePage() {
      const [error, setError] = useState<string | null>(null)
 
      const router = useRouter()
-       const  GoTochangePassword = async () => {
-     router.push("/change-password")
-    }
+     const GoTochangePassword = async () => {
+          router.push("/change-password")
+     }
 
      const loadProfile = async () => {
           try {
@@ -54,7 +54,10 @@ export default function OsaProfilePage() {
                               <p className="text-muted-foreground text-lg mt-1">{user?.userType}</p>
                          </div>
 
-                         <Button className="rounded-sm self-start" onClick={GoTochangePassword}> Change Password</Button>
+                         <Button className="rounded-sm self-start" onClick={GoTochangePassword}>
+                              {" "}
+                              Change Password
+                         </Button>
                     </div>
 
                     {/* osa account details  */}
