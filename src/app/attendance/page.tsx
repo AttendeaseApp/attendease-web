@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Table,
@@ -24,20 +24,45 @@ interface Student {
   attendance: AttendanceStatus;
 }
 
-//mock data only
-const data: Student[] = [
-  { fullName: 'John Colsum Doe', cluster: 'CETE', course: 'BIT', gradeLevel: '101', attendance: 'Present' },
-  { fullName: 'Cameron Williamson', cluster: 'CETE', course: 'BSIT', gradeLevel: '101', attendance: 'Late' },
-  { fullName: 'Brooklyn Simmons', cluster: 'CBAM', course: 'BSA', gradeLevel: '201', attendance: 'Absent' },
-  { fullName: 'Savannah Nguyen', cluster: 'CETE', course: 'BSECE', gradeLevel: '301', attendance: 'Present' },
-  { fullName: 'Ralph Edwards', cluster: 'CBAM', course: 'BSA', gradeLevel: '301', attendance: 'Late' },
-  { fullName: 'Theresa Webb', cluster: 'CBAM', course: 'BSA', gradeLevel: '401', attendance: 'Late' },
-];
-
 export default function AttendancePage() {
+  const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const filtered = data.filter((s) =>
+  const fetchStudents = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const res = await fetch(
+        'https://attendease-backend-latest.onrender.com/api/registration/students',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) {
+        setError('Cannot fetch student data');
+        return;
+      }
+
+      const data = await res.json();
+      setStudents(data);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  const filtered = students.filter((s) =>
     s.fullName.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -52,7 +77,8 @@ export default function AttendancePage() {
 
       <div className="pl-10">
         <p className="text-xl font-semibold mb-4">
-          Ongoing Event <span className="font-semibold text-foreground">Celestial Night</span>
+          Ongoing Event{' '}
+          <span className="font-semibold text-foreground">Celestial Night</span>
         </p>
 
         <div className="flex justify-between items-center mb-3">
@@ -100,28 +126,42 @@ export default function AttendancePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((student, i) => (
-                <TableRow key={i}>
-                  <TableCell>{student.fullName}</TableCell>
-                  <TableCell>{student.cluster}</TableCell>
-                  <TableCell>{student.course}</TableCell>
-                  <TableCell>{student.gradeLevel}</TableCell>
-                  <TableCell>
-                    <Link
-                      href="/attendance/logs"
-                      className="text-sm hover:underline text-foreground inline-flex items-center gap-1"
-                    >
-                      {student.attendance} →
-                    </Link>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-4">
+                    Loading...
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : filtered.length > 0 ? (
+                filtered.map((student, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{student.fullName}</TableCell>
+                    <TableCell>{student.cluster}</TableCell>
+                    <TableCell>{student.course}</TableCell>
+                    <TableCell>{student.gradeLevel}</TableCell>
+                    <TableCell>
+                      <Link
+                        href="/attendance/logs"
+                        className="text-sm hover:underline text-foreground inline-flex items-center gap-1"
+                      >
+                        {student.attendance} →
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-4">
+                    {error || 'No records found.'}
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
 
         <div className="flex justify-between items-center mt-4 text-sm text-muted-foreground">
-          <p>0 of 5 row(s) selected.</p>
+          <p>{filtered.length} of {students.length} row(s) displayed.</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled>
               <ChevronLeft className="h-4 w-4 mr-1" /> Previous
