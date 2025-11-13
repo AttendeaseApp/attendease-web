@@ -33,3 +33,8 @@ export const EVENT_MONITORING_API_ENDPOINTS = {
      GET_REGISTERED_ATTENDEES: (id: string) =>
           `${API_BASE}/api/events/monitoring/attendees/registered/${id}`,
 }
+
+export const OSA_PROFILE_ENDPOINT = {
+     GET_OSA_PROFILE: `${API_BASE}/api/profile/user-osa/me`,
+     OSA_CHANGE_PASSWORD: `${API_BASE}/api/profile/account/password/update`,
+}
