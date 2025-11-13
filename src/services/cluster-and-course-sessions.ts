@@ -21,12 +21,12 @@ export const getAllClusters = async (): Promise<ClusterSession[]> => {
   try {
     const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_CLUSTERS)
     if (!res.ok) {
-      throw new Error(`Failed to fetch events: ${res.status}`)
+      throw new Error(`Failed to fetch clusters: ${res.status}`)
     }
     const data = await res.json()
     return data as ClusterSession[]
   } catch (error) {
-    console.error("Error fetching events:", error)
+    console.error("Error fetching clusters:", error)
     throw error
   }
 }

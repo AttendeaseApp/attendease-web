@@ -16,8 +16,8 @@ export interface CourseSession {
 }
 
 export interface ClusterSession {
-  clusterId: string
-  clusterName: string
-  createdAt?: string | null
-  updatedAt?: string | null
+    clusterId: string
+    clusterName: string
+    createdAt?: string | null
+    updatedAt?: string | null
 }

@@ -18,9 +18,9 @@ const menu = [
     icon: Home,
   },
   {
-    title: "Manage Clusters and Course",
-    url: "/manage-clusters-and-courses",
-    icon: LibrarySquareIcon,
+    title: "Manage Users",
+    url: "/manage-users",
+    icon: Users,
   },
   {
     title: "Manage Events",
@@ -28,14 +28,14 @@ const menu = [
     icon: Calendar,
   },
   {
-    title: "Manage Users",
-    url: "/manage-users",
-    icon: Users,
-  },
-  {
     title: "Manage Locations",
     url: "/manage-locations",
     icon: LocationEditIcon,
+  },
+  {
+    title: "Manage Clusters and Courses",
+    url: "/manage-clusters-and-courses",
+    icon: LibrarySquareIcon,
   }
 ]
 

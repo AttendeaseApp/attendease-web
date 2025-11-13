@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +12,23 @@ import { ClusterAndCourseTable } from "@/components/manage-clusters-and-courses/
 import { CreateClusterDialog } from "@/components/manage-clusters-and-courses/CreateClusterDialog"
 import { CreateCourseDialog } from "@/components/manage-clusters-and-courses/CreateCourseDialog"
 import { getAllClusters } from "@/services/cluster-and-course-sessions"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { X } from "lucide-react"
 
 export default function ManageClustersPage() {
 
@@ -28,7 +44,9 @@ export default function ManageClustersPage() {
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState<CourseSession | null>(null)
   const [selectedCluster, setSelectedCluster] = useState<ClusterSession | null>(null)
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [isCreateClusterOpen, setIsCreateClusterOpen] = useState(false)
+  const [isChooseClusterOpen, setIsChooseClusterOpen] = useState(false)
+  const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false)
   const [clusters, setClusters] = useState<ClusterSession[]>([])
   const [loadingClusters, setLoadingClusters] = useState(true)
   
@@ -39,7 +57,7 @@ export default function ManageClustersPage() {
           const data = await getAllClusters()
           setClusters(data)
         } catch (err) {
-          console.error("Failed to load locations:", err)
+          console.error("Failed to load clusters:", err)
         } finally {
           setLoadingClusters(false)
         }
@@ -55,8 +73,8 @@ export default function ManageClustersPage() {
       const data = await getAllCourses()
       setCourses(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load events")
-      console.error("Error loading events:", err)
+      setError(err instanceof Error ? err.message : "Failed to load courses")
+      console.error("Error loading courses:", err)
     } finally {
       setLoading(false)
     }
@@ -70,6 +88,7 @@ export default function ManageClustersPage() {
     course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  // still no edit feature on this page
   const handleEdit = (event: CourseSession) => {
     setSelectedCourse(event)
     setIsEditOpen(true)
@@ -86,10 +105,17 @@ export default function ManageClustersPage() {
     loadCourses()
   }
 
-  const handleCreateOpen = () => setIsCreateOpen(true)
-  const handleCreateClose = () => setIsCreateOpen(false)
+  const handleCreateClusterOpen = () => setIsCreateClusterOpen(true)
+  const handleCreateClusterClose = () => setIsCreateClusterOpen(false)
+  const handleCreateClusterSuccess = () => {
+    setIsCreateClusterOpen(false)
+    loadCourses()
+  }
+
+  const handleCreateCourseOpen = () => setIsChooseClusterOpen(true)
+  const handleCreateCourseClose = () => setIsChooseClusterOpen(false)
   const handleCreateSuccess = () => {
-    setIsCreateOpen(false)
+    setIsChooseClusterOpen(false)
     loadCourses()
   }
 
@@ -102,10 +128,10 @@ export default function ManageClustersPage() {
     try {
       await deleteCourse(course.id)
       setCourses((prev) => prev.filter((c) => c.id !== course.id))
-      alert("Event deleted successfully!")
+      alert("Course deleted successfully!")
     } catch (error) {
       console.error("Delete failed:", error)
-      alert("Failed to delete event. Please try again.")
+      alert("Failed to delete course. Please try again.")
     }
   }
 
@@ -119,12 +145,12 @@ export default function ManageClustersPage() {
           </div>
 
           <div className="flex sm:gap-4">
-            <Button className="sm:w-auto" onClick={handleCreateOpen}>
+            <Button className="sm:w-auto" onClick={handleCreateClusterOpen}>
               <Plus className="mr-2 h-4 w-4" />
               Create Cluster
             </Button>
 
-            <Button className="sm:w-auto" onClick={handleCreateOpen}>
+            <Button className="sm:w-auto" onClick={handleCreateCourseOpen}>
               <Plus className="mr-2 h-4 w-4" />
               Create Course
             </Button>
@@ -166,20 +192,80 @@ export default function ManageClustersPage() {
             />
 
             <CreateClusterDialog
-              isOpen={isCreateOpen}
-              onClose={handleCreateClose}
+              isOpen={isCreateClusterOpen}
+              onClose={handleCreateClusterClose}
               onCreate={handleCreateSuccess}
             />
-
-            {selectedCluster && (
-            <CreateCourseDialog
-              course={selectedCluster}
-              isOpen={isCreateOpen}
-              onClose={handleCreateClose}
-              onCreate={handleCreateSuccess}
-            />
-            )}
             
+            <Dialog open={isChooseClusterOpen} onOpenChange={setIsChooseClusterOpen}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Choose Cluster for the New Course</DialogTitle>
+              <DialogDescription>Fill in the details to create a new course.</DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-2">
+              <Label htmlFor="clusterName">Cluster Name</Label>
+              <Select
+                value={formData.clusterId}
+                disabled={loadingClusters}
+                onValueChange={(value) => {
+                  handleInputChange("clusterId", value);
+                  const cluster = clusters.find((c) => c.clusterId === value) || null;
+                  setSelectedCluster(cluster);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={loadingClusters ? "Loading clusters..." : "Select a cluster"}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {clusters.map((cluster) => (
+                    <SelectItem key={cluster.clusterId} value={cluster.clusterId}>
+                      {cluster.clusterName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {error && (
+              <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
+                {error}
+              </div>
+            )}
+
+            <DialogFooter className="flex justify-end space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={ () => setIsChooseClusterOpen(false)}>
+                <X className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+              <>
+                <Button
+                  type="button"
+                  disabled={!selectedCluster}
+                  onClick={() => {
+                    setIsChooseClusterOpen(false);
+                    setIsCreateCourseOpen(true);
+                  }}
+                >
+                  Next
+                </Button>
+              </>
+            </DialogFooter>
+            </DialogContent>
+            </Dialog>
+
+            { isCreateCourseOpen && selectedCluster && (
+              <CreateCourseDialog
+                course={selectedCluster}
+                cluster={selectedCluster}
+                isOpen={isCreateCourseOpen}
+                onClose={() => setIsCreateCourseOpen(false)}
+                onCreate={handleCreateSuccess}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

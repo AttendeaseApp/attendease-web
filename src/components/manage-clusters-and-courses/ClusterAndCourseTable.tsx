@@ -19,6 +19,7 @@ import {
 import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { CourseSession } from "@/interface/cluster-and-course-interface"
+import { ClusterSession } from "@/interface/cluster-and-course-interface"
 
 interface CourseTableProps {
   courses: CourseSession[]
@@ -39,7 +40,7 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
     e.stopPropagation()
     if (
       confirm(
-        `Are you sure you want to delete the event "${course.courseName}"? This action cannot be undone.`
+        `Are you sure you want to delete the course "${course.courseName}"? This action cannot be undone.`
       )
     ) {
       onDelete(course)
@@ -59,20 +60,20 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
         {loading ? (
           <TableRow>
             <TableCell colSpan={6} className="text-center py-8">
-              Loading events...
+              Loading courses and clusters...
             </TableCell>
           </TableRow>
         ) : courses.length === 0 ? (
           <TableRow>
             <TableCell colSpan={6} className="text-center py-8">
-              No events found
+              No courses and clusters found
             </TableCell>
           </TableRow>
         ) : (
           courses.map((course) => (
-            <TableRow key={course.id}>
-              <TableCell>{course.courseName}</TableCell>
-              <TableCell>{course.cluster?.clusterName}</TableCell>
+            <TableRow key={`${course.id || 'no-course'}`}>
+              <TableCell>{course.courseName || ' –'}</TableCell>
+              <TableCell>{course.cluster?.clusterName || ' –'}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

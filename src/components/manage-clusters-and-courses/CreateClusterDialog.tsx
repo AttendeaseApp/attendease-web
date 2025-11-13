@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { ChevronDownIcon, Plus, X } from "lucide-react"
+import { Plus, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -57,7 +57,7 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
       onClose()
     } catch (err) {
       console.error("Create failed:", err)
-      setError(err instanceof Error ? err.message : "Failed to create event.")
+      setError(err instanceof Error ? err.message : "Failed to create cluster.")
     } finally {
       setIsSubmitting(false)
     }
