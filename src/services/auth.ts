@@ -43,3 +43,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
 export const logout = () => {
      localStorage.removeItem("authToken")
 }
+
+export const logout = () => {
+  localStorage.removeItem("authToken")
+}
