@@ -1,0 +1,44 @@
+/**
+ * A wrapper around fetch that includes the auth token from local storage
+ * in the Authorization header for authenticated requests.
+ *
+ * @param url The URL to fetch
+ * @param options Fetch options (method, headers, body, etc.)
+ * @returns The fetch Response object
+ */
+export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+     try {
+          const token = localStorage.getItem("authToken")
+
+          const headers: Record<string, string> = {
+               ...(options.headers instanceof Headers
+                    ? Object.fromEntries(options.headers.entries())
+                    : (options.headers as Record<string, string>) || {}),
+          }
+
+          if (token) {
+               headers["Authorization"] = `Bearer ${token}`
+          }
+
+          if (!(options.body instanceof FormData)) {
+               headers["Content-Type"] = "application/json"
+          }
+
+          console.log("Making request to:", url)
+          console.log("Has token:", !!token)
+          console.log("Is FormData:", options.body instanceof FormData)
+
+          const response = await fetch(url, {
+               ...options,
+               headers,
+          })
+
+          console.log("Response status:", response.status)
+          console.log("Response ok:", response.ok)
+
+          return response
+     } catch (error) {
+          console.error("authFetch error:", error)
+          throw error
+     }
+}
