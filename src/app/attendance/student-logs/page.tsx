@@ -14,8 +14,22 @@ import {
 import { ChevronLeft, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
+interface Attendance {
+  status?: string;
+  timeIn?: string;
+  timeOut?: string;
+}
+
+interface Student {
+  fullName: string;
+  cluster: string;
+  course: string;
+  gradeLevel: string;
+  attendance?: Attendance;
+}
+
 export default function StudentLogPage() {
-  const [students, setStudents] = useState<any[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
@@ -26,6 +40,12 @@ export default function StudentLogPage() {
 
     try {
       const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError('No auth token found.');
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch(
         'https://attendease-backend-latest.onrender.com/api/registration/students',
         {
@@ -33,12 +53,14 @@ export default function StudentLogPage() {
         }
       );
 
+      const data = await res.json();
+
       if (!res.ok) {
-        setError('Cannot load student logs.');
+        setError(data?.message || 'Cannot load student logs.');
+        setLoading(false);
         return;
       }
 
-      const data = await res.json();
       setStudents(data);
     } catch (err) {
       console.error(err);
@@ -53,7 +75,7 @@ export default function StudentLogPage() {
   }, []);
 
   const filteredStudents = students.filter((s) =>
-    s.fullName?.toLowerCase().includes(search.toLowerCase())
+    s.fullName.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -113,7 +135,13 @@ export default function StudentLogPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredStudents.length > 0 ? (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-4">
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              ) : filteredStudents.length > 0 ? (
                 filteredStudents.map((student, index) => (
                   <TableRow key={index}>
                     <TableCell>{student.fullName}</TableCell>
@@ -137,7 +165,7 @@ export default function StudentLogPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-4">
-                    {loading ? 'Loading...' : error || 'No records found.'}
+                    {error || 'No records found.'}
                   </TableCell>
                 </TableRow>
               )}
