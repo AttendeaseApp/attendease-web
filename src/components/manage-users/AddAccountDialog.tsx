@@ -5,34 +5,36 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { createOSAAccount } from "@/services/user-management-services";
+import { createOSAAccount, OsaAccountPayload } from "@/services/user-management-services";
 
-export default function AddAccountDialog({
-  open,
-  onOpenChange,
-}: {
+interface AddAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
-  const [form, setForm] = useState({
+}
+
+export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialogProps) {
+  const [form, setForm] = useState<OsaAccountPayload & { confirmPassword: string; contact?: string }>({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
     contact: "",
+    userType: "OSA",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     setError("");
 
+    // Password match validation
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -40,17 +42,13 @@ export default function AddAccountDialog({
 
     setLoading(true);
     try {
-      const payload = {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        password: form.password,
-        userType: "OSA",
-      };
+      // Exclude confirmPassword and contact before sending
+      const { confirmPassword, contact, ...payload } = form;
+      await createOSAAccount(payload);
 
-      const response = await createOSAAccount(payload);
-      console.log("Account created:", response);
+      console.log("Account created");
 
+      // Reset form (contact remains for UI)
       setForm({
         firstName: "",
         lastName: "",
@@ -58,11 +56,13 @@ export default function AddAccountDialog({
         password: "",
         confirmPassword: "",
         contact: "",
+        userType: "OSA",
       });
       onOpenChange(false);
-    } catch (err: any) {
-      console.error("Failed to create account:", err);
-      setError(err.message || "Failed to create account");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to create account";
+      setError(message);
+      console.error(message);
     } finally {
       setLoading(false);
     }
@@ -80,68 +80,35 @@ export default function AddAccountDialog({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label>First Name</Label>
-              <Input
-                name="firstName"
-                placeholder="Enter First Name"
-                value={form.firstName}
-                onChange={handleChange}
-              />
+              <Input name="firstName" placeholder="Enter First Name" value={form.firstName} onChange={handleChange} />
             </div>
 
             <div>
               <Label>Last Name</Label>
-              <Input
-                name="lastName"
-                placeholder="Enter Last Name"
-                value={form.lastName}
-                onChange={handleChange}
-              />
+              <Input name="lastName" placeholder="Enter Last Name" value={form.lastName} onChange={handleChange} />
             </div>
           </div>
 
           <div>
             <Label>Email Address</Label>
-            <Input
-              name="email"
-              type="email"
-              placeholder="Enter Email ID"
-              value={form.email}
-              onChange={handleChange}
-            />
+            <Input name="email" type="email" placeholder="Enter Onpassive Email ID" value={form.email} onChange={handleChange} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label>Password</Label>
-              <Input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-              />
+              <Input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} />
             </div>
 
             <div>
               <Label>Confirm Password</Label>
-              <Input
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm Password"
-                value={form.confirmPassword}
-                onChange={handleChange}
-              />
+              <Input name="confirmPassword" type="password" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} />
             </div>
           </div>
 
           <div>
             <Label>Contact No.</Label>
-            <Input
-              name="contact"
-              placeholder="Contact No."
-              value={form.contact}
-              onChange={handleChange}
-            />
+            <Input name="contact" placeholder="Contact No." value={form.contact} onChange={handleChange} />
           </div>
 
           {error && <p className="text-red-500">{error}</p>}
