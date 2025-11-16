@@ -71,7 +71,12 @@ export default function RetrieveAllUsers() {
                               <p className="text-muted-foreground mt-1">Manage all users here.</p>
                          </div>
                          <div className="flex justify-end space-x-2">
-                              <Button className="sm:w-autom" onClick={() => setOpenAddAccount(true)}>Manually Add Account</Button>
+                              <Button
+                                   className="sm:w-autom"
+                                   onClick={() => setOpenAddAccount(true)}
+                              >
+                                   Manually Add Account
+                              </Button>
                               <Button className="sm:w-auto">Import Student Accounts</Button>
                               <Button
                                    variant="outline"
