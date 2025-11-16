@@ -10,6 +10,7 @@ import { getAllUsers } from "@/services/user-management-services"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
+import AddAccountDialog from "@/components/manage-users/AddAccountDialog"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -19,6 +20,7 @@ export default function RetrieveAllUsers() {
      const [selectedType, setSelectedType] = useState("all")
      const [error, setError] = useState<string | null>(null)
      const [openMoreSettings, setOpenMoreSettings] = useState(false)
+     const [openAddAccount, setOpenAddAccount] = useState(false)
 
      const loadUsers = async () => {
           try {
@@ -69,7 +71,7 @@ export default function RetrieveAllUsers() {
                               <p className="text-muted-foreground mt-1">Manage all users here.</p>
                          </div>
                          <div className="flex justify-end space-x-2">
-                              <Button className="sm:w-autom">Manually Add Account</Button>
+                              <Button className="sm:w-autom" onClick={() => setOpenAddAccount(true)}>Manually Add Account</Button>
                               <Button className="sm:w-auto">Import Student Accounts</Button>
                               <Button
                                    variant="outline"
@@ -123,6 +125,7 @@ export default function RetrieveAllUsers() {
                </div>
 
                <MoreSettingsDialog open={openMoreSettings} onOpenChange={setOpenMoreSettings} />
+               <AddAccountDialog open={openAddAccount} onOpenChange={setOpenAddAccount} />
           </ProtectedLayout>
      )
 }
