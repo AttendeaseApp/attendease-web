@@ -10,7 +10,7 @@ import { getAllUsers } from "@/services/user-management-services"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
-import AddAccountDialog from "@/components/manage-users/AddAccountDialog"
+import AddAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])

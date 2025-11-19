@@ -36,7 +36,6 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
      const handleSubmit = async () => {
           setError("")
 
-          // Password match validation
           if (form.password !== form.confirmPassword) {
                setError("Passwords do not match")
                return
@@ -44,13 +43,11 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
 
           setLoading(true)
           try {
-               // Exclude confirmPassword and contact before sending
                const { confirmPassword, contact, ...payload } = form
                await createOSAAccount(payload)
 
                console.log("Account created")
 
-               // Reset form (contact remains for UI)
                setForm({
                     firstName: "",
                     lastName: "",
