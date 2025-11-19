@@ -64,7 +64,7 @@ export default function OsaProfilePage() {
                     <div>
                          <h3 className="text-xl font-semibold mb-4">Account Details</h3>
 
-                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                               <div>
                                    <Label className="block font-semibold text-sky-600 mb-1">
                                         User ID
@@ -106,18 +106,6 @@ export default function OsaProfilePage() {
                                         Account Created At
                                    </Label>
                                    <p>{user?.createdAt || "N/A"}</p>
-                              </div>
-                              <div>
-                                   <Label className="block font-semibold text-sky-600 mb-1">
-                                        Account Updated At
-                                   </Label>
-                                   <p>{user?.updatedAt || "N/A"}</p>
-                              </div>
-                              <div>
-                                   <Label className="block font-semibold text-sky-600 mb-1">
-                                        Account Status
-                                   </Label>
-                                   <p>{user?.accountStatus || "N/A"}</p>
                               </div>
                          </div>
                     </div>
