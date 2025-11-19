@@ -9,12 +9,15 @@ import { Eye, EyeOff } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { changePassword } from "@/services/OSA-change-password"
 
-
 export default function OsaChangePasswordPage() {
-     const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword:"" })
+     const [passwords, setPasswords] = useState({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+     })
      const [showOld, setShowOld] = useState(false)
      const [showNew, setShowNew] = useState(false)
-      const [showConfirm, setShowConfirm] = useState(false)
+     const [showConfirm, setShowConfirm] = useState(false)
      const [loading, setLoading] = useState(false)
 
      const router = useRouter()
@@ -23,34 +26,34 @@ export default function OsaChangePasswordPage() {
      }
 
      const handleResetPassword = async () => {
-          if (!passwords.oldPassword || !passwords.newPassword || !passwords.confirmPassword ) {
+          if (!passwords.oldPassword || !passwords.newPassword || !passwords.confirmPassword) {
                alert("Please fill out all fields.")
                return
           }
-            if(passwords.newPassword !== passwords.confirmPassword){
-                alert("Passwords dont match")
+          if (passwords.newPassword !== passwords.confirmPassword) {
+               alert("Passwords dont match")
                return
           }
-          if (passwords.newPassword === passwords.confirmPassword){
-                setLoading(true)
-                       try {
-               const result = await changePassword(passwords.oldPassword, passwords.newPassword)
+          if (passwords.newPassword === passwords.confirmPassword) {
+               setLoading(true)
+               try {
+                    const result = await changePassword(
+                         passwords.oldPassword,
+                         passwords.newPassword
+                    )
 
-               if (result.success) {
-                    alert(result.message)
-                    setPasswords({ oldPassword: "", newPassword: "" , confirmPassword:""})
-               } else {
-                    alert("Error: " + result.message)
+                    if (result.success) {
+                         alert(result.message)
+                         setPasswords({ oldPassword: "", newPassword: "", confirmPassword: "" })
+                    } else {
+                         alert("Error: " + result.message)
+                    }
+               } catch (err) {
+                    alert("Error: Something went wrong. " + String(err))
+               } finally {
+                    setLoading(false)
                }
-          } catch (err) {
-               alert("Error: Something went wrong. " + String(err))
-          } finally {
-               setLoading(false)
           }
-          }
-        
-          
-   
      }
 
      return (
@@ -126,7 +129,7 @@ export default function OsaChangePasswordPage() {
                                    </button>
                               </div>
 
-                          {/* confirm password */}
+                              {/* confirm password */}
                               <div className="relative">
                                    <Label className="block font-semibold text-black mb-1">
                                         Confirm Password
@@ -156,7 +159,6 @@ export default function OsaChangePasswordPage() {
                                    </button>
                               </div>
 
-                              
                               {/* cancel and reset buttons */}
                               <div className="flex justify-end gap-3 mt-4">
                                    <Button
