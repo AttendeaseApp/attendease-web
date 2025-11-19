@@ -9,10 +9,12 @@ import { Eye, EyeOff } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { changePassword } from "@/services/OSA-change-password"
 
+
 export default function OsaChangePasswordPage() {
-     const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "" })
+     const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword:"" })
      const [showOld, setShowOld] = useState(false)
      const [showNew, setShowNew] = useState(false)
+      const [showConfirm, setShowConfirm] = useState(false)
      const [loading, setLoading] = useState(false)
 
      const router = useRouter()
@@ -21,19 +23,22 @@ export default function OsaChangePasswordPage() {
      }
 
      const handleResetPassword = async () => {
-          if (!passwords.oldPassword || !passwords.newPassword) {
-               alert("Please fill out both fields.")
+          if (!passwords.oldPassword || !passwords.newPassword || !passwords.confirmPassword ) {
+               alert("Please fill out all fields.")
                return
           }
-
-          setLoading(true)
-
-          try {
+            if(passwords.newPassword !== passwords.confirmPassword){
+                alert("Passwords dont match")
+               return
+          }
+          if (passwords.newPassword === passwords.confirmPassword){
+                setLoading(true)
+                       try {
                const result = await changePassword(passwords.oldPassword, passwords.newPassword)
 
                if (result.success) {
                     alert(result.message)
-                    setPasswords({ oldPassword: "", newPassword: "" })
+                    setPasswords({ oldPassword: "", newPassword: "" , confirmPassword:""})
                } else {
                     alert("Error: " + result.message)
                }
@@ -42,6 +47,10 @@ export default function OsaChangePasswordPage() {
           } finally {
                setLoading(false)
           }
+          }
+        
+          
+   
      }
 
      return (
@@ -117,6 +126,37 @@ export default function OsaChangePasswordPage() {
                                    </button>
                               </div>
 
+                          {/* confirm password */}
+                              <div className="relative">
+                                   <Label className="block font-semibold text-black mb-1">
+                                        Confirm Password
+                                   </Label>
+                                   <Input
+                                        type={showConfirm ? "text" : "password"}
+                                        placeholder="Enter Confirm Password"
+                                        value={passwords.confirmPassword}
+                                        onChange={(e) =>
+                                             setPasswords((prev) => ({
+                                                  ...prev,
+                                                  confirmPassword: e.target.value,
+                                             }))
+                                        }
+                                        className="w-full pr-10 border border-sky-300 focus:border-sky-500"
+                                   />
+                                   <button
+                                        type="button"
+                                        onClick={() => setShowConfirm(!showConfirm)}
+                                        className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                                   >
+                                        {showConfirm ? (
+                                             <EyeOff className="h-5 w-5" />
+                                        ) : (
+                                             <Eye className="h-5 w-5" />
+                                        )}
+                                   </button>
+                              </div>
+
+                              
                               {/* cancel and reset buttons */}
                               <div className="flex justify-end gap-3 mt-4">
                                    <Button
