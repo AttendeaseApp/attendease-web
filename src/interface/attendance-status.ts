@@ -3,4 +3,6 @@ export interface AttendanceStatus {
      ABSENT: "ABSENT"
      REGISTERED: "REGISTERED"
      IDLE: "IDLE"
+     LATE: "LATE"
+     EXCUSED: "EXCUSED"
 }
