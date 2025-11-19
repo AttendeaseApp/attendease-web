@@ -18,33 +18,30 @@ export interface OsaAccountPayload {
  *
  * @returns list of users
  */
-export const getAllUsers = async (): Promise<UserStudentResponse[]> => {
+export const getAllUsers = async (): Promise<[UserStudentResponse]> => {
      try {
           const res = await authFetch(USER_MANAGEMENT_API_ENDPOINTS.RETRIEVE_ALL_USERS)
           if (!res.ok) {
-               throw new Error(`Failed to fetch users: ${res.status}`)
+               throw new Error(`Failed to fetch events: ${res.status}`)
           }
           const data = await res.json()
-          return data as UserStudentResponse[]
+          return data as [UserStudentResponse]
      } catch (error) {
-          console.error("Error fetching users:", error)
+          console.error("Error fetching events:", error)
           throw error
      }
 }
 
-/**
- * Get OSA profile
- */
 export const getOSAProfile = async (): Promise<UserStudentResponse> => {
      try {
           const res = await authFetch(OSA_PROFILE_ENDPOINT.GET_OSA_PROFILE)
           if (!res.ok) {
-               throw new Error(`Failed to fetch profile data: ${res.status}`)
+               throw new Error(`Failed to fetch Profile Data: ${res.status}`)
           }
           const data = await res.json()
           return data as UserStudentResponse
      } catch (error) {
-          console.error("Error fetching profile data:", error)
+          console.error("Error fetching Profile Data", error)
           throw error
      }
 }
