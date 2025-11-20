@@ -4,12 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Calendar, ArrowRight, Users, TrendingUp } from "lucide-react"
 import { Bar, BarChart, XAxis, CartesianGrid } from "recharts"
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, } from "@/components/ui/chart"
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+     ChartConfig,
+     ChartContainer,
+     ChartTooltip,
+     ChartTooltipContent,
+     ChartLegend,
+     ChartLegendContent,
+} from "@/components/ui/chart"
+import {
+     Accordion,
+     AccordionContent,
+     AccordionItem,
+     AccordionTrigger,
 } from "@/components/ui/accordion"
 import Link from "next/link"
 
@@ -21,33 +28,30 @@ const cancelledEvents = 5
 
 const totalAttendeesOnCurrentEvent = 190
 
-
 const eventsChartOverview = [
      {
-          eventId : "E001",
-          eventName : "One-day League",
-          totalVisit : 180,
+          eventId: "E001",
+          eventName: "One-day League",
+          totalVisit: 180,
      },
      {
-          eventId : "E002",
-          eventName : "Palarong Pinoy",
-          totalVisit : 210,
+          eventId: "E002",
+          eventName: "Palarong Pinoy",
+          totalVisit: 210,
      },
      {
-          eventId : "E001",
-          eventName : "Buwan ng Wika",
-          totalVisit : 80,
+          eventId: "E001",
+          eventName: "Buwan ng Wika",
+          totalVisit: 80,
      },
 ]
 
-
 const chartConfig = {
-  visits: {
-    label: "Total Visits",
-    color: "#000000",
-  }
+     visits: {
+          label: "Total Visits",
+          color: "#000000",
+     },
 } satisfies ChartConfig
-
 
 export default function DashboardPage() {
      return (
@@ -62,7 +66,6 @@ export default function DashboardPage() {
 
                     {/* stats grid */}
                     <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
-
                          <Card>
                               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                    <CardTitle className="text-sm font-medium">
@@ -72,7 +75,9 @@ export default function DashboardPage() {
                               </CardHeader>
                               <CardContent>
                                    <div className="flex items-center gap-2">
-                                        <div className="text-2xl font-bold">{registeredStudents}</div>
+                                        <div className="text-2xl font-bold">
+                                             {registeredStudents}
+                                        </div>
                                    </div>
                               </CardContent>
                          </Card>
@@ -114,7 +119,9 @@ export default function DashboardPage() {
                               </CardHeader>
                               <CardContent>
                                    <div className="flex items-center gap-2">
-                                        <div className="text-2xl font-bold">{totalAttendeesOnCurrentEvent}</div>
+                                        <div className="text-2xl font-bold">
+                                             {totalAttendeesOnCurrentEvent}
+                                        </div>
                                    </div>
                               </CardContent>
                          </Card>
@@ -129,16 +136,20 @@ export default function DashboardPage() {
                               <ChartContainer config={chartConfig}>
                                    <BarChart accessibilityLayer data={eventsChartOverview}>
                                         <CartesianGrid vertical={false} />
-                                        <XAxis 
+                                        <XAxis
                                              dataKey="eventName"
                                              tickLine={false}
                                              tickMargin={10}
                                              axisLine={false}
                                              tickFormatter={(value) => value}
                                         />
-                                   <Bar dataKey="totalVisit" fill="var(--color-totalVisit) " radius={4} />
-                                   <ChartTooltip content={<ChartTooltipContent />} />
-                                   <ChartLegend content={<ChartLegendContent />} />
+                                        <Bar
+                                             dataKey="totalVisit"
+                                             fill="var(--color-totalVisit) "
+                                             radius={4}
+                                        />
+                                        <ChartTooltip content={<ChartTooltipContent />} />
+                                        <ChartLegend content={<ChartLegendContent />} />
                                    </BarChart>
                               </ChartContainer>
                          </CardContent>
@@ -157,18 +168,31 @@ export default function DashboardPage() {
                               </div>
                               <Accordion type="single" collapsible>
                                    <AccordionItem value="item-1">
-                                        <AccordionTrigger>How can I create an Event?</AccordionTrigger>
+                                        <AccordionTrigger>
+                                             How can I create an Event?
+                                        </AccordionTrigger>
                                         <AccordionContent className="text-muted-foreground">
-                                             Creating a New Event<br />
-                                                  a. Go to <Link href="/manage-events" className="underline">Manage Events</Link> →
-                                                       Create Event<br />
-                                                  b. Fill in the required details:<br />
-                                                       - Event Name<br />
-                                                       - Description<br />
-                                                       - Registration Start<br />
-                                                       - Start and End Date & Time<br />
-                                                       - Location<br />
-                                                  c. Click Save and it should appear on the Event page
+                                             Creating a New Event
+                                             <br />
+                                             a. Go to{" "}
+                                             <Link href="/manage-events" className="underline">
+                                                  Manage Events
+                                             </Link>{" "}
+                                             → Create Event
+                                             <br />
+                                             b. Fill in the required details:
+                                             <br />
+                                             - Event Name
+                                             <br />
+                                             - Description
+                                             <br />
+                                             - Registration Start
+                                             <br />
+                                             - Start and End Date & Time
+                                             <br />
+                                             - Location
+                                             <br />
+                                             c. Click Save and it should appear on the Event page
                                         </AccordionContent>
                                    </AccordionItem>
                               </Accordion>
@@ -177,34 +201,63 @@ export default function DashboardPage() {
                                    <AccordionItem value="item-1">
                                         <AccordionTrigger>Can I add new Venue?</AccordionTrigger>
                                         <AccordionContent className="text-muted-foreground">
-                                             Adding a New Venue<br/>
-                                                  a. Go to <Link href="/manage-locations" className="underline">Manage Venues</Link> → 
-                                                       Add New Location<br/>
-                                                  b. Fill in the required details:<br/>
-                                                       - Location Name<br/>
-                                                       - Description of the Location: Indoor or Outdoor<br/>
-                                                       - Choose whether to plot the location through Satellite or Open Street Map<br/>
-                                                       - Plot the Location<br/>
-                                                  c. Click Save and it should appear to the Venue page<br/>
+                                             Adding a New Venue
+                                             <br />
+                                             a. Go to{" "}
+                                             <Link href="/manage-locations" className="underline">
+                                                  Manage Venues
+                                             </Link>{" "}
+                                             → Add New Location
+                                             <br />
+                                             b. Fill in the required details:
+                                             <br />
+                                             - Location Name
+                                             <br />
+                                             - Description of the Location: Indoor or Outdoor
+                                             <br />
+                                             - Choose whether to plot the location through Satellite
+                                             or Open Street Map
+                                             <br />
+                                             - Plot the Location
+                                             <br />
+                                             c. Click Save and it should appear to the Venue page
+                                             <br />
                                         </AccordionContent>
                                    </AccordionItem>
                               </Accordion>
 
                               <Accordion type="single" collapsible>
                                    <AccordionItem value="item-1">
-                                        <AccordionTrigger>How can I add new users?</AccordionTrigger>
+                                        <AccordionTrigger>
+                                             How can I add new users?
+                                        </AccordionTrigger>
                                         <AccordionContent className="text-muted-foreground">
-                                             Adding New User<br/>
-                                                  a. Go to <Link href="/manage-users" className="underline">Manage Users</Link> → 
-                                                       Manually Add Account or Import Student Accounts to simplify user account management<br/>
-                                                  b. For Manually adding of student account, just fill in the required details:<br/>
-                                                       - Student Full Name<br/>
-                                                       - Student Number<br/>
-                                                       - Cluster<br/>
-                                                       - Course<br/>
-                                                       - Email<br/>
-                                                       - Contact Number<br/>
-                                                  c. Click Save and it should appear to the Users page<br/>
+                                             Adding New User
+                                             <br />
+                                             a. Go to{" "}
+                                             <Link href="/manage-users" className="underline">
+                                                  Manage Users
+                                             </Link>{" "}
+                                             → Manually Add Account or Import Student Accounts to
+                                             simplify user account management
+                                             <br />
+                                             b. For Manually adding of student account, just fill in
+                                             the required details:
+                                             <br />
+                                             - Student Full Name
+                                             <br />
+                                             - Student Number
+                                             <br />
+                                             - Cluster
+                                             <br />
+                                             - Course
+                                             <br />
+                                             - Email
+                                             <br />
+                                             - Contact Number
+                                             <br />
+                                             c. Click Save and it should appear to the Users page
+                                             <br />
                                         </AccordionContent>
                                    </AccordionItem>
                               </Accordion>
