@@ -1,4 +1,4 @@
-export const API_BASE = "https://attendease-backend-latest.onrender.com"
+export const API_BASE = "http://localhost:8082"
 /**
  * constant login endpoint
  */
@@ -15,12 +15,30 @@ export const EVENT_MANAGEMENT_API_ENDPOINTS = {
      DELETE_EVENT: (id: string) => `${API_BASE}/api/events/${id}`,
 }
 
+/**
+ * All cluster and course management related API endpoints.
+ */
+export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
+     GET_ALL_COURSES: `${API_BASE}/api/courses`,
+     GET_ALL_CLUSTERS: `${API_BASE}/api/clusters`,
+     DELETE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
+     CREATE_COURSE: (id: string) => `${API_BASE}/api/courses?clusterId=${id}`,
+     DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
+     CREATE_CLUSTER: `${API_BASE}/api/clusters`,
+}
+
+/**
+ * All location management related API endpoints.
+ */
 export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
      GET_ALL_LOCATIONS: `${API_BASE}/api/locations`,
      CREATE_LOCATION: `${API_BASE}/api/locations`,
      DELETE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
 }
 
+/**
+ * All user management related API endpoints.
+ */
 export const USER_MANAGEMENT_API_ENDPOINTS = {
      RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
      IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
