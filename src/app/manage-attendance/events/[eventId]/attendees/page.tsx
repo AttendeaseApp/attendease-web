@@ -18,8 +18,6 @@ export default function EventAttendeesPage() {
      const { data: event, loading: eventLoading } = useEventById(eventId)
      const { data: attendeesResponse, loading, error, refetch } = useEventAttendees(eventId)
      const [searchTerm, setSearchTerm] = useState("")
-     const [currentPage, setCurrentPage] = useState(1)
-     const pageSize = 10
      const attendees = attendeesResponse?.attendees ?? []
      const totalAttendees = attendeesResponse?.totalAttendees ?? 0
      const { handleUpdate, submitting } = useUpdateAttendance(eventId, refetch)
@@ -33,7 +31,6 @@ export default function EventAttendeesPage() {
      }
      const handleSearchChange = (term: string) => {
           setSearchTerm(term)
-          setCurrentPage(1)
      }
      if (eventLoading || loading) {
           return (
@@ -90,9 +87,6 @@ export default function EventAttendeesPage() {
                          totalAttendees={totalAttendees}
                          loading={loading}
                          eventId={eventId}
-                         currentPage={currentPage}
-                         pageSize={pageSize}
-                         onPageChange={setCurrentPage}
                          searchTerm={searchTerm}
                          onSearchChange={handleSearchChange}
                          onOpenDialog={handleOpenDialog}
