@@ -24,7 +24,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                alert("CSV uploaded successfully")
                onOpenChange(false)
           } catch (err) {
-               alert("Failed to upload CSV file, File has a duplicate Student"+err)
+               alert("Failed to upload CSV file, File has a duplicate Student" + err)
           } finally {
                setLoading(false)
           }
