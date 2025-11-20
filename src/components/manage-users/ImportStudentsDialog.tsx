@@ -23,8 +23,8 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                setSelectedFile(result)
                alert("CSV uploaded successfully")
                onOpenChange(false)
-          } catch (err: any) {
-               alert(err.message || "Failed to upload CSV file")
+          } catch (err) {
+               alert( "Failed to upload CSV file")
           } finally {
                setLoading(false)
           }
