@@ -20,6 +20,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
           try {
                setLoading(true)
                const result = await uploadStudentCSV(selectedFile)
+               setSelectedFile(result)
                alert("CSV uploaded successfully")
                onOpenChange(false)
           } catch (err: any) {
