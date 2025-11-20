@@ -1,4 +1,4 @@
-import { EventStatus } from "@/interface/event-interface"
+import { EventStatus } from "@/interface/event/event-interface"
 
 /**
  * FinalizedAttendanceRecordsResponse interface representing an summary of attendance records.

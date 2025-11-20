@@ -1,4 +1,4 @@
-import { FinalizedAttendanceRecordsResponse } from "@/interface/attendance/records/management/finalized-attendance-records-response"
+import { FinalizedAttendanceRecordsResponse } from "@/interface/attendance/records/management/FinalizedAttendanceRecordsResponse"
 import { authFetch } from "@/services/auth-fetch"
 import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "@/constants/api"
 

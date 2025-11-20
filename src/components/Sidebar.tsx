@@ -21,11 +21,11 @@ import {
 
 // menu items.
 const menu = [
-     {
-          title: "Dashboard",
-          url: "/dashboard",
-          icon: Home,
-     },
+     // {
+     //      title: "Dashboard",
+     //      url: "/dashboard",
+     //      icon: Home,
+     // },
      {
           title: "Monitor Events",
           url: "/monitor-events",
@@ -55,12 +55,7 @@ const menu = [
 
 const others = [
      {
-          title: "Settings",
-          url: "/settings",
-          icon: Settings,
-     },
-     {
-          title: "Account",
+          title: "My Profile",
           url: "/account",
           icon: User,
      },

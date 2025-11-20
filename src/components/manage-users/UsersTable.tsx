@@ -9,7 +9,7 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
-import { UserStudentResponse } from "@/interface/user-interface"
+import { UserStudentResponse } from "@/interface/UserStudent"
 
 interface UsersTableProps {
      users: UserStudentResponse[]
@@ -21,21 +21,21 @@ export default function UsersTable({ users, loading }: UsersTableProps) {
           <Table>
                <TableHeader className="bg-gray-100">
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">Full Name</TableHead>
-                         <TableHead className="font-semibold text-gray-900">User Type</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Section</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Course</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Student No.</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Email</TableHead>
+                         <TableHead className="font-semibold text-gray-900">FULL NAME</TableHead>
+                         <TableHead className="font-semibold text-gray-900">USER TYPE</TableHead>
+                         <TableHead className="font-semibold text-gray-900">SECTION</TableHead>
+                         <TableHead className="font-semibold text-gray-900">COURSE</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Contact Number
+                              STUDENT NUMBER
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">EMAIL</TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              CONTACT NUMBER
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Account Status
+                              ACCOUNT STATUS
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              View / Update
-                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">VIEW/ UPDATE</TableHead>
                     </TableRow>
                </TableHeader>
 

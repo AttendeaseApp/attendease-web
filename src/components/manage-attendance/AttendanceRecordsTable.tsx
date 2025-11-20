@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { FinalizedAttendanceRecordsResponse } from "@/interface/attendance/records/management/finalized-attendance-records-response"
+import { FinalizedAttendanceRecordsResponse } from "@/interface/attendance/records/management/FinalizedAttendanceRecordsResponse"
 
 interface AttendanceRecordsTableProps {
      events: FinalizedAttendanceRecordsResponse[]

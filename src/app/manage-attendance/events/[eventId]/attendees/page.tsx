@@ -1,35 +1,47 @@
 "use client"
-
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { useEventById } from "@/hooks/attendance-records-management/useEventById"
-import { useEventAttendees } from "@/hooks/attendance-records-management/useEventAttendees"
-import { EventAttendeesTable } from "@/components/manage-attendance/EventAttendeesTable"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
-import { useRouter } from "next/navigation"
-
+import { EventAttendeesTable } from "@/components/manage-attendance/EventAttendeesTable"
+import { UpdateStudentAttendanceRecordDialog } from "@/components/manage-attendance/UpdateStudentAttendanceRecordDialog"
+import { Button } from "@/components/ui/button"
+import { useEventAttendees } from "@/hooks/attendance-records-management/useEventAttendees"
+import { useEventById } from "@/hooks/attendance-records-management/useEventById"
+import { useUpdateAttendance } from "@/hooks/attendance-records-management/useUpdateStudentAttendanceStatus"
+import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
+import { useParams, useRouter } from "next/navigation"
+import { useState } from "react"
 export default function EventAttendeesPage() {
      const params = useParams()
      const eventId = params.eventId as string
      const router = useRouter()
-
-     const { data: event } = useEventById(eventId)
-
-     const { data: attendeesResponse, loading, error } = useEventAttendees(eventId)
-
+     const [open, setOpen] = useState(false)
+     const [selectedAttendee, setSelectedAttendee] = useState<AttendeesResponse | null>(null)
+     const { data: event, loading: eventLoading } = useEventById(eventId)
+     const { data: attendeesResponse, loading, error, refetch } = useEventAttendees(eventId)
      const [searchTerm, setSearchTerm] = useState("")
      const [currentPage, setCurrentPage] = useState(1)
      const pageSize = 10
-
      const attendees = attendeesResponse?.attendees ?? []
      const totalAttendees = attendeesResponse?.totalAttendees ?? 0
-
+     const { handleUpdate, submitting } = useUpdateAttendance(eventId, refetch)
+     const handleOpenDialog = (attendee: AttendeesResponse) => {
+          setSelectedAttendee(attendee)
+          setOpen(true)
+     }
+     const handleCloseDialog = () => {
+          setOpen(false)
+          setSelectedAttendee(null)
+     }
      const handleSearchChange = (term: string) => {
           setSearchTerm(term)
           setCurrentPage(1)
      }
-
+     if (eventLoading || loading) {
+          return (
+               <ProtectedLayout>
+                    <div className="p-4 text-center">Loading event details...</div>
+               </ProtectedLayout>
+          )
+     }
      if (error) {
           return (
                <ProtectedLayout>
@@ -37,14 +49,12 @@ export default function EventAttendeesPage() {
                </ProtectedLayout>
           )
      }
-
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
                     <Button variant="outline" onClick={() => router.back()} className="w-fit">
                          ← Go Back
                     </Button>
-
                     <div className="space-y-2">
                          <h1 className="text-2xl font-bold">
                               Attendance Records for {event?.eventName || "Event"}
@@ -72,10 +82,9 @@ export default function EventAttendeesPage() {
                               </div>
                          )}
                          <div className="flex justify-end">
-                              <Button onClick={() => window.print()}>Print</Button>{" "}
+                              <Button onClick={() => window.print()}>Print</Button>
                          </div>
                     </div>
-
                     <EventAttendeesTable
                          attendeesData={attendees}
                          totalAttendees={totalAttendees}
@@ -86,8 +95,16 @@ export default function EventAttendeesPage() {
                          onPageChange={setCurrentPage}
                          searchTerm={searchTerm}
                          onSearchChange={handleSearchChange}
+                         onOpenDialog={handleOpenDialog}
                     />
                </div>
+               <UpdateStudentAttendanceRecordDialog
+                    open={open}
+                    onOpenChange={handleCloseDialog}
+                    attendee={selectedAttendee}
+                    onUpdate={(data) => handleUpdate(data, selectedAttendee)}
+                    submitting={submitting}
+               />
           </ProtectedLayout>
      )
 }

@@ -1,4 +1,4 @@
-import { FinalizedAttendanceRecordsResponse } from "@/interface/attendance/records/management/finalized-attendance-records-response"
+import { FinalizedAttendanceRecordsResponse } from "@/interface/attendance/records/management/FinalizedAttendanceRecordsResponse"
 import { fetchFinalizedEventSummary } from "@/services/api/attendance/records/management/getFinalizedEventSummary"
 import { useState, useEffect } from "react"
 

@@ -17,12 +17,9 @@ import {
      DropdownMenuTrigger,
      DropdownMenuContent,
      DropdownMenuItem,
-     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { AttendeesResponse } from "@/interface/attendance/records/management/atendees-response-interface"
-
+import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 interface EventAttendeesTableProps {
      attendeesData: AttendeesResponse[]
      totalAttendees: number
@@ -33,30 +30,37 @@ interface EventAttendeesTableProps {
      onPageChange: (page: number) => void
      searchTerm: string
      onSearchChange: (term: string) => void
+     onOpenDialog: (attendee: AttendeesResponse) => void
 }
-
 export function EventAttendeesTable({
      attendeesData,
      loading,
-     eventId,
      currentPage = 1,
      pageSize = 10,
      searchTerm,
      onSearchChange,
+     onOpenDialog,
 }: EventAttendeesTableProps) {
-     const router = useRouter()
-
      const getFullName = (attendee: AttendeesResponse) =>
           `${attendee.firstName} ${attendee.lastName}`
-
+     const formatDate = (dateString: string | null): string => {
+          if (!dateString) return "N/A"
+          const date = new Date(dateString.replace(" ", "T") + ":00")
+          return date.toLocaleString("en-US", {
+               year: "numeric",
+               month: "short",
+               day: "numeric",
+               hour: "2-digit",
+               minute: "2-digit",
+               hour12: true,
+          })
+     }
      const filteredData = attendeesData.filter(
           (attendee) =>
                getFullName(attendee).toLowerCase().includes(searchTerm.toLowerCase()) ||
                attendee.reason?.toLowerCase().includes(searchTerm.toLowerCase())
      )
-
      const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-
      return (
           <div className="space-y-4">
                <div className="relative">
@@ -68,17 +72,16 @@ export function EventAttendeesTable({
                          onChange={(e) => onSearchChange(e.target.value)}
                     />
                </div>
-
                <Table>
                     <TableHeader>
                          <TableRow>
-                              <TableHead>Full Name</TableHead>
-                              <TableHead>Attendance Status</TableHead>
-                              <TableHead>Cluster</TableHead>
-                              <TableHead>Course</TableHead>
-                              <TableHead>Time In</TableHead>
-                              <TableHead>Reason</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
+                              <TableHead>FULL NAME</TableHead>
+                              <TableHead>ATTENDANCE STATUS</TableHead>
+                              <TableHead>CLUSTER</TableHead>
+                              <TableHead>COURSE</TableHead>
+                              <TableHead>TIME IN</TableHead>
+                              <TableHead>REASON</TableHead>
+                              <TableHead className="text-right">ACTIONS</TableHead>
                          </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -101,7 +104,6 @@ export function EventAttendeesTable({
                                              {getFullName(attendee)}
                                         </TableCell>
                                         <TableCell>
-                                             {/* Fixed: Expanded badge to cover all AttendanceStatus values */}
                                              <span
                                                   className={cn(
                                                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset",
@@ -122,11 +124,9 @@ export function EventAttendeesTable({
                                                   {attendee.attendanceStatus}
                                              </span>
                                         </TableCell>
-                                        <TableCell>{attendee.section || "N/A"}</TableCell>{" "}
+                                        <TableCell>{attendee.section || "N/A"}</TableCell>
                                         <TableCell>{attendee.course || "N/A"}</TableCell>
-                                        <TableCell>
-                                             {new Date(attendee.timeIn).toLocaleString()}
-                                        </TableCell>
+                                        <TableCell>{formatDate(attendee.timeIn)}</TableCell>
                                         <TableCell>{attendee.reason || "N/A"}</TableCell>
                                         <TableCell className="text-right">
                                              <DropdownMenu>
@@ -140,24 +140,9 @@ export function EventAttendeesTable({
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        <DropdownMenuItem
-                                                            onClick={() => {
-                                                                 router.push(
-                                                                      `/manage-attendance/${eventId}/update/${attendee.attendanceRecordId}`
-                                                                 )
-                                                            }}
+                                                            onClick={() => onOpenDialog(attendee)}
                                                        >
                                                             View and Update
-                                                       </DropdownMenuItem>
-                                                       <DropdownMenuSeparator />
-                                                       <DropdownMenuItem
-                                                            onClick={() =>
-                                                                 console.log(
-                                                                      "Print record:",
-                                                                      attendee.attendanceRecordId
-                                                                 )
-                                                            }
-                                                       >
-                                                            Print
                                                        </DropdownMenuItem>
                                                   </DropdownMenuContent>
                                              </DropdownMenu>

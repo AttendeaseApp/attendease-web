@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { EventSession } from "@/interface/event-interface"
+import { EventSession } from "@/interface/event/event-interface"
 import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "../../constants/api"
 import { authFetch } from "@/services/auth-fetch"
 

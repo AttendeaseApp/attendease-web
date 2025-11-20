@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { EventAttendeesResponse } from "@/interface/attendance/records/management/atendees-response-interface"
+import { EventAttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "../../constants/api"
 import { authFetch } from "@/services/auth-fetch"
 

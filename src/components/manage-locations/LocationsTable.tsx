@@ -48,14 +48,14 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
                <TableHeader className="bg-gray-100">
                     <TableRow>
                          <TableHead className="font-semibold text-gray-900">
-                              Location Name
+                              LOCATION NAME
                          </TableHead>
+                         <TableHead className="font-semibold text-gray-900">TYPE</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Location Type
+                              CREATED (DATE-TIME)
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">Created At</TableHead>
                          <TableHead className="text-right font-semibold text-gray-900">
-                              Actions
+                              ACTIONS
                          </TableHead>
                     </TableRow>
                </TableHeader>
