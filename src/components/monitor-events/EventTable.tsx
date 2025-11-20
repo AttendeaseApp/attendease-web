@@ -28,14 +28,16 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
           <Table>
                <TableHeader className="bg-gray-100">
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">EVENT NAME</TableHead>
+                         <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
                          <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
-                         <TableHead className="font-semibold text-gray-900">REGISTRATION</TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              REGISTRATION (DATE-TIME)
+                         </TableHead>
                          <TableHead className="font-semibold text-gray-900">
                               START (DATE-TIME)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              END (DATE-TIME
+                              END (DATE-TIME)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">STATUS</TableHead>
                          <TableHead className="font-semibold text-gray-900">ACTIONS</TableHead>

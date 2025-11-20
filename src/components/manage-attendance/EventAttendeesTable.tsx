@@ -20,29 +20,27 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react"
 import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
+
 interface EventAttendeesTableProps {
      attendeesData: AttendeesResponse[]
      totalAttendees: number
      loading: boolean
      eventId: string
-     currentPage: number
-     pageSize?: number
-     onPageChange: (page: number) => void
      searchTerm: string
      onSearchChange: (term: string) => void
      onOpenDialog: (attendee: AttendeesResponse) => void
 }
+
 export function EventAttendeesTable({
      attendeesData,
      loading,
-     currentPage = 1,
-     pageSize = 10,
      searchTerm,
      onSearchChange,
      onOpenDialog,
 }: EventAttendeesTableProps) {
      const getFullName = (attendee: AttendeesResponse) =>
           `${attendee.firstName} ${attendee.lastName}`
+
      const formatDate = (dateString: string | null): string => {
           if (!dateString) return "N/A"
           const date = new Date(dateString.replace(" ", "T") + ":00")
@@ -55,12 +53,13 @@ export function EventAttendeesTable({
                hour12: true,
           })
      }
+
      const filteredData = attendeesData.filter(
           (attendee) =>
                getFullName(attendee).toLowerCase().includes(searchTerm.toLowerCase()) ||
                attendee.reason?.toLowerCase().includes(searchTerm.toLowerCase())
      )
-     const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+
      return (
           <div className="space-y-4">
                <div className="relative">
@@ -72,6 +71,7 @@ export function EventAttendeesTable({
                          onChange={(e) => onSearchChange(e.target.value)}
                     />
                </div>
+
                <Table>
                     <TableHeader>
                          <TableRow>
@@ -91,14 +91,14 @@ export function EventAttendeesTable({
                                         Loading attendees...
                                    </TableCell>
                               </TableRow>
-                         ) : paginatedData.length === 0 ? (
+                         ) : filteredData.length === 0 ? (
                               <TableRow>
                                    <TableCell colSpan={7} className="text-center py-8">
                                         No attendees found
                                    </TableCell>
                               </TableRow>
                          ) : (
-                              paginatedData.map((attendee) => (
+                              filteredData.map((attendee) => (
                                    <TableRow key={attendee.attendanceRecordId}>
                                         <TableCell className="font-medium">
                                              {getFullName(attendee)}

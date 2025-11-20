@@ -31,20 +31,20 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
           <Table>
                <TableHeader className="bg-gray-100">
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">Event Name</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Venue</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Registration</TableHead>
+                         <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
+                         <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Start Date-Time
+                              REGISTRATION (DATE-TIME)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              End Date-Time
+                              START (DATE-TIME)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Total Present
+                              END (DATE-TIME)
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">Total Absent</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Total Late</TableHead>
+                         <TableHead className="font-semibold text-gray-900">PRESENT</TableHead>
+                         <TableHead className="font-semibold text-gray-900">ABSENTEES</TableHead>
+                         <TableHead className="font-semibold text-gray-900">LATE</TableHead>
                          <TableHead className="text-right font-semibold text-gray-900">
                               Actions
                          </TableHead>
