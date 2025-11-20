@@ -8,7 +8,7 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Plus, Search } from "lucide-react"
 import { getAllEvents } from "@/services/event-sessions"
 import { deleteEvent } from "@/services/event-sessions"
-import { EventSession } from "@/interface/event-interface"
+import { EventSession } from "@/interface/event/event-interface"
 import { EditEventDialog } from "@/components/manage-events/EditEventDialog"
 import { CreateEventDialog } from "@/components/manage-events/CreateEventDialog"
 

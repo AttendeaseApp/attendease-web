@@ -2,7 +2,7 @@
 
 import React from "react"
 import { cn } from "@/lib/utils"
-import { EventSession, EventStatus } from "@/interface/event-interface"
+import { EventSession, EventStatus } from "@/interface/event/event-interface"
 import { Button } from "@/components/ui/button"
 import {
      Table,
@@ -28,15 +28,19 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
           <Table>
                <TableHeader className="bg-gray-100">
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">Event Name</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Venue</TableHead>
+                         <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
+                         <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Registration Start
+                              REGISTRATION (DATE-TIME)
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">Start Date</TableHead>
-                         <TableHead className="font-semibold text-gray-900">End Date</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Status</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Actions</TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              START (DATE-TIME)
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              END (DATE-TIME)
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">STATUS</TableHead>
+                         <TableHead className="font-semibold text-gray-900">ACTIONS</TableHead>
                     </TableRow>
                </TableHeader>
                <TableBody>

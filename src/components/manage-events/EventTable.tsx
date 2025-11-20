@@ -1,6 +1,6 @@
 "use client"
 
-import { EventSession, EventStatus } from "@/interface/event-interface"
+import { EventSession, EventStatus } from "@/interface/event/event-interface"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -56,16 +56,20 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
           <Table>
                <TableHeader className="bg-gray-100">
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">Event Name</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Venue</TableHead>
+                         <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
+                         <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Registration Start
+                              REGISTRATION (DATE-TIME)
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">Start Date</TableHead>
-                         <TableHead className="font-semibold text-gray-900">End Date</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              START (DATE-TIME)
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              END (DATE-TIME)
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">STATUS</TableHead>
                          <TableHead className="text-right font-semibold text-gray-900">
-                              Actions
+                              ACTIONS
                          </TableHead>
                     </TableRow>
                </TableHeader>

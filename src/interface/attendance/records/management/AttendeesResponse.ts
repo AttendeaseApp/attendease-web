@@ -1,6 +1,6 @@
-import { AttendanceStatus } from "./attendance-status"
-import { AccountStatus } from "./account-status"
-import { UserType } from "./user-type"
+import { AttendanceStatus } from "@/interface/attendance/status/AttendanceStatus"
+import { AccountStatus } from "@/interface/users/account/status/AccountStatus"
+import { UserType } from "@/interface/users/type/UserType"
 
 export interface AttendeesResponse {
      attendanceRecordId: string

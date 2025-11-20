@@ -1,4 +1,13 @@
-import { Calendar, Home, Users, LibrarySquareIcon, User, Settings, LocationEditIcon, TicketCheck } from "lucide-react"
+import {
+     Calendar,
+     Home,
+     Users,
+     User,
+     Settings,
+     LocationEditIcon,
+     TicketCheck,
+     Library,
+} from "lucide-react"
 import {
      Sidebar,
      SidebarContent,
@@ -11,46 +20,41 @@ import {
 } from "@/components/ui/sidebar"
 
 const menu = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-     title: "Monitor Events",
-     url: "/monitor-events",
-     icon: TicketCheck,
-  },
-  {
-    title: "Manage Users",
-    url: "/manage-users",
-    icon: Users,
-  },
-  {
-    title: "Manage Events",
-    url: "/manage-events",
-    icon: Calendar,
-  },
-  {
-    title: "Manage Venues",
-    url: "/manage-locations",
-    icon: LocationEditIcon,
-  },
-  {
-    title: "Manage Clusters and Courses",
-    url: "/manage-clusters-and-courses",
-    icon: LibrarySquareIcon,
-  }
+     // {
+     //      title: "Dashboard",
+     //      url: "/dashboard",
+     //      icon: Home,
+     // },
+     {
+          title: "Monitor Events",
+          url: "/monitor-events",
+          icon: TicketCheck,
+     },
+     {
+          title: "Manage Attendance Records",
+          url: "/manage-attendance",
+          icon: Library,
+     },
+     {
+          title: "Manage Users",
+          url: "/manage-users",
+          icon: Users,
+     },
+     {
+          title: "Manage Events",
+          url: "/manage-events",
+          icon: Calendar,
+     },
+     {
+          title: "Manage Venues",
+          url: "/manage-locations",
+          icon: LocationEditIcon,
+     },
 ]
 
 const others = [
      {
-          title: "Settings",
-          url: "/settings",
-          icon: Settings,
-     },
-     {
-          title: "Account",
+          title: "My Profile",
           url: "/account",
           icon: User,
      },

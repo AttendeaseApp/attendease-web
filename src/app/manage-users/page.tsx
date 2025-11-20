@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ChevronDown, Search } from "lucide-react"
-import { UserStudentResponse } from "@/interface/user-interface"
+import { UserStudentResponse } from "@/interface/UserStudent"
 import { getAllUsers } from "@/services/user-management-services"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
+import ImportStudentsDialog from "@/components/manage-users/ImportStudentsDialog"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -19,6 +20,7 @@ export default function RetrieveAllUsers() {
      const [selectedType, setSelectedType] = useState("all")
      const [error, setError] = useState<string | null>(null)
      const [openMoreSettings, setOpenMoreSettings] = useState(false)
+     const [openImportStudents, setOpenImportStudents] = useState(false)
 
      const loadUsers = async () => {
           try {
@@ -70,7 +72,12 @@ export default function RetrieveAllUsers() {
                          </div>
                          <div className="flex justify-end space-x-2">
                               <Button className="sm:w-autom">Manually Add Account</Button>
-                              <Button className="sm:w-auto">Import Student Accounts</Button>
+                              <Button
+                                   className="sm:w-auto"
+                                   onClick={() => setOpenImportStudents(true)}
+                              >
+                                   Import Student Accounts
+                              </Button>
                               <Button
                                    variant="outline"
                                    className="sm:w-auto"
@@ -123,6 +130,10 @@ export default function RetrieveAllUsers() {
                </div>
 
                <MoreSettingsDialog open={openMoreSettings} onOpenChange={setOpenMoreSettings} />
+               <ImportStudentsDialog
+                    open={openImportStudents}
+                    onOpenChange={setOpenImportStudents}
+               />
           </ProtectedLayout>
      )
 }

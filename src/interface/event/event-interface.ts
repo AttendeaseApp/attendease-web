@@ -1,4 +1,4 @@
-import { EventLocation } from "./location-interface"
+import { EventLocation } from "../location-interface"
 
 /**
  * EventStatus enum representing the status of an event.
