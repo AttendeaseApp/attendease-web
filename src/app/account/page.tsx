@@ -3,7 +3,7 @@
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { UserStudentResponse } from "@/interface/user-interface"
+import { UserStudentResponse } from "@/interface/UserStudent"
 import { getOSAProfile } from "@/services/user-management-services"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"

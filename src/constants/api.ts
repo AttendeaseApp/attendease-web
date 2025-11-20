@@ -37,3 +37,16 @@ export const OSA_PROFILE_ENDPOINT = {
      GET_OSA_PROFILE: `${API_BASE}/api/profile/user-osa/me`,
      OSA_CHANGE_PASSWORD: `${API_BASE}/api/profile/account/password/update`,
 }
+
+export const ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS = {
+     GET_FINALIZED_EVENT_SUMMARY: `${API_BASE}/api/attendance/records/event/finalized`,
+     GET_ATTENDEES_BY_EVENT_ID: (id: string) =>
+          `${API_BASE}/api/attendance/records/attendees/event/${id}`,
+     GET_EVENT_BY_ID: (id: string) => `${API_BASE}/api/attendance/records/event/${id}`,
+     GET_ATTENDANCE_RECORDS_BY_STUDENT_ID: (id: string) =>
+          `${API_BASE}/api/attendance/records/student/${id}`,
+     UPDATE_STUDENT_ATTENDANCE_STATUS_BY_STUDENT_AND_EVENT_ID: (
+          studentId: string,
+          eventId: string
+     ) => `${API_BASE}/api/attendance/records/${studentId}/event/${eventId}`,
+}

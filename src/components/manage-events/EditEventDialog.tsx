@@ -22,7 +22,7 @@ import {
      DialogFooter,
 } from "@/components/ui/dialog"
 import { Save, X } from "lucide-react"
-import { EventSession, EventStatus } from "@/interface/event-interface"
+import { EventSession, EventStatus } from "@/interface/event/event-interface"
 import { updateEvent } from "@/services/event-sessions"
 
 interface EditEventDialogProps {

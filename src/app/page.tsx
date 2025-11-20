@@ -14,7 +14,7 @@ export default function Home() {
      useEffect(() => {
           const token = localStorage.getItem("authToken")
           if (token) {
-               router.push("/dashboard")
+               router.push("/monitor-events")
           } else {
                router.push("/login")
           }

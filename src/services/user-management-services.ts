@@ -1,6 +1,6 @@
 import { authFetch } from "./auth-fetch"
 import { OSA_PROFILE_ENDPOINT, USER_MANAGEMENT_API_ENDPOINTS } from "../constants/api"
-import { UserStudentResponse } from "@/interface/user-interface"
+import { UserStudentResponse } from "@/interface/UserStudent"
 
 /**
  * Retrieve all users

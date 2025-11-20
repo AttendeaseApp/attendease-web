@@ -9,7 +9,8 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
-import { AttendeesResponse, EventAttendeesResponse } from "@/interface/event-monitoring-interface"
+import { EventAttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
+import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 
 interface AttendeesCardProps {
      attendeesData: EventAttendeesResponse
