@@ -1,5 +1,5 @@
-import { EventSession } from "@/interface/event-interface"
-import { EventAttendeesResponse } from "@/interface/event-monitoring-interface"
+import { EventSession } from "@/interface/event/event-interface"
+import { EventAttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 import { authFetch } from "./auth-fetch"
 import { EVENT_MONITORING_API_ENDPOINTS } from "@/constants/api"
 

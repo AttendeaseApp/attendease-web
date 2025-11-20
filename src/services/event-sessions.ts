@@ -1,4 +1,4 @@
-import { EventSession } from "@/interface/event-interface"
+import { EventSession } from "@/interface/event/event-interface"
 import { authFetch } from "./auth-fetch"
 import { EVENT_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { format } from "date-fns"
