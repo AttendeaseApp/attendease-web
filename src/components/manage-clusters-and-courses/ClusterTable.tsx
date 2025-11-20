@@ -1,6 +1,4 @@
 "use client"
-
-import React from "react"
 import { Button } from "@/components/ui/button"
 import {
      Table,
@@ -18,29 +16,31 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
-import { CourseSession } from "@/interface/cluster-and-course-interface"
-interface CourseTableProps {
-     courses: CourseSession[]
+import { ClusterSession } from "@/interface/cluster-and-course-interface"
+export function ClusterTable({
+     clusters,
+     loading,
+     onDeleteAction,
+}: {
+     clusters: ClusterSession[]
      loading: boolean
-     onDelete: (course: CourseSession) => void
-}
-export function ClusterAndCourseTable({ courses, loading, onDelete }: CourseTableProps) {
-     const handleDelete = (course: CourseSession, e: React.MouseEvent) => {
+     onDeleteAction: (cluster: ClusterSession) => void
+}) {
+     const handleDelete = (cluster: ClusterSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           if (
                confirm(
-                    `Are you sure you want to delete the course "${course.courseName}"? This action cannot be undone.`
+                    `Are you sure you want to delete the cluster "${cluster.clusterName}"? This action cannot be undone and will also delete associated courses.`
                )
           ) {
-               onDelete(course)
+               onDeleteAction(cluster)
           }
      }
      return (
           <Table className="w-full">
                <TableHeader>
                     <TableRow>
-                         <TableHead>COURSE</TableHead>
                          <TableHead>CLUSTER</TableHead>
                          <TableHead className="text-right">ACTIONS</TableHead>
                     </TableRow>
@@ -48,21 +48,20 @@ export function ClusterAndCourseTable({ courses, loading, onDelete }: CourseTabl
                <TableBody>
                     {loading ? (
                          <TableRow>
-                              <TableCell colSpan={3} className="text-center py-8">
-                                   Loading courses and clusters...
+                              <TableCell colSpan={2} className="text-center py-8">
+                                   Loading clusters...
                               </TableCell>
                          </TableRow>
-                    ) : courses.length === 0 ? (
+                    ) : clusters.length === 0 ? (
                          <TableRow>
-                              <TableCell colSpan={3} className="text-center py-8">
-                                   No courses and clusters found
+                              <TableCell colSpan={2} className="text-center py-8">
+                                   No clusters found
                               </TableCell>
                          </TableRow>
                     ) : (
-                         courses.map((course) => (
-                              <TableRow key={`${course.id || "no-course"}`}>
-                                   <TableCell>{course.courseName || " –"}</TableCell>
-                                   <TableCell>{course.cluster?.clusterName || " –"}</TableCell>
+                         clusters.map((cluster) => (
+                              <TableRow key={cluster.clusterId}>
+                                   <TableCell>{cluster.clusterName || " –"}</TableCell>
                                    <TableCell className="text-right">
                                         <DropdownMenu>
                                              <DropdownMenuTrigger asChild>
@@ -73,7 +72,7 @@ export function ClusterAndCourseTable({ courses, loading, onDelete }: CourseTabl
                                              </DropdownMenuTrigger>
                                              <DropdownMenuContent align="end">
                                                   <DropdownMenuItem
-                                                       onClick={(e) => handleDelete(course, e)}
+                                                       onClick={(e) => handleDelete(cluster, e)}
                                                   >
                                                        <Trash className="mr-2 h-4 w-4" />
                                                        Delete

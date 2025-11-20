@@ -1,4 +1,4 @@
-export const API_BASE = "https://attendease-backend-latest.onrender.com"
+export const API_BASE = "http://localhost:8082"
 /**
  * constant login endpoint
  */
@@ -19,11 +19,12 @@ export const EVENT_MANAGEMENT_API_ENDPOINTS = {
  * All cluster and course management related API endpoints.
  */
 export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
-  GET_ALL_COURSES: `${API_BASE}/api/courses`,
-  GET_ALL_CLUSTERS: `${API_BASE}/api/clusters`,
-  CREATE_COURSE: (id: string) => `${API_BASE}/api/courses?clusterId=${id}`,
-  DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
-  CREATE_CLUSTER: `${API_BASE}/api/clusters`
+     GET_ALL_COURSES: `${API_BASE}/api/courses`,
+     GET_ALL_CLUSTERS: `${API_BASE}/api/clusters`,
+     DELETE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
+     CREATE_COURSE: (id: string) => `${API_BASE}/api/courses?clusterId=${id}`,
+     DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
+     CREATE_CLUSTER: `${API_BASE}/api/clusters`,
 }
 
 /**
