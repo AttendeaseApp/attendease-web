@@ -72,7 +72,12 @@ export default function RetrieveAllUsers() {
                          </div>
                          <div className="flex justify-end space-x-2">
                               <Button className="sm:w-autom">Manually Add Account</Button>
-                              <Button className="sm:w-auto" onClick={() => setOpenImportStudents(true)}>Import Student Accounts</Button>
+                              <Button
+                                   className="sm:w-auto"
+                                   onClick={() => setOpenImportStudents(true)}
+                              >
+                                   Import Student Accounts
+                              </Button>
                               <Button
                                    variant="outline"
                                    className="sm:w-auto"
@@ -125,7 +130,10 @@ export default function RetrieveAllUsers() {
                </div>
 
                <MoreSettingsDialog open={openMoreSettings} onOpenChange={setOpenMoreSettings} />
-               <ImportStudentsDialog open={openImportStudents} onOpenChange={setOpenImportStudents} />
+               <ImportStudentsDialog
+                    open={openImportStudents}
+                    onOpenChange={setOpenImportStudents}
+               />
           </ProtectedLayout>
      )
 }
