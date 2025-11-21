@@ -65,7 +65,7 @@ export function UpdateStudentAttendanceRecordDialog({
           <Dialog open={open} onOpenChange={onOpenChange}>
                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                         <DialogTitle>Update Attendance</DialogTitle>
+                         <DialogTitle>Edit Attendance</DialogTitle>
                          <DialogDescription>
                               Edit status for {attendee ? getFullName(attendee) : "Student"}.
                          </DialogDescription>

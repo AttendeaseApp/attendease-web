@@ -36,6 +36,7 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
+
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")

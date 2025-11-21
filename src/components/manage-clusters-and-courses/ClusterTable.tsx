@@ -42,7 +42,7 @@ export function ClusterTable({
                <TableHeader>
                     <TableRow>
                          <TableHead>CLUSTER</TableHead>
-                         <TableHead className="text-right">ACTIONS</TableHead>
+                         <TableHead className="text-right"></TableHead>
                     </TableRow>
                </TableHeader>
                <TableBody>
@@ -63,23 +63,13 @@ export function ClusterTable({
                               <TableRow key={cluster.clusterId}>
                                    <TableCell>{cluster.clusterName || " –"}</TableCell>
                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                             <DropdownMenuTrigger asChild>
-                                                  <Button variant="ghost" size="sm">
-                                                       <MoreHorizontal className="h-4 w-4" />
-                                                       <span className="sr-only">Open menu</span>
-                                                  </Button>
-                                             </DropdownMenuTrigger>
-                                             <DropdownMenuContent align="end">
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleDelete(cluster, e)}
-                                                  >
-                                                       <Trash className="mr-2 h-4 w-4" />
-                                                       Delete
-                                                  </DropdownMenuItem>
-                                                  <DropdownMenuSeparator />
-                                             </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <Button
+                                             variant="ghost"
+                                             size="sm"
+                                             onClick={(e) => handleDelete(cluster, e)}
+                                        >
+                                             Delete
+                                        </Button>
                                    </TableCell>
                               </TableRow>
                          ))
