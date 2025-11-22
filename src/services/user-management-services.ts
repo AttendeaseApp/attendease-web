@@ -12,15 +12,15 @@ export interface OsaAccountPayload {
 }
 
 export interface StudentAccountPayload {
-  firstName: string;
-  lastName: string;
-  studentNumber: string;
-  section: string;
-  yearLevel: string;
-  contactNumber: string;
-  email: string;
-  address: string;
-  password: string;
+     firstName: string
+     lastName: string
+     studentNumber: string
+     section: string
+     yearLevel: string
+     contactNumber: string
+     email: string
+     address: string
+     password: string
 }
 
 /**
@@ -87,28 +87,28 @@ export async function createOSAAccount(payload: OsaAccountPayload) {
  * Create a new Student account
  */
 export const createStudentAccount = async (payload: StudentAccountPayload) => {
-  try {
-    const token = localStorage.getItem("authToken");
-    if (!token) throw new Error("No auth token found");
+     try {
+          const token = localStorage.getItem("authToken")
+          if (!token) throw new Error("No auth token found")
 
-    const response = await fetch(`${API_BASE}/api/auth/student/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+          const response = await fetch(`${API_BASE}/api/auth/student/register`, {
+               method: "POST",
+               headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+               },
+               body: JSON.stringify(payload),
+          })
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Failed to create student account");
-    }
+          if (!response.ok) {
+               const errorText = await response.text()
+               throw new Error(errorText || "Failed to create student account")
+          }
 
-    const result = await response.text();
-    return result;
-  } catch (err) {
-    console.error("Error creating student:", err);
-    throw err;
-  }
+          const result = await response.text()
+          return result
+     } catch (err) {
+          console.error("Error creating student:", err)
+          throw err
+     }
 }

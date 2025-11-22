@@ -13,7 +13,12 @@ import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
 import ImportStudentsDialog from "@/components/manage-users/ImportStudentsDialog"
 import AddOSAAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
 import AddStudentAccountDialog from "@/components/manage-users/AddStudentAccountDialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+     DropdownMenu,
+     DropdownMenuContent,
+     DropdownMenuItem,
+     DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -82,8 +87,12 @@ export default function RetrieveAllUsers() {
                                    </DropdownMenuTrigger>
 
                                    <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => setOpenAddOSA(true)}>OSA Account</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => setOpenAddStudent(true)}>Student Account</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setOpenAddOSA(true)}>
+                                             OSA Account
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setOpenAddStudent(true)}>
+                                             Student Account
+                                        </DropdownMenuItem>
                                    </DropdownMenuContent>
                               </DropdownMenu>
 
