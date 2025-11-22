@@ -45,9 +45,7 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
                          <TableHead className="font-semibold text-gray-900">PRESENT</TableHead>
                          <TableHead className="font-semibold text-gray-900">ABSENTEES</TableHead>
                          <TableHead className="font-semibold text-gray-900">LATE</TableHead>
-                         <TableHead className="text-right font-semibold text-gray-900">
-                              Actions
-                         </TableHead>
+                         <TableHead className="text-right font-semibold text-gray-900"></TableHead>
                     </TableRow>
                </TableHeader>
                <TableBody>
@@ -85,25 +83,17 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
                                    <TableCell>{event.totalAbsent}</TableCell>
                                    <TableCell>{event.totalLate}</TableCell>
                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                             <DropdownMenuTrigger asChild>
-                                                  <Button variant="ghost" size="sm">
-                                                       <MoreHorizontal className="h-4 w-4" />
-                                                       <span className="sr-only">Open menu</span>
-                                                  </Button>
-                                             </DropdownMenuTrigger>
-                                             <DropdownMenuContent align="end">
-                                                  <DropdownMenuItem
-                                                       onClick={() =>
-                                                            router.push(
-                                                                 `manage-attendance/events/${event.eventId}/attendees`
-                                                            )
-                                                       }
-                                                  >
-                                                       View all records
-                                                  </DropdownMenuItem>
-                                             </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <Button
+                                             variant="ghost"
+                                             size="sm"
+                                             onClick={() =>
+                                                  router.push(
+                                                       `manage-attendance/events/${event.eventId}/attendees`
+                                                  )
+                                             }
+                                        >
+                                             View all records
+                                        </Button>
                                    </TableCell>
                               </TableRow>
                          ))

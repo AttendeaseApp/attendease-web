@@ -81,7 +81,7 @@ export function EventAttendeesTable({
                               <TableHead>COURSE</TableHead>
                               <TableHead>TIME IN</TableHead>
                               <TableHead>REASON</TableHead>
-                              <TableHead className="text-right">ACTIONS</TableHead>
+                              <TableHead className="text-right"></TableHead>
                          </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -129,23 +129,13 @@ export function EventAttendeesTable({
                                         <TableCell>{formatDate(attendee.timeIn)}</TableCell>
                                         <TableCell>{attendee.reason || "N/A"}</TableCell>
                                         <TableCell className="text-right">
-                                             <DropdownMenu>
-                                                  <DropdownMenuTrigger asChild>
-                                                       <Button variant="ghost" size="sm">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">
-                                                                 Open menu
-                                                            </span>
-                                                       </Button>
-                                                  </DropdownMenuTrigger>
-                                                  <DropdownMenuContent align="end">
-                                                       <DropdownMenuItem
-                                                            onClick={() => onOpenDialog(attendee)}
-                                                       >
-                                                            View and Update
-                                                       </DropdownMenuItem>
-                                                  </DropdownMenuContent>
-                                             </DropdownMenu>
+                                             <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  onClick={() => onOpenDialog(attendee)}
+                                             >
+                                                  Edit
+                                             </Button>
                                         </TableCell>
                                    </TableRow>
                               ))

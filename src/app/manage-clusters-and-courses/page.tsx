@@ -139,47 +139,63 @@ export default function ManageClustersPage() {
                          </div>
                     </div>
 
-                    <div>
-                         <div className="flex flex-col gap-4 md:flex-row md:items-center mb-4">
-                              <h2 className="text-lg font-semibold">Clusters List</h2>
-                              <Button variant="outline" size="sm" onClick={loadClusters}>
-                                   Refresh
-                              </Button>
+                    <div className="flex flex-row w-full h-full min-w-0 gap-12">
+                         <div className="w-full">
+                              <h2 className="text-lg font-semibold mb-4">CLUSTERS</h2>
+                              <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                                   <div className="relative flex-1">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                             placeholder="Search clusters..."
+                                             className="pl-8"
+                                             value={searchTerm}
+                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                   </div>
+                                   <Button variant="outline" size="sm" onClick={loadClusters}>
+                                        Refresh
+                                   </Button>
+                              </div>
+                              {error && (
+                                   <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
+                                        {error}
+                                   </div>
+                              )}
+                              <ClusterTable
+                                   clusters={clusters}
+                                   loading={loadingClusters}
+                                   onDeleteAction={handleDeleteCluster}
+                              />
                          </div>
-                         <ClusterTable
-                              clusters={clusters}
-                              loading={loadingClusters}
-                              onDeleteAction={handleDeleteCluster}
-                         />
-                    </div>
 
-                    {/*courses*/}
-                    <div>
-                         <h2 className="text-lg font-semibold mb-4">Courses</h2>
-                         <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                              <div className="relative flex-1">
-                                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                   <Input
-                                        placeholder="Search course..."
-                                        className="pl-8"
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                   />
+                         {/*courses*/}
+                         <div className="w-full">
+                              <h2 className="text-lg font-semibold mb-4">COURSES</h2>
+                              <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                                   <div className="relative flex-1">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                             placeholder="Search course..."
+                                             className="pl-8"
+                                             value={searchTerm}
+                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                   </div>
+                                   <Button variant="outline" size="sm" onClick={loadCourses}>
+                                        Refresh
+                                   </Button>
                               </div>
-                              <Button variant="outline" size="sm" onClick={loadCourses}>
-                                   Refresh
-                              </Button>
+                              {error && (
+                                   <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
+                                        {error}
+                                   </div>
+                              )}
+                              <ClusterAndCourseTable
+                                   courses={filteredCourses}
+                                   loading={loading}
+                                   onDelete={handleDelete}
+                              />
                          </div>
-                         {error && (
-                              <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
-                                   {error}
-                              </div>
-                         )}
-                         <ClusterAndCourseTable
-                              courses={filteredCourses}
-                              loading={loading}
-                              onDelete={handleDelete}
-                         />
                     </div>
 
                     {/*dialogs*/}
