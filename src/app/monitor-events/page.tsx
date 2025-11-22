@@ -8,8 +8,8 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { EventTable } from "@/components/monitor-events/EventTable"
 import { AttendeesCard } from "@/components/monitor-events/AttendeesCard"
 
-import { EventSession } from "@/interface/event-interface"
-import { EventAttendeesResponse } from "@/interface/event-monitoring-interface"
+import { EventSession } from "@/interface/event/event-interface"
+import { EventAttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 import { getAllEventsForMonitoring, getRegisteredAttendees } from "@/services/event-monitoring"
 
 /**

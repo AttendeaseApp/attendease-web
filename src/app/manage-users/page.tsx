@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ChevronDown, Search } from "lucide-react"
-import { UserStudentResponse } from "@/interface/user-interface"
+import { UserStudentResponse } from "@/interface/UserStudent"
 import { getAllUsers } from "@/services/user-management-services"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
+import ImportStudentsDialog from "@/components/manage-users/ImportStudentsDialog"
 import AddOSAAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/menu"
+import AddStudentAccountDialog from "@/components/manage-users/AddStudentAccountDialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -21,6 +23,7 @@ export default function RetrieveAllUsers() {
      const [selectedType, setSelectedType] = useState("all")
      const [error, setError] = useState<string | null>(null)
      const [openMoreSettings, setOpenMoreSettings] = useState(false)
+     const [openImportStudents, setOpenImportStudents] = useState(false)
      const [openAddOSA, setOpenAddOSA] = useState(false)
      const [openAddStudent, setOpenAddStudent] = useState(false)
 
@@ -73,18 +76,23 @@ export default function RetrieveAllUsers() {
                               <p className="text-muted-foreground mt-1">Manage all users here.</p>
                          </div>
                          <div className="flex justify-end space-x-2">
-                              <Menu>
-                                   <MenuTrigger asChild>
+                              <DropdownMenu>
+                                   <DropdownMenuTrigger asChild>
                                         <Button>Manually Add Account ▾</Button>
-                                   </MenuTrigger>
+                                   </DropdownMenuTrigger>
 
-                                   <MenuContent>
-                                        <MenuItem onClick={() => setOpenAddOSA(true)}>OSA Account</MenuItem>
-                                        <MenuItem onClick={() => setOpenAddStudent(true)}>Student Account</MenuItem>
-                                   </MenuContent>
-                              </Menu>
+                                   <DropdownMenuContent>
+                                        <DropdownMenuItem onClick={() => setOpenAddOSA(true)}>OSA Account</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setOpenAddStudent(true)}>Student Account</DropdownMenuItem>
+                                   </DropdownMenuContent>
+                              </DropdownMenu>
 
-                              <Button className="sm:w-auto">Import Student Accounts</Button>
+                              <Button
+                                   className="sm:w-auto"
+                                   onClick={() => setOpenImportStudents(true)}
+                              >
+                                   Import Student Accounts
+                              </Button>
                               <Button
                                    variant="outline"
                                    className="sm:w-auto"
@@ -137,7 +145,12 @@ export default function RetrieveAllUsers() {
                </div>
 
                <MoreSettingsDialog open={openMoreSettings} onOpenChange={setOpenMoreSettings} />
+               <ImportStudentsDialog
+                    open={openImportStudents}
+                    onOpenChange={setOpenImportStudents}
+               />
                <AddOSAAccountDialog open={openAddOSA} onOpenChange={setOpenAddOSA} />
+               <AddStudentAccountDialog open={openAddStudent} onOpenChange={setOpenAddStudent} />
           </ProtectedLayout>
      )
 }

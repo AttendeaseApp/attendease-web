@@ -1,4 +1,12 @@
-import { Calendar, Home, Users, User, Settings, LocationEditIcon, TicketCheck } from "lucide-react"
+import {
+     Calendar,
+     Users,
+     User,
+     LocationEditIcon,
+     TicketCheck,
+     Library,
+     GraduationCap,
+} from "lucide-react"
 import {
      Sidebar,
      SidebarContent,
@@ -10,43 +18,47 @@ import {
      SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-// menu items.
 const menu = [
-     {
-          title: "Dashboard",
-          url: "/dashboard",
-          icon: Home,
-     },
+     // {
+     //      title: "Dashboard",
+     //      url: "/dashboard",
+     //      icon: Home,
+     // },
      {
           title: "Monitor Events",
           url: "/monitor-events",
           icon: TicketCheck,
      },
      {
-          title: "Manage Users",
-          url: "/manage-users",
-          icon: Users,
+          title: "Attendance Records",
+          url: "/manage-attendance",
+          icon: Library,
      },
      {
-          title: "Manage Events",
+          title: "Events",
           url: "/manage-events",
           icon: Calendar,
      },
      {
-          title: "Manage Venues",
+          title: "Venues",
           url: "/manage-locations",
           icon: LocationEditIcon,
+     },
+     {
+          title: "Users",
+          url: "/manage-users",
+          icon: Users,
+     },
+     {
+          title: "Clusters & Courses",
+          url: "/manage-clusters-and-courses",
+          icon: GraduationCap,
      },
 ]
 
 const others = [
      {
-          title: "Settings",
-          url: "/settings",
-          icon: Settings,
-     },
-     {
-          title: "Account",
+          title: "My Profile",
           url: "/account",
           icon: User,
      },
