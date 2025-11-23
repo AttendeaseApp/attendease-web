@@ -27,6 +27,7 @@ import {
 import { createEvent } from "@/services/event-sessions"
 import { getAllLocations } from "@/services/locations-service"
 import { EventLocation } from "@/interface/location-interface"
+import CreateEventStatusDialog from "@/components/manage-events/CreateEventStatusDialog"
 
 interface CreateEventDialogProps {
      isOpen: boolean
@@ -56,6 +57,19 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [isSubmitting, setIsSubmitting] = useState(false)
      const [locations, setLocations] = useState<EventLocation[]>([])
      const [loadingLocations, setLoadingLocations] = useState(true)
+
+        
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
+     const [createMessage, setCreateMessage] = useState("")
+
+   
+     const showStatus = (status: "success" | "error", message: string) => {
+          setCreateStatus(status)
+          setCreateMessage(message)
+          setStatusDialogOpen(true)
+     }
+
 
      useEffect(() => {
           const loadLocations = async () => {
@@ -112,11 +126,16 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
-               onCreate()
-               onClose()
+      
+               showStatus("success","Succesfully created the event.")
+
+              
+
+               
           } catch (err) {
                console.error("Create failed:", err)
                setError(err instanceof Error ? err.message : "Failed to create event.")
+               showStatus("error","Failed to create the event")
           } finally {
                setIsSubmitting(false)
           }
@@ -192,6 +211,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      if (!isOpen) return null
 
      return (
+            <>
           <Dialog open={isOpen} onOpenChange={handleClose}>
                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
@@ -567,5 +587,20 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     </form>
                </DialogContent>
           </Dialog>
+
+                         <CreateEventStatusDialog
+                         open={statusDialogOpen}
+                         status={createStatus}
+                         message={createMessage}
+                         onClose={() => {
+                         setStatusDialogOpen(false)
+                         if (createStatus === "success") {
+                              onClose()
+                              onCreate()
+                         }
+                    }}
+               />
+          </>
+
      )
 }
