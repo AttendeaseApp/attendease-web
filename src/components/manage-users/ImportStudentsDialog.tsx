@@ -19,7 +19,6 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
      const [importStatus, setImportStatus] = useState<"success" | "error">("success")
      const [importMessage, setImportMessage] = useState("")
 
-
      const showStatus = (status: "success" | "error", message: string) => {
           setImportStatus(status)
           setImportMessage(message)
@@ -37,7 +36,10 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                showStatus("success", "CSV uploaded successfully.")
                onOpenChange(false)
           } catch (err) {
-               showStatus("error", "Failed to upload CSV. File contains a duplicate student. " + err)
+               showStatus(
+                    "error",
+                    "Failed to upload CSV. File contains a duplicate student. " + err
+               )
           } finally {
                setLoading(false)
           }
@@ -62,7 +64,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                                    </p>
                               )}
 
-                                   {/* cancl and upload button */}
+                              {/* cancl and upload button */}
                               <div className="flex items-center justify-end pt-2 gap-1">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
                                         Cancel
