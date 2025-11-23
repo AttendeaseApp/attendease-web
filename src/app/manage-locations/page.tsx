@@ -40,9 +40,18 @@ export default function ManageLocationsPage() {
           loadLocations()
      }, [])
 
-     const filteredEvents = locations.filter((location) =>
-          location.locationName.toLowerCase().includes(searchTerm.toLowerCase())
-     )
+     const filteredEvents = locations.filter((location) => {
+          const term = searchTerm.toLowerCase()
+
+          const fields = [
+               location.locationName,
+               location.locationType,
+               new Date(location.createdAt).toLocaleString(),
+               location.updatedAt ? new Date(location.updatedAt).toLocaleString() : "",
+          ]
+
+          return fields.some((value) => value.toLowerCase().includes(term))
+     })
 
      const handleDelete = async (location: EventLocation) => {
           try {
@@ -102,6 +111,7 @@ export default function ManageLocationsPage() {
                          open={openDialog}
                          onClose={() => setOpenModal(false)}
                          onSuccess={loadLocations}
+                         existingLocations={locations}
                     />
                </div>
           </ProtectedLayout>
