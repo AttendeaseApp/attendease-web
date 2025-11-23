@@ -49,15 +49,13 @@ export default function EventAttendeesPage() {
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
-                    <Button variant="outline" onClick={() => router.back()} className="w-fit">
+                    <Button variant="ghost" onClick={() => router.back()} className="w-fit">
                          ← Go Back
                     </Button>
                     <div className="space-y-2">
-                         <h1 className="text-2xl font-bold">
-                              Attendance Records for {event?.eventName || "Event"}
-                         </h1>
+                         <h1 className="text-2xl font-bold">{event?.eventName || "Event"}</h1>
                          {event && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                              <div className="flex flex-col">
                                    <div>
                                         <strong>Event Description:</strong>{" "}
                                         {event.description || "N/A"}

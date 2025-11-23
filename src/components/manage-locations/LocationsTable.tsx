@@ -45,18 +45,12 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
      }
      return (
           <Table>
-               <TableHeader className="bg-gray-100">
+               <TableHeader className="font-semibold text-gray-900">
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">
-                              LOCATION NAME
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">TYPE</TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              CREATED (DATE-TIME)
-                         </TableHead>
-                         <TableHead className="text-right font-semibold text-gray-900">
-                              ACTIONS
-                         </TableHead>
+                         <TableHead>LOCATION NAME</TableHead>
+                         <TableHead>TYPE</TableHead>
+                         <TableHead>CREATED (DATE-TIME)</TableHead>
+                         <TableHead></TableHead>
                     </TableRow>
                </TableHeader>
                <TableBody>
@@ -84,25 +78,13 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
                                    </TableCell>
 
                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                             <DropdownMenuTrigger asChild>
-                                                  <Button variant="ghost" size="sm">
-                                                       <MoreHorizontal className="h-4 w-4" />
-                                                       <span className="sr-only">Open menu</span>
-                                                  </Button>
-                                             </DropdownMenuTrigger>
-                                             <DropdownMenuContent align="end">
-                                                  <DropdownMenuItem
-                                                       onClick={(e) =>
-                                                            handleDelete(eventLocation, e)
-                                                       }
-                                                  >
-                                                       <Trash className="mr-2 h-4 w-4" />
-                                                       Delete
-                                                  </DropdownMenuItem>
-                                                  <DropdownMenuSeparator />
-                                             </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <Button
+                                             variant="ghost"
+                                             size="sm"
+                                             onClick={(e) => handleDelete(eventLocation, e)}
+                                        >
+                                             Delete
+                                        </Button>
                                    </TableCell>
                               </TableRow>
                          ))
