@@ -45,18 +45,19 @@ export default function RetrieveAllUsers() {
           const lowerSearch = searchTerm.toLowerCase()
 
           const filtered = users.filter((user) => {
-               const matchesSearch =
-                    user.firstName?.toLowerCase().includes(lowerSearch) ||
-                    user.lastName?.toLowerCase().includes(lowerSearch) ||
-                    user.email?.toLowerCase().includes(lowerSearch) ||
-                    user.course?.toLowerCase().includes(lowerSearch) ||
-                    user.studentNumber?.toLowerCase().includes(lowerSearch)
+               const fields = [
+                    user.firstName,
+                    user.lastName,
+                    user.userType,
+                    user.section,
+                    user.course,
+                    user.studentNumber,
+                    user.email,
+                    user.contactNumber,
+                    user.accountStatus,
+               ]
 
-               const matchesType =
-                    selectedType === "all" ||
-                    user.userType?.toLowerCase() === selectedType.toLowerCase()
-
-               return matchesSearch && matchesType
+               return fields.some((value) => value?.toString().toLowerCase().includes(lowerSearch))
           })
 
           setFilteredUsers(filtered)
