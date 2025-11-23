@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
+import ClusterCourseStatusDialog from "@/components/manage-clusters-and-courses/CreateClustercCoursesStatusDialog"
 
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
@@ -44,6 +45,18 @@ export default function ManageClustersPage() {
      const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false)
      const [clusters, setClusters] = useState<ClusterSession[]>([])
      const [loadingClusters, setLoadingClusters] = useState(true)
+
+     
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
+     const [createMessage, setCreateMessage] = useState("")
+
+     const showStatus = (status: "success" | "error", message: string) => {
+          setCreateStatus(status)
+          setCreateMessage(message)
+          setStatusDialogOpen(true)
+     }
+     
      const loadClusters = async () => {
           try {
                setLoadingClusters(true)
@@ -84,11 +97,13 @@ export default function ManageClustersPage() {
           setIsCreateClusterOpen(false)
           loadClusters()
           loadCourses()
+          showStatus("success", "Succesfully created Cluster.")
      }
      const handleCreateCourseOpen = () => setIsChooseClusterOpen(true)
      const handleCreateSuccess = () => {
           setIsChooseClusterOpen(false)
           loadCourses()
+         showStatus("success", "Succesfully created Course.")
      }
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
@@ -283,7 +298,15 @@ export default function ManageClustersPage() {
                               onCreate={handleCreateSuccess}
                          />
                     )}
+                    <ClusterCourseStatusDialog
+    open={statusDialogOpen}
+    status={createStatus}
+    message={createMessage}
+    onClose={() => setStatusDialogOpen(false)}
+/>
+
                </div>
           </ProtectedLayout>
+          
      )
 }
