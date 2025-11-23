@@ -53,9 +53,20 @@ export default function EventMonitoringPage() {
           loadEvents()
      }, [])
 
-     const filteredEvents = events.filter((event) =>
-          event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
-     )
+     const filteredEvents = events.filter((event) => {
+          const term = searchTerm.toLowerCase()
+
+          const fields = [
+               event.eventName,
+               event.eventLocation?.locationName,
+               new Date(event.timeInRegistrationStartDateTime).toLocaleString(),
+               new Date(event.startDateTime).toLocaleString(),
+               new Date(event.endDateTime).toLocaleString(),
+               event.eventStatus,
+          ]
+
+          return fields.some((value) => value?.toString().toLowerCase().includes(term))
+     })
 
      return (
           <ProtectedLayout>
