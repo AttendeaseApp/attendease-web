@@ -58,18 +58,15 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [locations, setLocations] = useState<EventLocation[]>([])
      const [loadingLocations, setLoadingLocations] = useState(true)
 
-        
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
 
-   
      const showStatus = (status: "success" | "error", message: string) => {
           setCreateStatus(status)
           setCreateMessage(message)
           setStatusDialogOpen(true)
      }
-
 
      useEffect(() => {
           const loadLocations = async () => {
@@ -126,16 +123,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
-      
-               showStatus("success","Succesfully created the event.")
 
-              
-
-               
+               showStatus("success", "Succesfully created the event.")
           } catch (err) {
                console.error("Create failed:", err)
                setError(err instanceof Error ? err.message : "Failed to create event.")
-               showStatus("error","Failed to create the event")
+               showStatus("error", "Failed to create the event")
           } finally {
                setIsSubmitting(false)
           }
@@ -211,388 +204,390 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      if (!isOpen) return null
 
      return (
-            <>
-          <Dialog open={isOpen} onOpenChange={handleClose}>
-               <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                         <DialogTitle>Create New Event</DialogTitle>
-                         <DialogDescription>
-                              Fill in the details to create a new event.
-                         </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                         <div className="space-y-2">
-                              <Label htmlFor="eventName">Event Name</Label>
-                              <Input
-                                   id="eventName"
-                                   value={formData.eventName}
-                                   onChange={(e) => handleInputChange("eventName", e.target.value)}
-                                   placeholder="Enter event name"
-                                   required
-                              />
-                         </div>
-
-                         <div className="space-y-2">
-                              <Label htmlFor="description">Description</Label>
-                              <Textarea
-                                   id="description"
-                                   value={formData.description}
-                                   onChange={(e) =>
-                                        handleInputChange("description", e.target.value)
-                                   }
-                                   placeholder="Enter description (optional)"
-                              />
-                         </div>
-
-                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              {/* Registration Start */}
+          <>
+               <Dialog open={isOpen} onOpenChange={handleClose}>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                         <DialogHeader>
+                              <DialogTitle>Create New Event</DialogTitle>
+                              <DialogDescription>
+                                   Fill in the details to create a new event.
+                              </DialogDescription>
+                         </DialogHeader>
+                         <form onSubmit={handleSubmit} className="space-y-4">
                               <div className="space-y-2">
-                                   <Label>Registration Start</Label>
-                                   <div className="flex flex-col gap-3">
-                                        {/* Date Picker */}
-                                        <Popover>
-                                             <PopoverTrigger asChild>
-                                                  <Button
-                                                       variant="outline"
-                                                       className="w-full justify-between font-normal"
-                                                       id="reg-date"
+                                   <Label htmlFor="eventName">Event Name</Label>
+                                   <Input
+                                        id="eventName"
+                                        value={formData.eventName}
+                                        onChange={(e) =>
+                                             handleInputChange("eventName", e.target.value)
+                                        }
+                                        placeholder="Enter event name"
+                                        required
+                                   />
+                              </div>
+
+                              <div className="space-y-2">
+                                   <Label htmlFor="description">Description</Label>
+                                   <Textarea
+                                        id="description"
+                                        value={formData.description}
+                                        onChange={(e) =>
+                                             handleInputChange("description", e.target.value)
+                                        }
+                                        placeholder="Enter description (optional)"
+                                   />
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                   {/* Registration Start */}
+                                   <div className="space-y-2">
+                                        <Label>Registration Start</Label>
+                                        <div className="flex flex-col gap-3">
+                                             {/* Date Picker */}
+                                             <Popover>
+                                                  <PopoverTrigger asChild>
+                                                       <Button
+                                                            variant="outline"
+                                                            className="w-full justify-between font-normal"
+                                                            id="reg-date"
+                                                       >
+                                                            {getDateDisplay(
+                                                                 formData.timeInRegistrationStartDateTime
+                                                            )}
+                                                            <ChevronDownIcon className="h-4 w-4" />
+                                                       </Button>
+                                                  </PopoverTrigger>
+                                                  <PopoverContent
+                                                       className="w-auto overflow-hidden p-0"
+                                                       align="start"
                                                   >
-                                                       {getDateDisplay(
+                                                       <Calendar
+                                                            mode="single"
+                                                            selected={
+                                                                 formData.timeInRegistrationStartDateTime
+                                                            }
+                                                            onSelect={(selectedDate) =>
+                                                                 handleDateSelect(
+                                                                      "timeInRegistrationStartDateTime",
+                                                                      selectedDate
+                                                                 )
+                                                            }
+                                                            initialFocus
+                                                       />
+                                                  </PopoverContent>
+                                             </Popover>
+                                             {/* 12-Hour Time Inputs */}
+                                             <div className="flex items-center gap-1">
+                                                  <Input
+                                                       type="number"
+                                                       min={1}
+                                                       max={12}
+                                                       value={getHour12(
                                                             formData.timeInRegistrationStartDateTime
                                                        )}
-                                                       <ChevronDownIcon className="h-4 w-4" />
-                                                  </Button>
-                                             </PopoverTrigger>
-                                             <PopoverContent
-                                                  className="w-auto overflow-hidden p-0"
-                                                  align="start"
-                                             >
-                                                  <Calendar
-                                                       mode="single"
-                                                       selected={
-                                                            formData.timeInRegistrationStartDateTime
-                                                       }
-                                                       onSelect={(selectedDate) =>
-                                                            handleDateSelect(
+                                                       onChange={(e) =>
+                                                            updateTime(
                                                                  "timeInRegistrationStartDateTime",
-                                                                 selectedDate
+                                                                 e.target.value,
+                                                                 undefined,
+                                                                 undefined
                                                             )
                                                        }
-                                                       initialFocus
+                                                       className="w-16 h-10"
+                                                       placeholder="1"
                                                   />
-                                             </PopoverContent>
-                                        </Popover>
-                                        {/* 12-Hour Time Inputs */}
-                                        <div className="flex items-center gap-1">
-                                             <Input
-                                                  type="number"
-                                                  min={1}
-                                                  max={12}
-                                                  value={getHour12(
-                                                       formData.timeInRegistrationStartDateTime
-                                                  )}
-                                                  onChange={(e) =>
-                                                       updateTime(
-                                                            "timeInRegistrationStartDateTime",
-                                                            e.target.value,
-                                                            undefined,
-                                                            undefined
-                                                       )
-                                                  }
-                                                  className="w-16 h-10"
-                                                  placeholder="1"
-                                             />
-                                             <span className="text-muted-foreground">:</span>
-                                             <Input
-                                                  type="number"
-                                                  min={0}
-                                                  max={59}
-                                                  step={1}
-                                                  value={getMinute(
-                                                       formData.timeInRegistrationStartDateTime
-                                                  )}
-                                                  onChange={(e) =>
-                                                       updateTime(
-                                                            "timeInRegistrationStartDateTime",
-                                                            undefined,
-                                                            e.target.value,
-                                                            undefined
-                                                       )
-                                                  }
-                                                  className="w-16 h-10"
-                                                  placeholder="00"
-                                             />
-                                             <Select
-                                                  value={getPeriod(
-                                                       formData.timeInRegistrationStartDateTime
-                                                  )}
-                                                  onValueChange={(value) =>
-                                                       updateTime(
-                                                            "timeInRegistrationStartDateTime",
-                                                            undefined,
-                                                            undefined,
-                                                            value as "AM" | "PM"
-                                                       )
-                                                  }
-                                             >
-                                                  <SelectTrigger className="w-20 h-10">
-                                                       <SelectValue placeholder="AM/PM" />
-                                                  </SelectTrigger>
-                                                  <SelectContent>
-                                                       <SelectItem value="AM">AM</SelectItem>
-                                                       <SelectItem value="PM">PM</SelectItem>
-                                                  </SelectContent>
-                                             </Select>
+                                                  <span className="text-muted-foreground">:</span>
+                                                  <Input
+                                                       type="number"
+                                                       min={0}
+                                                       max={59}
+                                                       step={1}
+                                                       value={getMinute(
+                                                            formData.timeInRegistrationStartDateTime
+                                                       )}
+                                                       onChange={(e) =>
+                                                            updateTime(
+                                                                 "timeInRegistrationStartDateTime",
+                                                                 undefined,
+                                                                 e.target.value,
+                                                                 undefined
+                                                            )
+                                                       }
+                                                       className="w-16 h-10"
+                                                       placeholder="00"
+                                                  />
+                                                  <Select
+                                                       value={getPeriod(
+                                                            formData.timeInRegistrationStartDateTime
+                                                       )}
+                                                       onValueChange={(value) =>
+                                                            updateTime(
+                                                                 "timeInRegistrationStartDateTime",
+                                                                 undefined,
+                                                                 undefined,
+                                                                 value as "AM" | "PM"
+                                                            )
+                                                       }
+                                                  >
+                                                       <SelectTrigger className="w-20 h-10">
+                                                            <SelectValue placeholder="AM/PM" />
+                                                       </SelectTrigger>
+                                                       <SelectContent>
+                                                            <SelectItem value="AM">AM</SelectItem>
+                                                            <SelectItem value="PM">PM</SelectItem>
+                                                       </SelectContent>
+                                                  </Select>
+                                             </div>
                                         </div>
                                    </div>
-                              </div>
 
-                              {/* Start Date & Time */}
-                              <div className="space-y-2">
-                                   <Label>Start Date & Time</Label>
-                                   <div className="flex flex-col gap-3">
-                                        {/* Date Picker */}
-                                        <Popover>
-                                             <PopoverTrigger asChild>
-                                                  <Button
-                                                       variant="outline"
-                                                       className="w-full justify-between font-normal"
-                                                       id="start-date"
+                                   {/* Start Date & Time */}
+                                   <div className="space-y-2">
+                                        <Label>Start Date & Time</Label>
+                                        <div className="flex flex-col gap-3">
+                                             {/* Date Picker */}
+                                             <Popover>
+                                                  <PopoverTrigger asChild>
+                                                       <Button
+                                                            variant="outline"
+                                                            className="w-full justify-between font-normal"
+                                                            id="start-date"
+                                                       >
+                                                            {getDateDisplay(formData.startDateTime)}
+                                                            <ChevronDownIcon className="h-4 w-4" />
+                                                       </Button>
+                                                  </PopoverTrigger>
+                                                  <PopoverContent
+                                                       className="w-auto overflow-hidden p-0"
+                                                       align="start"
                                                   >
-                                                       {getDateDisplay(formData.startDateTime)}
-                                                       <ChevronDownIcon className="h-4 w-4" />
-                                                  </Button>
-                                             </PopoverTrigger>
-                                             <PopoverContent
-                                                  className="w-auto overflow-hidden p-0"
-                                                  align="start"
-                                             >
-                                                  <Calendar
-                                                       mode="single"
-                                                       selected={formData.startDateTime}
-                                                       onSelect={(selectedDate) =>
-                                                            handleDateSelect(
+                                                       <Calendar
+                                                            mode="single"
+                                                            selected={formData.startDateTime}
+                                                            onSelect={(selectedDate) =>
+                                                                 handleDateSelect(
+                                                                      "startDateTime",
+                                                                      selectedDate
+                                                                 )
+                                                            }
+                                                            initialFocus
+                                                       />
+                                                  </PopoverContent>
+                                             </Popover>
+                                             {/* 12-Hour Time Inputs */}
+                                             <div className="flex items-center gap-1">
+                                                  <Input
+                                                       type="number"
+                                                       min={1}
+                                                       max={12}
+                                                       value={getHour12(formData.startDateTime)}
+                                                       onChange={(e) =>
+                                                            updateTime(
                                                                  "startDateTime",
-                                                                 selectedDate
+                                                                 e.target.value,
+                                                                 undefined,
+                                                                 undefined
                                                             )
                                                        }
-                                                       initialFocus
+                                                       className="w-16 h-10"
+                                                       placeholder="1"
                                                   />
-                                             </PopoverContent>
-                                        </Popover>
-                                        {/* 12-Hour Time Inputs */}
-                                        <div className="flex items-center gap-1">
-                                             <Input
-                                                  type="number"
-                                                  min={1}
-                                                  max={12}
-                                                  value={getHour12(formData.startDateTime)}
-                                                  onChange={(e) =>
-                                                       updateTime(
-                                                            "startDateTime",
-                                                            e.target.value,
-                                                            undefined,
-                                                            undefined
-                                                       )
-                                                  }
-                                                  className="w-16 h-10"
-                                                  placeholder="1"
-                                             />
-                                             <span className="text-muted-foreground">:</span>
-                                             <Input
-                                                  type="number"
-                                                  min={0}
-                                                  max={59}
-                                                  step={1}
-                                                  value={getMinute(formData.startDateTime)}
-                                                  onChange={(e) =>
-                                                       updateTime(
-                                                            "startDateTime",
-                                                            undefined,
-                                                            e.target.value,
-                                                            undefined
-                                                       )
-                                                  }
-                                                  className="w-16 h-10"
-                                                  placeholder="00"
-                                             />
-                                             <Select
-                                                  value={getPeriod(formData.startDateTime)}
-                                                  onValueChange={(value) =>
-                                                       updateTime(
-                                                            "startDateTime",
-                                                            undefined,
-                                                            undefined,
-                                                            value as "AM" | "PM"
-                                                       )
-                                                  }
-                                             >
-                                                  <SelectTrigger className="w-20 h-10">
-                                                       <SelectValue placeholder="AM/PM" />
-                                                  </SelectTrigger>
-                                                  <SelectContent>
-                                                       <SelectItem value="AM">AM</SelectItem>
-                                                       <SelectItem value="PM">PM</SelectItem>
-                                                  </SelectContent>
-                                             </Select>
-                                        </div>
-                                   </div>
-                              </div>
-
-                              {/* End Date & Time */}
-                              <div className="space-y-2">
-                                   <Label>End Date & Time</Label>
-                                   <div className="flex flex-col gap-3">
-                                        {/* Date Picker */}
-                                        <Popover>
-                                             <PopoverTrigger asChild>
-                                                  <Button
-                                                       variant="outline"
-                                                       className="w-full justify-between font-normal"
-                                                       id="end-date"
+                                                  <span className="text-muted-foreground">:</span>
+                                                  <Input
+                                                       type="number"
+                                                       min={0}
+                                                       max={59}
+                                                       step={1}
+                                                       value={getMinute(formData.startDateTime)}
+                                                       onChange={(e) =>
+                                                            updateTime(
+                                                                 "startDateTime",
+                                                                 undefined,
+                                                                 e.target.value,
+                                                                 undefined
+                                                            )
+                                                       }
+                                                       className="w-16 h-10"
+                                                       placeholder="00"
+                                                  />
+                                                  <Select
+                                                       value={getPeriod(formData.startDateTime)}
+                                                       onValueChange={(value) =>
+                                                            updateTime(
+                                                                 "startDateTime",
+                                                                 undefined,
+                                                                 undefined,
+                                                                 value as "AM" | "PM"
+                                                            )
+                                                       }
                                                   >
-                                                       {getDateDisplay(formData.endDateTime)}
-                                                       <ChevronDownIcon className="h-4 w-4" />
-                                                  </Button>
-                                             </PopoverTrigger>
-                                             <PopoverContent
-                                                  className="w-auto overflow-hidden p-0"
-                                                  align="start"
-                                             >
-                                                  <Calendar
-                                                       mode="single"
-                                                       selected={formData.endDateTime}
-                                                       onSelect={(selectedDate) =>
-                                                            handleDateSelect(
+                                                       <SelectTrigger className="w-20 h-10">
+                                                            <SelectValue placeholder="AM/PM" />
+                                                       </SelectTrigger>
+                                                       <SelectContent>
+                                                            <SelectItem value="AM">AM</SelectItem>
+                                                            <SelectItem value="PM">PM</SelectItem>
+                                                       </SelectContent>
+                                                  </Select>
+                                             </div>
+                                        </div>
+                                   </div>
+
+                                   {/* End Date & Time */}
+                                   <div className="space-y-2">
+                                        <Label>End Date & Time</Label>
+                                        <div className="flex flex-col gap-3">
+                                             {/* Date Picker */}
+                                             <Popover>
+                                                  <PopoverTrigger asChild>
+                                                       <Button
+                                                            variant="outline"
+                                                            className="w-full justify-between font-normal"
+                                                            id="end-date"
+                                                       >
+                                                            {getDateDisplay(formData.endDateTime)}
+                                                            <ChevronDownIcon className="h-4 w-4" />
+                                                       </Button>
+                                                  </PopoverTrigger>
+                                                  <PopoverContent
+                                                       className="w-auto overflow-hidden p-0"
+                                                       align="start"
+                                                  >
+                                                       <Calendar
+                                                            mode="single"
+                                                            selected={formData.endDateTime}
+                                                            onSelect={(selectedDate) =>
+                                                                 handleDateSelect(
+                                                                      "endDateTime",
+                                                                      selectedDate
+                                                                 )
+                                                            }
+                                                            initialFocus
+                                                       />
+                                                  </PopoverContent>
+                                             </Popover>
+                                             {/* 12-Hour Time Inputs */}
+                                             <div className="flex items-center gap-1">
+                                                  <Input
+                                                       type="number"
+                                                       min={1}
+                                                       max={12}
+                                                       value={getHour12(formData.endDateTime)}
+                                                       onChange={(e) =>
+                                                            updateTime(
                                                                  "endDateTime",
-                                                                 selectedDate
+                                                                 e.target.value,
+                                                                 undefined,
+                                                                 undefined
                                                             )
                                                        }
-                                                       initialFocus
+                                                       className="w-16 h-10"
+                                                       placeholder="1"
                                                   />
-                                             </PopoverContent>
-                                        </Popover>
-                                        {/* 12-Hour Time Inputs */}
-                                        <div className="flex items-center gap-1">
-                                             <Input
-                                                  type="number"
-                                                  min={1}
-                                                  max={12}
-                                                  value={getHour12(formData.endDateTime)}
-                                                  onChange={(e) =>
-                                                       updateTime(
-                                                            "endDateTime",
-                                                            e.target.value,
-                                                            undefined,
-                                                            undefined
-                                                       )
-                                                  }
-                                                  className="w-16 h-10"
-                                                  placeholder="1"
-                                             />
-                                             <span className="text-muted-foreground">:</span>
-                                             <Input
-                                                  type="number"
-                                                  min={0}
-                                                  max={59}
-                                                  step={1}
-                                                  value={getMinute(formData.endDateTime)}
-                                                  onChange={(e) =>
-                                                       updateTime(
-                                                            "endDateTime",
-                                                            undefined,
-                                                            e.target.value,
-                                                            undefined
-                                                       )
-                                                  }
-                                                  className="w-16 h-10"
-                                                  placeholder="00"
-                                             />
-                                             <Select
-                                                  value={getPeriod(formData.endDateTime)}
-                                                  onValueChange={(value) =>
-                                                       updateTime(
-                                                            "endDateTime",
-                                                            undefined,
-                                                            undefined,
-                                                            value as "AM" | "PM"
-                                                       )
-                                                  }
-                                             >
-                                                  <SelectTrigger className="w-20 h-10">
-                                                       <SelectValue placeholder="AM/PM" />
-                                                  </SelectTrigger>
-                                                  <SelectContent>
-                                                       <SelectItem value="AM">AM</SelectItem>
-                                                       <SelectItem value="PM">PM</SelectItem>
-                                                  </SelectContent>
-                                             </Select>
+                                                  <span className="text-muted-foreground">:</span>
+                                                  <Input
+                                                       type="number"
+                                                       min={0}
+                                                       max={59}
+                                                       step={1}
+                                                       value={getMinute(formData.endDateTime)}
+                                                       onChange={(e) =>
+                                                            updateTime(
+                                                                 "endDateTime",
+                                                                 undefined,
+                                                                 e.target.value,
+                                                                 undefined
+                                                            )
+                                                       }
+                                                       className="w-16 h-10"
+                                                       placeholder="00"
+                                                  />
+                                                  <Select
+                                                       value={getPeriod(formData.endDateTime)}
+                                                       onValueChange={(value) =>
+                                                            updateTime(
+                                                                 "endDateTime",
+                                                                 undefined,
+                                                                 undefined,
+                                                                 value as "AM" | "PM"
+                                                            )
+                                                       }
+                                                  >
+                                                       <SelectTrigger className="w-20 h-10">
+                                                            <SelectValue placeholder="AM/PM" />
+                                                       </SelectTrigger>
+                                                       <SelectContent>
+                                                            <SelectItem value="AM">AM</SelectItem>
+                                                            <SelectItem value="PM">PM</SelectItem>
+                                                       </SelectContent>
+                                                  </Select>
+                                             </div>
                                         </div>
                                    </div>
                               </div>
-                         </div>
 
-                         <div className="space-y-2">
-                              <Label htmlFor="eventLocationId">Location</Label>
-                              <Select
-                                   value={formData.eventLocationId}
-                                   onValueChange={(value) =>
-                                        handleInputChange("eventLocationId", value)
-                                   }
-                                   disabled={loadingLocations}
-                              >
-                                   <SelectTrigger>
-                                        <SelectValue
-                                             placeholder={
-                                                  loadingLocations
-                                                       ? "Loading locations..."
-                                                       : "Select a location"
-                                             }
-                                        />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                        {locations.map((loc) => (
-                                             <SelectItem
-                                                  key={loc.locationId}
-                                                  value={loc.locationId}
-                                             >
-                                                  {loc.locationName}
-                                             </SelectItem>
-                                        ))}
-                                   </SelectContent>
-                              </Select>
-                         </div>
-
-                         {error && (
-                              <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
-                                   {error}
+                              <div className="space-y-2">
+                                   <Label htmlFor="eventLocationId">Location</Label>
+                                   <Select
+                                        value={formData.eventLocationId}
+                                        onValueChange={(value) =>
+                                             handleInputChange("eventLocationId", value)
+                                        }
+                                        disabled={loadingLocations}
+                                   >
+                                        <SelectTrigger>
+                                             <SelectValue
+                                                  placeholder={
+                                                       loadingLocations
+                                                            ? "Loading locations..."
+                                                            : "Select a location"
+                                                  }
+                                             />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             {locations.map((loc) => (
+                                                  <SelectItem
+                                                       key={loc.locationId}
+                                                       value={loc.locationId}
+                                                  >
+                                                       {loc.locationName}
+                                                  </SelectItem>
+                                             ))}
+                                        </SelectContent>
+                                   </Select>
                               </div>
-                         )}
 
-                         <DialogFooter className="flex justify-end space-x-2 pt-4">
-                              <Button
-                                   type="button"
-                                   variant="outline"
-                                   onClick={handleClose}
-                                   disabled={isSubmitting}
-                              >
-                                   <X className="mr-2 h-4 w-4" />
-                                   Cancel
-                              </Button>
-                              <Button type="submit" disabled={isSubmitting}>
-                                   <Plus className="mr-2 h-4 w-4" />
-                                   {isSubmitting ? "Creating..." : "Create Event"}
-                              </Button>
-                         </DialogFooter>
-                    </form>
-               </DialogContent>
-          </Dialog>
+                              {error && (
+                                   <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
+                                        {error}
+                                   </div>
+                              )}
 
-                         <CreateEventStatusDialog
-                         open={statusDialogOpen}
-                         status={createStatus}
-                         message={createMessage}
-                         onClose={() => {
+                              <DialogFooter className="flex justify-end space-x-2 pt-4">
+                                   <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleClose}
+                                        disabled={isSubmitting}
+                                   >
+                                        <X className="mr-2 h-4 w-4" />
+                                        Cancel
+                                   </Button>
+                                   <Button type="submit" disabled={isSubmitting}>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        {isSubmitting ? "Creating..." : "Create Event"}
+                                   </Button>
+                              </DialogFooter>
+                         </form>
+                    </DialogContent>
+               </Dialog>
+
+               <CreateEventStatusDialog
+                    open={statusDialogOpen}
+                    status={createStatus}
+                    message={createMessage}
+                    onClose={() => {
                          setStatusDialogOpen(false)
                          if (createStatus === "success") {
                               onClose()
@@ -601,6 +596,5 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     }}
                />
           </>
-
      )
 }
