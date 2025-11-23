@@ -31,7 +31,8 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
 
           try {
                setLoading(true)
-               await uploadStudentCSV(selectedFile)
+               const result = await uploadStudentCSV(selectedFile)
+               setSelectedFile(result)
 
                showStatus("success", "CSV uploaded successfully.")
                onOpenChange(false)
@@ -60,7 +61,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                                         <span className="font-medium">{selectedFile.name}</span>
                                    </p>
                               )}
-                              
+
                                    {/* cancl and upload button */}
                               <div className="flex items-center justify-end pt-2 gap-1">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
