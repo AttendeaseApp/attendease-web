@@ -47,7 +47,6 @@ export default function ManageLocationsPage() {
                location.locationName,
                location.locationType,
                new Date(location.createdAt).toLocaleString(),
-               location.updatedAt ? new Date(location.updatedAt).toLocaleString() : "",
           ]
 
           return fields.some((value) => value.toLowerCase().includes(term))
