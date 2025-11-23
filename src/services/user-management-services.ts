@@ -1,15 +1,7 @@
 import { authFetch } from "./auth-fetch"
 import { API_BASE, OSA_PROFILE_ENDPOINT, USER_MANAGEMENT_API_ENDPOINTS } from "../constants/api"
 import { UserStudentResponse } from "@/interface/UserStudent"
-
-export interface OsaAccountPayload {
-     firstName: string
-     lastName: string
-     email: string
-     password: string
-     contact?: string
-     userType: "OSA"
-}
+import { OsaAccountPayload } from "@/interface/users/OSAInterface"
 
 export interface StudentAccountPayload {
      firstName: string
@@ -60,27 +52,25 @@ export const getOSAProfile = async (): Promise<UserStudentResponse> => {
  * Create a new OSA account
  */
 export async function createOSAAccount(payload: OsaAccountPayload) {
-     const token = localStorage.getItem("authToken")
-     if (!token) throw new Error("Authentication token missing")
+     try {
+          const res = await authFetch(USER_MANAGEMENT_API_ENDPOINTS.ADD_OSA_ACCOUNT, {
+               method: "POST",
+               body: JSON.stringify(payload),
+          })
 
-     const res = await fetch(`${API_BASE}/api/auth/osa/register`, {
-          method: "POST",
-          headers: {
-               "Content-Type": "application/json",
-               Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-     })
+          if (!res.ok) {
+               const text = await res.text()
+               throw new Error(text || "Failed to create OSA account")
+          }
 
-     if (!res.ok) {
-          const text = await res.text()
-          throw new Error(text || "Failed to create OSA account")
+          const contentType = res.headers.get("content-type")
+          return contentType && contentType.includes("application/json")
+               ? await res.json()
+               : await res.text()
+     } catch (err) {
+          console.error("Error creating OSA account:", err)
+          throw err
      }
-
-     const contentType = res.headers.get("content-type")
-     return contentType && contentType.includes("application/json")
-          ? await res.json()
-          : await res.text()
 }
 
 /**
@@ -88,25 +78,20 @@ export async function createOSAAccount(payload: OsaAccountPayload) {
  */
 export const createStudentAccount = async (payload: StudentAccountPayload) => {
      try {
-          const token = localStorage.getItem("authToken")
-          if (!token) throw new Error("No auth token found")
-
-          const response = await fetch(`${API_BASE}/api/auth/student/register`, {
+          const res = await authFetch(USER_MANAGEMENT_API_ENDPOINTS.ADD_STUDENT_ACCOUNT, {
                method: "POST",
-               headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-               },
                body: JSON.stringify(payload),
           })
 
-          if (!response.ok) {
-               const errorText = await response.text()
+          if (!res.ok) {
+               const errorText = await res.text()
                throw new Error(errorText || "Failed to create student account")
           }
 
-          const result = await response.text()
-          return result
+          const contentType = res.headers.get("content-type")
+          return contentType && contentType.includes("application/json")
+               ? await res.json()
+               : await res.text()
      } catch (err) {
           console.error("Error creating student:", err)
           throw err

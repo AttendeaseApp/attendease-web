@@ -32,59 +32,6 @@ export default function AddStudentAccountDialog({
      const [loading, setLoading] = useState(false)
      const [error, setError] = useState("")
 
-     const sections = [
-          "IT101",
-          "IT201",
-          "IT301",
-          "IT401",
-          "IT501",
-          "IT601",
-          "IT701",
-          "IT801",
-          "ECE101",
-          "ECE201",
-          "ECE301",
-          "ECE401",
-          "ECE501",
-          "ECE601",
-          "ECE701",
-          "ECE801",
-          "THM101",
-          "THM201",
-          "THM301",
-          "THM401",
-          "THM501",
-          "THM601",
-          "THM701",
-          "THM801",
-          "BA101",
-          "BA201",
-          "BA301",
-          "BA401",
-          "BA501",
-          "BA601",
-          "BA701",
-          "BA801",
-          "BSA101",
-          "BSA201",
-          "BSA301",
-          "BSA401",
-          "BSA501",
-          "BSA601",
-          "BSA701",
-          "BSA801",
-          "BIT101",
-          "BIT201",
-          "BIT301",
-          "BIT401",
-          "BIT501",
-          "BIT601",
-          "BIT701",
-          "BIT801",
-     ]
-
-     const yearLevels = ["1st Year", "2nd Year", "3rd Year", "4th Year"]
-
      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const { name, value } = e.target
           setForm((prev) => ({ ...prev, [name]: value }))
@@ -142,7 +89,7 @@ export default function AddStudentAccountDialog({
 
      return (
           <Dialog open={open} onOpenChange={onOpenChange}>
-               <DialogContent className="max-w-4xl p-8">
+               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
                     <DialogHeader>
                          <DialogTitle className="text-2xl">
                               Create a new Student account
@@ -185,8 +132,8 @@ export default function AddStudentAccountDialog({
                               />
                          </div>
 
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
+                         {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               <div>
                                    <Label>Section</Label>
                                    <select
                                         name="section"
@@ -204,7 +151,7 @@ export default function AddStudentAccountDialog({
                                              <option key={s} value={s}>
                                                   {s}
                                              </option>
-                                        ))}
+                                        ))} 
                                    </select>
                               </div>
 
@@ -229,7 +176,7 @@ export default function AddStudentAccountDialog({
                                         ))}
                                    </select>
                               </div>
-                         </div>
+                         </div> */}
 
                          <div>
                               <Label>Contact Number</Label>
@@ -289,6 +236,27 @@ export default function AddStudentAccountDialog({
                          {error && <p className="text-red-500">{error}</p>}
 
                          <div className="flex justify-end">
+                              <Button
+                                   variant="outline"
+                                   onClick={() => {
+                                        setForm({
+                                             firstName: "",
+                                             lastName: "",
+                                             studentNumber: "",
+                                             section: "",
+                                             yearLevel: "",
+                                             contactNumber: "",
+                                             email: "",
+                                             address: "",
+                                             password: "",
+                                             confirmPassword: "",
+                                        })
+                                        onOpenChange(false)
+                                   }}
+                              >
+                                   Cancel
+                              </Button>
+
                               <Button onClick={handleSubmit} disabled={loading}>
                                    {loading ? "Registering..." : "Register"}
                               </Button>

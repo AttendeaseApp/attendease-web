@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
-import { createOSAAccount, OsaAccountPayload } from "@/services/user-management-services"
+import { createOSAAccount } from "@/services/user-management-services"
+import { OsaAccountPayload } from "@/interface/users/OSAInterface"
 
 interface AddAccountDialogProps {
      open: boolean
@@ -14,14 +15,14 @@ interface AddAccountDialogProps {
 
 export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialogProps) {
      const [form, setForm] = useState<
-          OsaAccountPayload & { confirmPassword: string; contact?: string }
+          OsaAccountPayload & { confirmPassword: string; contactNumber?: string }
      >({
           firstName: "",
           lastName: "",
           email: "",
           password: "",
           confirmPassword: "",
-          contact: "",
+          contactNumber: "",
           userType: "OSA",
      })
 
@@ -43,7 +44,7 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
 
           setLoading(true)
           try {
-               const { confirmPassword, contact, ...payload } = form
+               const { confirmPassword, ...payload } = form
                await createOSAAccount(payload)
 
                console.log("Account created")
@@ -54,7 +55,7 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
                     email: "",
                     password: "",
                     confirmPassword: "",
-                    contact: "",
+                    contactNumber: "",
                     userType: "OSA",
                })
                onOpenChange(false)
@@ -136,9 +137,11 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
                          <div>
                               <Label>Contact No.</Label>
                               <Input
-                                   name="contact"
+                                   name="contactNumber"
+                                   type="text"
+                                   inputMode="numeric"
                                    placeholder="Contact No."
-                                   value={form.contact}
+                                   value={form.contactNumber}
                                    onChange={handleChange}
                               />
                          </div>
@@ -146,6 +149,24 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
                          {error && <p className="text-red-500">{error}</p>}
 
                          <div className="flex justify-end">
+                              <Button
+                                   variant="outline"
+                                   onClick={() => {
+                                        setForm({
+                                             firstName: "",
+                                             lastName: "",
+                                             email: "",
+                                             password: "",
+                                             confirmPassword: "",
+                                             contactNumber: "",
+                                             userType: "OSA",
+                                        })
+                                        onOpenChange(false)
+                                   }}
+                              >
+                                   Cancel
+                              </Button>
+
                               <Button onClick={handleSubmit} disabled={loading}>
                                    {loading ? "Registering..." : "Register"}
                               </Button>

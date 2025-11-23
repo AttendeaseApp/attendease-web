@@ -43,8 +43,8 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
      RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
      IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
      RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
-     ADD_OSA: `${API_BASE}/api/auth/osa/register`,
-     ADD_STUDENT: `${API_BASE}/api/auth/student/register`,
+     ADD_OSA_ACCOUNT: `${API_BASE}/api/auth/osa/register`,
+     ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {
