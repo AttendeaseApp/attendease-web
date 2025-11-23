@@ -12,9 +12,22 @@ export default function AttendanceRecordsManagementPage() {
      const { data: attendanceRecords, loading, error, refetch: loadEvents } = useFinalizedEvents()
      const [searchTerm, setSearchTerm] = useState("")
 
-     const filteredAttendanceRecords = (attendanceRecords ?? []).filter((event) =>
-          event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
-     )
+     const filteredAttendanceRecords = (attendanceRecords ?? []).filter((event) => {
+          const term = searchTerm.toLowerCase()
+
+          const fields = [
+               event.eventName,
+               event.locationName,
+               new Date(event.timeInRegistrationStartDateTime).toLocaleString(),
+               new Date(event.startDateTime).toLocaleString(),
+               new Date(event.endDateTime).toLocaleString(),
+               event.totalPresent?.toString(),
+               event.totalAbsent?.toString(),
+               event.totalLate?.toString(),
+          ]
+
+          return fields.some((value) => value?.toString().toLowerCase().includes(term))
+     })
 
      return (
           <ProtectedLayout>
