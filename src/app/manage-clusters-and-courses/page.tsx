@@ -37,7 +37,8 @@ export default function ManageClustersPage() {
      const [courses, setCourses] = useState<CourseSession[]>([])
      const [loading, setLoading] = useState(true)
      const [error, setError] = useState<string | null>(null)
-     const [searchTerm, setSearchTerm] = useState("")
+     const [clusterSearchTerm, setClusterSearchTerm] = useState("")
+     const [courseSearchTerm, setCourseSearchTerm] = useState("")
      const [selectedCluster, setSelectedCluster] = useState<ClusterSession | null>(null)
      const [isCreateClusterOpen, setIsCreateClusterOpen] = useState(false)
      const [isChooseClusterOpen, setIsChooseClusterOpen] = useState(false)
@@ -74,9 +75,16 @@ export default function ManageClustersPage() {
      useEffect(() => {
           loadCourses()
      }, [])
-     const filteredCourses = courses.filter((course) =>
-          course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
+     const filteredClusters = clusters.filter((cluster) =>
+          cluster.clusterName.toLowerCase().includes(clusterSearchTerm.toLowerCase())
      )
+     const filteredCourses = courses.filter((course) => {
+          const clusterName = course.cluster?.clusterName ?? ""
+          return (
+               course.courseName.toLowerCase().includes(courseSearchTerm.toLowerCase()) ||
+               clusterName.toLowerCase().includes(courseSearchTerm.toLowerCase())
+          )
+     })
 
      const handleCreateClusterOpen = () => setIsCreateClusterOpen(true)
      const handleCreateClusterClose = () => setIsCreateClusterOpen(false)
@@ -148,8 +156,8 @@ export default function ManageClustersPage() {
                                         <Input
                                              placeholder="Search clusters..."
                                              className="pl-8"
-                                             value={searchTerm}
-                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                             value={clusterSearchTerm}
+                                             onChange={(e) => setClusterSearchTerm(e.target.value)}
                                         />
                                    </div>
                                    <Button variant="outline" size="sm" onClick={loadClusters}>
@@ -162,7 +170,7 @@ export default function ManageClustersPage() {
                                    </div>
                               )}
                               <ClusterTable
-                                   clusters={clusters}
+                                   clusters={filteredClusters}
                                    loading={loadingClusters}
                                    onDeleteAction={handleDeleteCluster}
                               />
@@ -177,8 +185,8 @@ export default function ManageClustersPage() {
                                         <Input
                                              placeholder="Search course..."
                                              className="pl-8"
-                                             value={searchTerm}
-                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                             value={courseSearchTerm}
+                                             onChange={(e) => setCourseSearchTerm(e.target.value)}
                                         />
                                    </div>
                                    <Button variant="outline" size="sm" onClick={loadCourses}>
@@ -203,6 +211,7 @@ export default function ManageClustersPage() {
                          isOpen={isCreateClusterOpen}
                          onClose={handleCreateClusterClose}
                          onCreate={handleCreateClusterSuccess}
+                         clusters={clusters}
                     />
                     <Dialog open={isChooseClusterOpen} onOpenChange={setIsChooseClusterOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -281,6 +290,7 @@ export default function ManageClustersPage() {
                               isOpen={isCreateCourseOpen}
                               onClose={() => setIsCreateCourseOpen(false)}
                               onCreate={handleCreateSuccess}
+                              courses={courses}
                          />
                     )}
                </div>
