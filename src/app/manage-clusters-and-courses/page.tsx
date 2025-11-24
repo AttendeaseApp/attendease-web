@@ -11,6 +11,7 @@ import { ClusterTable } from "@/components/manage-clusters-and-courses/ClusterTa
 import { CreateClusterDialog } from "@/components/manage-clusters-and-courses/CreateClusterDialog"
 import { CreateCourseDialog } from "@/components/manage-clusters-and-courses/CreateCourseDialog"
 import { getAllClusters } from "@/services/cluster-and-course-sessions"
+import ClusterCourseStatusDialog from "@/components/manage-clusters-and-courses/CreateClustercCoursesStatusDialog"
 import {
      Dialog,
      DialogContent,
@@ -28,7 +29,7 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
-import ClusterCourseStatusDialog from "@/components/manage-clusters-and-courses/CreateClustercCoursesStatusDialog"
+
 
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
@@ -218,6 +219,7 @@ export default function ManageClustersPage() {
                          isOpen={isCreateClusterOpen}
                          onClose={handleCreateClusterClose}
                          onCreate={handleCreateClusterSuccess}
+                         onError={(message) => showStatus("error",message)}
                     />
                     <Dialog open={isChooseClusterOpen} onOpenChange={setIsChooseClusterOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -296,6 +298,7 @@ export default function ManageClustersPage() {
                               isOpen={isCreateCourseOpen}
                               onClose={() => setIsCreateCourseOpen(false)}
                               onCreate={handleCreateSuccess}
+                              onError={(message) => showStatus("error",message)}
                          />
                     )}
                     <ClusterCourseStatusDialog
