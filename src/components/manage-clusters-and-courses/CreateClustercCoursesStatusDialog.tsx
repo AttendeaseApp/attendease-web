@@ -10,7 +10,9 @@ interface CreateClustercCoursesStatusDialogProps {
      onClose: () => void
 }
 
-export default function CreateClustercCoursesStatusDialog(props: CreateClustercCoursesStatusDialogProps) {
+export default function CreateClustercCoursesStatusDialog(
+     props: CreateClustercCoursesStatusDialogProps
+) {
      const { open, status, message, onClose } = props
 
      const isSuccess = status === "success"

@@ -26,7 +26,7 @@ export function CreateCourseDialog({
      isOpen,
      onClose,
      onCreate,
-     onError
+     onError,
 }: CreateCourseDialogProps) {
      const [formData, setFormData] = useState({
           courseName: "",
@@ -58,7 +58,7 @@ export function CreateCourseDialog({
                onCreate()
                onClose()
           } catch (err) {
-              const message = err +", "+"Failed to create course." 
+               const message = err + ", " + "Failed to create course."
                setError(message)
                console.error("Create failed:", err)
                if (onError) onError(message)

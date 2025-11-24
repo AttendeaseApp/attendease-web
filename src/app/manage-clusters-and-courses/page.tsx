@@ -30,7 +30,6 @@ import {
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
 
-
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
           clusterId: "",
@@ -47,7 +46,6 @@ export default function ManageClustersPage() {
      const [clusters, setClusters] = useState<ClusterSession[]>([])
      const [loadingClusters, setLoadingClusters] = useState(true)
 
-     
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
@@ -57,7 +55,7 @@ export default function ManageClustersPage() {
           setCreateMessage(message)
           setStatusDialogOpen(true)
      }
-     
+
      const loadClusters = async () => {
           try {
                setLoadingClusters(true)
@@ -104,7 +102,7 @@ export default function ManageClustersPage() {
      const handleCreateSuccess = () => {
           setIsChooseClusterOpen(false)
           loadCourses()
-         showStatus("success", "Succesfully created Course.")
+          showStatus("success", "Succesfully created Course.")
      }
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
@@ -219,7 +217,7 @@ export default function ManageClustersPage() {
                          isOpen={isCreateClusterOpen}
                          onClose={handleCreateClusterClose}
                          onCreate={handleCreateClusterSuccess}
-                         onError={(message) => showStatus("error",message)}
+                         onError={(message) => showStatus("error", message)}
                     />
                     <Dialog open={isChooseClusterOpen} onOpenChange={setIsChooseClusterOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -298,18 +296,16 @@ export default function ManageClustersPage() {
                               isOpen={isCreateCourseOpen}
                               onClose={() => setIsCreateCourseOpen(false)}
                               onCreate={handleCreateSuccess}
-                              onError={(message) => showStatus("error",message)}
+                              onError={(message) => showStatus("error", message)}
                          />
                     )}
                     <ClusterCourseStatusDialog
-    open={statusDialogOpen}
-    status={createStatus}
-    message={createMessage}
-    onClose={() => setStatusDialogOpen(false)}
-/>
-
+                         open={statusDialogOpen}
+                         status={createStatus}
+                         message={createMessage}
+                         onClose={() => setStatusDialogOpen(false)}
+                    />
                </div>
           </ProtectedLayout>
-          
      )
 }
