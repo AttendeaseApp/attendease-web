@@ -44,9 +44,21 @@ export default function ManageEventsPage() {
           loadEvents()
      }, [])
 
-     const filteredEvents = events.filter((event) =>
-          event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
-     )
+     const filteredEvents = events.filter((event) => {
+          const term = searchTerm.toLowerCase()
+
+          return (
+               event.eventName.toLowerCase().includes(term) ||
+               event.eventLocation?.locationName?.toLowerCase().includes(term) ||
+               new Date(event.timeInRegistrationStartDateTime)
+                    .toLocaleString()
+                    .toLowerCase()
+                    .includes(term) ||
+               new Date(event.startDateTime).toLocaleString().toLowerCase().includes(term) ||
+               new Date(event.endDateTime).toLocaleString().toLowerCase().includes(term) ||
+               event.eventStatus.toLowerCase().includes(term)
+          )
+     })
 
      const handleEdit = (event: EventSession) => {
           setSelectedEvent(event)
