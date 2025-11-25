@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog"
 import { createLocation } from "@/services/locations-service"
 import { EventLocationRequest } from "@/interface/location-interface"
+import CreateLocationStatusDialog from "@/components/manage-locations/CreateLocationStatusDialog";
+
 import L from "leaflet"
 const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false })
 
@@ -34,6 +36,16 @@ export default function CreateLocationDialog({
      const [error, setError] = useState<string | null>(null)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
 
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
+     const [createMessage, setCreateMessage] = useState("")
+
+     const showStatus = (status: "success" | "error", message: string) => {
+          setCreateStatus(status)
+          setCreateMessage(message)
+          setStatusDialogOpen(true)
+     }
+
      const handleCreate = async () => {
           if (!polygon.length) {
                setError("Please draw a polygon on the map.")
@@ -53,7 +65,9 @@ export default function CreateLocationDialog({
                setLoading(true)
                await createLocation(payload)
                onSuccess()
+               showStatus("success","Succesully created locataion")
                onClose()
+
           } catch (err) {
                setError("Failed to create location.")
                console.error(err)
@@ -74,6 +88,7 @@ export default function CreateLocationDialog({
      }
 
      return (
+     
           <Dialog open={open} onOpenChange={onClose}>
                <DialogContent className="max-w-7xl">
                     <DialogHeader>
@@ -130,6 +145,14 @@ export default function CreateLocationDialog({
                          </Button>
                     </DialogFooter>
                </DialogContent>
+                 <CreateLocationStatusDialog
+                         open={statusDialogOpen}
+                         status={createStatus}
+                         message={createMessage}
+                         onClose={() => setStatusDialogOpen(false)}
+                         
+                    />
           </Dialog>
+            
      )
 }
