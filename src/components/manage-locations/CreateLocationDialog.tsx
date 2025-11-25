@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { createLocation } from "@/services/locations-service"
 import { EventLocationRequest } from "@/interface/location-interface"
-import CreateLocationStatusDialog from "@/components/manage-locations/CreateLocationStatusDialog";
+import CreateLocationStatusDialog from "@/components/manage-locations/CreateLocationStatusDialog"
 
 import L from "leaflet"
 const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false })
@@ -65,9 +65,8 @@ export default function CreateLocationDialog({
                setLoading(true)
                await createLocation(payload)
                onSuccess()
-               showStatus("success","Succesully created locataion")
+               showStatus("success", "Succesully created locataion")
                onClose()
-
           } catch (err) {
                setError("Failed to create location.")
                console.error(err)
@@ -88,7 +87,6 @@ export default function CreateLocationDialog({
      }
 
      return (
-     
           <Dialog open={open} onOpenChange={onClose}>
                <DialogContent className="max-w-7xl">
                     <DialogHeader>
@@ -145,14 +143,12 @@ export default function CreateLocationDialog({
                          </Button>
                     </DialogFooter>
                </DialogContent>
-                 <CreateLocationStatusDialog
-                         open={statusDialogOpen}
-                         status={createStatus}
-                         message={createMessage}
-                         onClose={() => setStatusDialogOpen(false)}
-                         
-                    />
+               <CreateLocationStatusDialog
+                    open={statusDialogOpen}
+                    status={createStatus}
+                    message={createMessage}
+                    onClose={() => setStatusDialogOpen(false)}
+               />
           </Dialog>
-            
      )
 }
