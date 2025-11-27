@@ -19,12 +19,14 @@ interface CreateCourseDialogProps {
      isOpen: boolean
      onClose: () => void
      onCreate: () => void
+     onError?: (message: string) => void
 }
 export function CreateCourseDialog({
      cluster,
      isOpen,
      onClose,
      onCreate,
+     onError,
 }: CreateCourseDialogProps) {
      const [formData, setFormData] = useState({
           courseName: "",
@@ -56,8 +58,10 @@ export function CreateCourseDialog({
                onCreate()
                onClose()
           } catch (err) {
+               const message = err + ", " + "Failed to create course."
+               setError(message)
                console.error("Create failed:", err)
-               setError(err instanceof Error ? err.message : "Failed to create course.")
+               if (onError) onError(message)
           } finally {
                setIsSubmitting(false)
           }
