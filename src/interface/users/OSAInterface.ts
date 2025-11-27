@@ -4,5 +4,4 @@ export interface OsaAccountPayload {
      email: string
      password: string
      contactNumber?: string
-     userType: "OSA"
 }

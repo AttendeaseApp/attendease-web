@@ -2,18 +2,8 @@ import { authFetch } from "./auth-fetch"
 import { API_BASE, OSA_PROFILE_ENDPOINT, USER_MANAGEMENT_API_ENDPOINTS } from "../constants/api"
 import { UserStudentResponse } from "@/interface/UserStudent"
 import { OsaAccountPayload } from "@/interface/users/OSAInterface"
-
-export interface StudentAccountPayload {
-     firstName: string
-     lastName: string
-     studentNumber: string
-     section: string
-     yearLevel: string
-     contactNumber: string
-     email: string
-     address: string
-     password: string
-}
+import { StudentAccountPayload } from "@/interface/users/StudentInterface"
+import { Section } from "@/interface/students/SectionInterface"
 
 /**
  * Retrieve all users
@@ -95,5 +85,22 @@ export const createStudentAccount = async (payload: StudentAccountPayload) => {
      } catch (err) {
           console.error("Error creating student:", err)
           throw err
+     }
+}
+
+/**
+ * Fetch all sections
+ */
+export const getSections = async (): Promise<Section[]> => {
+     try {
+          const res = await authFetch(`${API_BASE}/api/sections`)
+          if (!res.ok) {
+               throw new Error(`Failed to fetch sections: ${res.status}`)
+          }
+          const data = (await res.json()) as Section[]
+          return data
+     } catch (err) {
+          console.error("Error fetching sections:", err)
+          return []
      }
 }

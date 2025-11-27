@@ -6,24 +6,29 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { createOSAAccount } from "@/services/user-management-services"
-import { OsaAccountPayload } from "@/interface/users/OSAInterface"
 
 interface AddAccountDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
 }
 
+interface FormState {
+     firstName: string
+     lastName: string
+     email: string
+     password: string
+     confirmPassword: string
+     contactNumber?: string
+}
+
 export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialogProps) {
-     const [form, setForm] = useState<
-          OsaAccountPayload & { confirmPassword: string; contactNumber?: string }
-     >({
+     const [form, setForm] = useState<FormState>({
           firstName: "",
           lastName: "",
           email: "",
           password: "",
           confirmPassword: "",
           contactNumber: "",
-          userType: "OSA",
      })
 
      const [loading, setLoading] = useState(false)
@@ -45,6 +50,7 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
           setLoading(true)
           try {
                const { confirmPassword, ...payload } = form
+
                await createOSAAccount(payload)
 
                console.log("Account created")
@@ -56,8 +62,8 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
                     password: "",
                     confirmPassword: "",
                     contactNumber: "",
-                    userType: "OSA",
                })
+
                onOpenChange(false)
           } catch (err: unknown) {
                const message = err instanceof Error ? err.message : "Failed to create account"
@@ -104,7 +110,7 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
                               <Input
                                    name="email"
                                    type="email"
-                                   placeholder="Enter Onpassive Email ID"
+                                   placeholder="Enter OSA Email"
                                    value={form.email}
                                    onChange={handleChange}
                               />
@@ -148,7 +154,7 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
 
                          {error && <p className="text-red-500">{error}</p>}
 
-                         <div className="flex justify-end">
+                         <div className="flex justify-end gap-2">
                               <Button
                                    variant="outline"
                                    onClick={() => {
@@ -159,7 +165,6 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
                                              password: "",
                                              confirmPassword: "",
                                              contactNumber: "",
-                                             userType: "OSA",
                                         })
                                         onOpenChange(false)
                                    }}

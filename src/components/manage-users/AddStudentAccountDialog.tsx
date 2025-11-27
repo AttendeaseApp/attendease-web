@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createStudentAccount, StudentAccountPayload } from "@/services/user-management-services"
-
+import { createStudentAccount, getSections } from "@/services/user-management-services"
+import { StudentAccountPayload } from "@/interface/users/StudentInterface"
+import { Section } from "@/interface/students/SectionInterface"
 interface AddStudentAccountDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
@@ -31,6 +32,22 @@ export default function AddStudentAccountDialog({
 
      const [loading, setLoading] = useState(false)
      const [error, setError] = useState("")
+     const [sections, setSections] = useState<Section[]>([])
+
+     useEffect(() => {
+          if (!open) return
+
+          const fetchSections = async () => {
+               try {
+                    const data = await getSections() // must return Section[]
+                    setSections(data)
+               } catch (err) {
+                    console.error("Failed to fetch sections:", err)
+               }
+          }
+
+          fetchSections()
+     }, [open])
 
      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const { name, value } = e.target
@@ -132,8 +149,8 @@ export default function AddStudentAccountDialog({
                               />
                          </div>
 
-                         {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               <div>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
                                    <Label>Section</Label>
                                    <select
                                         name="section"
@@ -148,14 +165,14 @@ export default function AddStudentAccountDialog({
                                    >
                                         <option value="">Select Section</option>
                                         {sections.map((s) => (
-                                             <option key={s} value={s}>
-                                                  {s}
+                                             <option key={s.id} value={s.name}>
+                                                  {s.name}
                                              </option>
-                                        ))} 
+                                        ))}
                                    </select>
                               </div>
 
-                              <div>
+                              {/*     <div>
                                    <Label>Year Level</Label>
                                    <select
                                         name="yearLevel"
@@ -175,8 +192,8 @@ export default function AddStudentAccountDialog({
                                              </option>
                                         ))}
                                    </select>
-                              </div>
-                         </div> */}
+                              </div> */}
+                         </div>
 
                          <div>
                               <Label>Contact Number</Label>
