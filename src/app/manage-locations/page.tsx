@@ -40,8 +40,15 @@ export default function ManageLocationsPage() {
           loadLocations()
      }, [])
 
+     const [selectedType, setSelectedType] = useState("all")
+
      const filteredEvents = locations.filter((location) => {
-          const term = searchTerm.toLowerCase()
+          const lowerSearch = searchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter((w) => w)
+
+          if (selectedType !== "all" && location.locationType !== selectedType) {
+               return false
+          }
 
           const fields = [
                location.locationName,
@@ -49,7 +56,9 @@ export default function ManageLocationsPage() {
                new Date(location.createdAt).toLocaleString(),
           ]
 
-          return fields.some((value) => value.toLowerCase().includes(term))
+          return searchWords.every((sw) =>
+               fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
+          )
      })
 
      const handleDelete = async (location: EventLocation) => {
