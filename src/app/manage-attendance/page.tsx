@@ -13,7 +13,8 @@ export default function AttendanceRecordsManagementPage() {
      const [searchTerm, setSearchTerm] = useState("")
 
      const filteredAttendanceRecords = (attendanceRecords ?? []).filter((event) => {
-          const term = searchTerm.toLowerCase()
+          const lowerSearch = searchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter((w) => w)
 
           const fields = [
                event.eventName,
@@ -26,7 +27,9 @@ export default function AttendanceRecordsManagementPage() {
                event.totalLate?.toString(),
           ]
 
-          return fields.some((value) => value?.toString().toLowerCase().includes(term))
+          return searchWords.every((sw) =>
+               fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
+          )
      })
 
      return (
