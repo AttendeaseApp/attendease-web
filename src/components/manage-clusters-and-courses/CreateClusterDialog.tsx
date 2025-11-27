@@ -17,12 +17,14 @@ interface CreateClusterDialogProps {
      isOpen: boolean
      onClose: () => void
      onCreate: () => void
+     onError?: (message: string) => void
      clusters: { clusterName: string }[]
 }
 export function CreateClusterDialog({
      isOpen,
      onClose,
      onCreate,
+     onError,
      clusters,
 }: CreateClusterDialogProps) {
      const [formData, setFormData] = useState({
@@ -66,8 +68,10 @@ export function CreateClusterDialog({
                onCreate()
                onClose()
           } catch (err) {
+               const message = err + ", " + "Failed to create cluster."
+               setError(message)
                console.error("Create failed:", err)
-               setError(err instanceof Error ? err.message : "Failed to create cluster.")
+               if (onError) onError(message)
           } finally {
                setIsSubmitting(false)
           }

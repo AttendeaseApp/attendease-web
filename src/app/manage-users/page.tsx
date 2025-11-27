@@ -42,21 +42,29 @@ export default function RetrieveAllUsers() {
 
      // SEARCH and FILTERING
      useEffect(() => {
-          const lowerSearch = searchTerm.toLowerCase()
+          const lowerSearch = searchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter((w) => w)
 
           const filtered = users.filter((user) => {
-               const matchesSearch =
-                    user.firstName?.toLowerCase().includes(lowerSearch) ||
-                    user.lastName?.toLowerCase().includes(lowerSearch) ||
-                    user.email?.toLowerCase().includes(lowerSearch) ||
-                    user.course?.toLowerCase().includes(lowerSearch) ||
-                    user.studentNumber?.toLowerCase().includes(lowerSearch)
+               if (selectedType !== "all" && user.userType !== selectedType) {
+                    return false
+               }
 
-               const matchesType =
-                    selectedType === "all" ||
-                    user.userType?.toLowerCase() === selectedType.toLowerCase()
+               const fields = [
+                    user.firstName,
+                    user.lastName,
+                    user.userType,
+                    user.section,
+                    user.course,
+                    user.studentNumber,
+                    user.email,
+                    user.contactNumber,
+                    user.accountStatus,
+               ]
 
-               return matchesSearch && matchesType
+               return searchWords.every((sw) =>
+                    fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
+               )
           })
 
           setFilteredUsers(filtered)
