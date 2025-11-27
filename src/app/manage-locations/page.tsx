@@ -40,9 +40,26 @@ export default function ManageLocationsPage() {
           loadLocations()
      }, [])
 
-     const filteredEvents = locations.filter((location) =>
-          location.locationName.toLowerCase().includes(searchTerm.toLowerCase())
-     )
+     const [selectedType, setSelectedType] = useState("all")
+
+     const filteredEvents = locations.filter((location) => {
+          const lowerSearch = searchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter((w) => w)
+
+          if (selectedType !== "all" && location.locationType !== selectedType) {
+               return false
+          }
+
+          const fields = [
+               location.locationName,
+               location.locationType,
+               new Date(location.createdAt).toLocaleString(),
+          ]
+
+          return searchWords.every((sw) =>
+               fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
+          )
+     })
 
      const handleDelete = async (location: EventLocation) => {
           try {
@@ -102,6 +119,7 @@ export default function ManageLocationsPage() {
                          open={openDialog}
                          onClose={() => setOpenModal(false)}
                          onSuccess={loadLocations}
+                         existingLocations={locations}
                     />
                </div>
           </ProtectedLayout>
