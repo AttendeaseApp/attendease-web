@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { createStudentAccount, getSections } from "@/services/user-management-services"
 import { StudentAccountPayload } from "@/interface/users/StudentInterface"
 import { Section } from "@/interface/students/SectionInterface"
+
 interface AddStudentAccountDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
@@ -39,7 +40,7 @@ export default function AddStudentAccountDialog({
 
           const fetchSections = async () => {
                try {
-                    const data = await getSections() // must return Section[]
+                    const data = await getSections()
                     setSections(data)
                } catch (err) {
                     console.error("Failed to fetch sections:", err)
