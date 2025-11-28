@@ -40,7 +40,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
                               END (DATE-TIME)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">STATUS</TableHead>
-                         <TableHead className="font-semibold text-gray-900">ACTIONS</TableHead>
+                         <TableHead className="font-semibold text-gray-900"></TableHead>
                     </TableRow>
                </TableHeader>
                <TableBody>
@@ -100,7 +100,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
                                    <TableCell>
                                         <Button
                                              size="sm"
-                                             variant="outline"
+                                             variant="ghost"
                                              onClick={() => onViewAttendees(event.eventId)}
                                         >
                                              View Registered Attendees

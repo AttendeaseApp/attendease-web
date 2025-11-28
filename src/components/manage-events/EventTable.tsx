@@ -73,7 +73,7 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">STATUS</TableHead>
                          <TableHead className="text-right font-semibold text-gray-900">
-                              ACTIONS
+                              MORE
                          </TableHead>
                     </TableRow>
                </TableHeader>

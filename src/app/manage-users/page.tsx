@@ -11,6 +11,14 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
 import ImportStudentsDialog from "@/components/manage-users/ImportStudentsDialog"
+import AddOSAAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
+import AddStudentAccountDialog from "@/components/manage-users/AddStudentAccountDialog"
+import {
+     DropdownMenu,
+     DropdownMenuContent,
+     DropdownMenuItem,
+     DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -21,6 +29,8 @@ export default function RetrieveAllUsers() {
      const [error, setError] = useState<string | null>(null)
      const [openMoreSettings, setOpenMoreSettings] = useState(false)
      const [openImportStudents, setOpenImportStudents] = useState(false)
+     const [openAddOSA, setOpenAddOSA] = useState(false)
+     const [openAddStudent, setOpenAddStudent] = useState(false)
 
      const loadUsers = async () => {
           try {
@@ -42,21 +52,29 @@ export default function RetrieveAllUsers() {
 
      // SEARCH and FILTERING
      useEffect(() => {
-          const lowerSearch = searchTerm.toLowerCase()
+          const lowerSearch = searchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter((w) => w)
 
           const filtered = users.filter((user) => {
-               const matchesSearch =
-                    user.firstName?.toLowerCase().includes(lowerSearch) ||
-                    user.lastName?.toLowerCase().includes(lowerSearch) ||
-                    user.email?.toLowerCase().includes(lowerSearch) ||
-                    user.course?.toLowerCase().includes(lowerSearch) ||
-                    user.studentNumber?.toLowerCase().includes(lowerSearch)
+               if (selectedType !== "all" && user.userType !== selectedType) {
+                    return false
+               }
 
-               const matchesType =
-                    selectedType === "all" ||
-                    user.userType?.toLowerCase() === selectedType.toLowerCase()
+               const fields = [
+                    user.firstName,
+                    user.lastName,
+                    user.userType,
+                    user.section,
+                    user.course,
+                    user.studentNumber,
+                    user.email,
+                    user.contactNumber,
+                    user.accountStatus,
+               ]
 
-               return matchesSearch && matchesType
+               return searchWords.every((sw) =>
+                    fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
+               )
           })
 
           setFilteredUsers(filtered)
@@ -71,7 +89,21 @@ export default function RetrieveAllUsers() {
                               <p className="text-muted-foreground mt-1">Manage all users here.</p>
                          </div>
                          <div className="flex justify-end space-x-2">
-                              <Button className="sm:w-autom">Manually Add Account</Button>
+                              <DropdownMenu>
+                                   <DropdownMenuTrigger asChild>
+                                        <Button>Manually Add Account ▾</Button>
+                                   </DropdownMenuTrigger>
+
+                                   <DropdownMenuContent>
+                                        <DropdownMenuItem onClick={() => setOpenAddOSA(true)}>
+                                             OSA Account
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setOpenAddStudent(true)}>
+                                             Student Account
+                                        </DropdownMenuItem>
+                                   </DropdownMenuContent>
+                              </DropdownMenu>
+
                               <Button
                                    className="sm:w-auto"
                                    onClick={() => setOpenImportStudents(true)}
@@ -133,6 +165,16 @@ export default function RetrieveAllUsers() {
                <ImportStudentsDialog
                     open={openImportStudents}
                     onOpenChange={setOpenImportStudents}
+               />
+               <AddOSAAccountDialog
+                    open={openAddOSA}
+                    onOpenChange={setOpenAddOSA}
+                    onAdd={loadUsers}
+               />
+               <AddStudentAccountDialog
+                    open={openAddStudent}
+                    onOpenChange={setOpenAddStudent}
+                    onAdd={loadUsers}
                />
           </ProtectedLayout>
      )
