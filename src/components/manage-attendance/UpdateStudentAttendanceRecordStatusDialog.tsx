@@ -20,20 +20,12 @@ export default function UpdateStudentAttendanceRecordStatusDialog({
      const isSuccess = status === "success"
      const title = isSuccess ? "Update Saved" : "Update Failed"
      const titleColor = isSuccess ? "text-green-600" : "text-red-600"
-     const [errors, setErrors] = useState<Record<string, string>>({})
-     const [isSubmitting, setIsSubmitting] = useState(false)
-
-     const handleClose = () => {
-          setErrors({})
-          setIsSubmitting(false)
-          onClose()
-     }
 
      return (
           <Dialog
                open={open}
                onOpenChange={(isOpen) => {
-                    if (!isOpen) handleClose()
+                    if (!isOpen) onClose()
                }}
           >
                <DialogContent className="sm:max-w-md">
@@ -44,7 +36,7 @@ export default function UpdateStudentAttendanceRecordStatusDialog({
                     <p className="text-sm text-muted-foreground">{message}</p>
 
                     <div className="flex justify-end mt-6">
-                         <Button onClick={handleClose}>OK</Button>
+                         <Button onClick={onClose}>OK</Button>
                     </div>
                </DialogContent>
           </Dialog>

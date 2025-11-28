@@ -3,14 +3,21 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
-import { deleteCourse, deleteCluster, getAllCourses } from "@/services/cluster-and-course-sessions"
+import { ClusterSession, CourseSession, Section } from "@/interface/cluster-and-course-interface"
+import {
+     deleteCourse,
+     deleteCluster,
+     getAllCourses,
+     getAllSections,
+     deleteSection,
+} from "@/services/cluster-and-course-sessions"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { ClusterAndCourseTable } from "@/components/manage-clusters-and-courses/ClusterAndCourseTable"
 import { ClusterTable } from "@/components/manage-clusters-and-courses/ClusterTable"
 import { CreateClusterDialog } from "@/components/manage-clusters-and-courses/CreateClusterDialog"
 import { CreateCourseDialog } from "@/components/manage-clusters-and-courses/CreateCourseDialog"
 import { getAllClusters } from "@/services/cluster-and-course-sessions"
+import { CreateSectionDialog } from "@/components/manage-clusters-and-courses/CreateSectionDialog"
 import ClusterCourseStatusDialog from "@/components/manage-clusters-and-courses/CreateClustercCoursesStatusDialog"
 import {
      Dialog,
@@ -29,11 +36,16 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
+import { SectionTable } from "@/components/manage-clusters-and-courses/SectionTable"
 
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
           clusterId: "",
           clusterName: "",
+     })
+     const [formSectionData, setFormSectionData] = useState({
+          courseId: "",
+          courseName: "",
      })
      const [courses, setCourses] = useState<CourseSession[]>([])
      const [loading, setLoading] = useState(true)
@@ -45,6 +57,12 @@ export default function ManageClustersPage() {
      const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false)
      const [clusters, setClusters] = useState<ClusterSession[]>([])
      const [loadingClusters, setLoadingClusters] = useState(true)
+     const [sections, setSections] = useState<Section[]>([])
+     const [loadingSections, setLoadingSections] = useState(true)
+     const [isChooseCourseOpen, setIsChooseCourseOpen] = useState(false)
+     const [selectedCourse, setSelectedCourse] = useState<Section | null>(null)
+     const [loadingCourses, setLoadingCourses] = useState(true)
+     const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false)
 
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
@@ -76,6 +94,7 @@ export default function ManageClustersPage() {
                setError(null)
                const data = await getAllCourses()
                setCourses(data)
+               console.log("successfully get all courses")
           } catch (err) {
                setError(err instanceof Error ? err.message : "Failed to load courses")
                console.error("Error loading courses:", err)
@@ -85,6 +104,23 @@ export default function ManageClustersPage() {
      }
      useEffect(() => {
           loadCourses()
+     }, [])
+     const loadSections = async () => {
+          try {
+               setLoading(true)
+               setError(null)
+               const data = await getAllSections()
+               setSections(data)
+               console.log("successfully get all sections")
+          } catch (err) {
+               setError(err instanceof Error ? err.message : "Failed to load sections")
+               console.error("Error loading sections:", err)
+          } finally {
+               setLoading(false)
+          }
+     }
+     useEffect(() => {
+          loadSections()
      }, [])
      const filteredCourses = courses.filter((course) =>
           course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -104,7 +140,16 @@ export default function ManageClustersPage() {
           loadCourses()
           showStatus("success", "Succesfully created Course.")
      }
+     const handleCreateSectionOpen = () => setIsChooseCourseOpen(true)
+     const handleCreateSectionSuccess = () => {
+          setIsChooseCourseOpen(false)
+          loadSections()
+     }
      const handleInputChange = (field: keyof typeof formData, value: string) => {
+          setFormData((prev) => ({ ...prev, [field]: value }))
+          if (error) setError("")
+     }
+     const handleSectionInputChange = (field: keyof typeof formSectionData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
@@ -129,16 +174,26 @@ export default function ManageClustersPage() {
                alert("Failed to delete cluster. Please try again.")
           }
      }
+     const handleDeleteSection = async (section: Section) => {
+          try {
+               await deleteSection(section.id)
+               setSections((prev) => prev.filter((s) => s.id !== section.id))
+               alert("Section deleted successfully!")
+          } catch (error) {
+               console.error("Delete failed:", error)
+               alert("Failed to delete section. Please try again.")
+          }
+     }
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                          <div>
                               <h1 className="text-2xl font-bold md:text-3xl">
-                                   Manage Clusters and Courses
+                                   Manage Clusters, Courses and Sections
                               </h1>
                               <p className="text-muted-foreground mt-1">
-                                   Create and manage clusters and courses here.
+                                   Create and manage clusters, courses and sections here.
                               </p>
                          </div>
                          <div className="flex sm:gap-4">
@@ -150,6 +205,41 @@ export default function ManageClustersPage() {
                                    <Plus className="mr-2 h-4 w-4" />
                                    Create Course
                               </Button>
+                              <Button className="sm:w-auto" onClick={handleCreateSectionOpen}>
+                                   <Plus className="mr-2 h-4 w-4" />
+                                   Create Section
+                              </Button>
+                         </div>
+                    </div>
+
+                    {/* section */}
+                    <div>
+                         <div className="w-full">
+                              <h2 className="text-lg font-semibold mb-4">SECTIONS</h2>
+                              <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                                   <div className="relative flex-1">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                             placeholder="Search sections..."
+                                             className="pl-8"
+                                             value={searchTerm}
+                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                   </div>
+                                   <Button variant="outline" size="sm" onClick={loadSections}>
+                                        Refresh
+                                   </Button>
+                              </div>
+                              {error && (
+                                   <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
+                                        {error}
+                                   </div>
+                              )}
+                              <SectionTable
+                                   sections={sections}
+                                   loading={loadingSections}
+                                   onDelete={handleDeleteSection}
+                              />
                          </div>
                     </div>
 
@@ -297,6 +387,86 @@ export default function ManageClustersPage() {
                               onClose={() => setIsCreateCourseOpen(false)}
                               onCreate={handleCreateSuccess}
                               onError={(message) => showStatus("error", message)}
+                         />
+                    )}
+                    <Dialog open={isChooseCourseOpen} onOpenChange={setIsChooseCourseOpen}>
+                         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                   <DialogTitle>Choose Course for the New Section</DialogTitle>
+                                   <DialogDescription>
+                                        Fill in the details to create a new section.
+                                   </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-2">
+                                   <Label htmlFor="courseName">Courses</Label>
+                                   <Select
+                                        value={formSectionData.courseId}
+                                        disabled={loadingCourses}
+                                        onValueChange={(value) => {
+                                             handleSectionInputChange("courseId", value)
+                                             const section =
+                                                  sections.find((s) => s.course.id === value) ||
+                                                  null
+                                             setSelectedCourse(section)
+                                        }}
+                                   >
+                                        <SelectTrigger>
+                                             <SelectValue
+                                                  placeholder={
+                                                       loadingSections
+                                                            ? "Loading sections..."
+                                                            : "Select a section"
+                                                  }
+                                             />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             {sections.map((section) => (
+                                                  <SelectItem
+                                                       key={section.course.id}
+                                                       value={section.course.id}
+                                                  >
+                                                       {section.course.courseName}
+                                                  </SelectItem>
+                                             ))}
+                                        </SelectContent>
+                                   </Select>
+                              </div>
+                              {error && (
+                                   <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
+                                        {error}
+                                   </div>
+                              )}
+                              <DialogFooter className="flex justify-end space-x-2 pt-4">
+                                   <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setIsChooseCourseOpen(false)}
+                                   >
+                                        <X className="mr-2 h-4 w-4" />
+                                        Cancel
+                                   </Button>
+                                   <>
+                                        <Button
+                                             type="button"
+                                             disabled={!selectedCourse}
+                                             onClick={() => {
+                                                  setIsChooseCourseOpen(false)
+                                                  setIsCreateSectionOpen(true)
+                                             }}
+                                        >
+                                             Next
+                                        </Button>
+                                   </>
+                              </DialogFooter>
+                         </DialogContent>
+                    </Dialog>
+                    {isCreateSectionOpen && selectedCourse && (
+                         <CreateSectionDialog
+                              course={selectedCourse}
+                              isOpen={isCreateSectionOpen}
+                              onClose={() => setIsCreateSectionOpen(false)}
+                              onCreate={handleCreateSectionSuccess}
+                              // onError={(message) => showStatus("error", message)}
                          />
                     )}
                     <ClusterCourseStatusDialog

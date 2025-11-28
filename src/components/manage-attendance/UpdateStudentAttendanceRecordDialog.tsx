@@ -47,21 +47,13 @@ export function UpdateStudentAttendanceRecordDialog({
      )
 
      const [reason, setReason] = useState(attendee?.reason || "")
-     const [initialized, setInitialized] = useState(false)
 
      useEffect(() => {
-          if (!initialized && attendee) {
+          if (attendee) {
                setStatus(attendee.attendanceStatus)
                setReason(attendee.reason || "")
-               setInitialized(true)
           }
-     }, [attendee, initialized])
-     // useEffect(() => {
-     //      if (attendee) {
-     //           setStatus(attendee.attendanceStatus)
-     //           setReason(attendee.reason || "")
-     //      }
-     // }, [attendee])
+     }, [attendee])
 
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [editStatus, setEditStatus] = useState<"success" | "error">("success")
@@ -78,7 +70,10 @@ export function UpdateStudentAttendanceRecordDialog({
           if (!attendee) return
           try {
                await onUpdate({ status, reason })
-               showStatus("success", "Successfully updated" + (attendee ? getFullName(attendee) : "attendance record"))
+               showStatus(
+                    "success",
+                    `Successfully updated ${attendee ? getFullName(attendee) : "attendance record"}`
+               )
           } catch (err) {
                console.error("Update error:", err)
                showStatus("error", "Failed to update student's record.")
@@ -138,16 +133,16 @@ export function UpdateStudentAttendanceRecordDialog({
                          </form>
                     </DialogContent>
                </Dialog>
-               
+
                <UpdateStudentAttendanceRecordStatusDialog
                     open={statusDialogOpen}
                     status={editStatus}
                     message={editMessage}
                     onClose={() => {
                          setStatusDialogOpen(false)
-                         // if (editStatus === "success") {
-                         //      onOpenChange(false)
-                         // }
+                         if (editStatus === "success") {
+                              onOpenChange(false)
+                         }
                     }}
                />
           </>
