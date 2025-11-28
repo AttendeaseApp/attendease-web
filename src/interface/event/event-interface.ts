@@ -16,7 +16,10 @@ export enum EventStatus {
  * EligibilityCriteria interface representing eligibility criteria for an event.
  */
 export interface EligibilityCriteria {
-     [key: string]: string | undefined
+     allStudents: boolean
+     cluster?: string[]
+     course?: string[]
+     sections?: string[]
 }
 
 /**
@@ -28,7 +31,7 @@ export interface EventSession {
      eventLocation?: EventLocation | null
      eventLocationId?: string | null
      description?: string | null
-     eligibleStudents?: EligibilityCriteria | null
+     eligibleStudents?: EligibilityCriteria
      timeInRegistrationStartDateTime: string
      startDateTime: string
      endDateTime: string
