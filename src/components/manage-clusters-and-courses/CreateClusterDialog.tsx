@@ -17,8 +17,16 @@ interface CreateClusterDialogProps {
      isOpen: boolean
      onClose: () => void
      onCreate: () => void
+     onError?: (message: string) => void
+     clusters: { clusterName: string }[]
 }
-export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateClusterDialogProps) {
+export function CreateClusterDialog({
+     isOpen,
+     onClose,
+     onCreate,
+     onError,
+     clusters,
+}: CreateClusterDialogProps) {
      const [formData, setFormData] = useState({
           clusterName: "",
      })
@@ -40,6 +48,16 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
+
+          const duplicate = clusters.some(
+               (c) =>
+                    c.clusterName.toLowerCase().trim() === formData.clusterName.toLowerCase().trim()
+          )
+
+          if (duplicate) {
+               setError("Cluster name already exists.")
+               return
+          }
           setIsSubmitting(true)
           try {
                const newClusterData = {
@@ -50,8 +68,10 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
                onCreate()
                onClose()
           } catch (err) {
+               const message = err + ", " + "Failed to create cluster."
+               setError(message)
                console.error("Create failed:", err)
-               setError(err instanceof Error ? err.message : "Failed to create cluster.")
+               if (onError) onError(message)
           } finally {
                setIsSubmitting(false)
           }
