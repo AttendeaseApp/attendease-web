@@ -92,6 +92,43 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           setStatusDialogOpen(true)
      }
 
+     const getCoursesUnderCluster = (clId: string) => {
+          return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
+     }
+
+     const getSectionsUnderCourse = (coId: string) => {
+          return sections.filter((s) => s.course?.id === coId).map((s) => s.id)
+     }
+
+     const getClusterOfCourse = (coId: string) => {
+          const course = courses.find((c) => c.id === coId)
+          return course?.cluster?.clusterId
+     }
+
+     const getCourseOfSection = (seId: string) => {
+          const section = sections.find((s) => s.id === seId)
+          return section?.course?.id
+     }
+
+     const cleanEligibility = (selClusters: string[], selCourses: string[], selSecs: string[]) => {
+          let newCourses = [...selCourses]
+          const newSecs = [...selSecs]
+          let newClusters = [...selClusters]
+          newCourses = newCourses.filter((coId) => {
+               const coSecs = getSectionsUnderCourse(coId)
+               return coSecs.length === 0 || coSecs.every((seId) => selSecs.includes(seId))
+          })
+          newClusters = newClusters.filter((clId) => {
+               const clCourses = getCoursesUnderCluster(clId)
+               return clCourses.length === 0 || clCourses.every((coId) => newCourses.includes(coId))
+          })
+          return {
+               selectedClusters: newClusters,
+               selectedCourses: newCourses,
+               selectedSections: newSecs,
+          }
+     }
+
      useEffect(() => {
           const loadData = async () => {
                try {
@@ -154,38 +191,168 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      }
 
      const handleClusterSelect = (clusterId: string, checked: boolean) => {
-          const newClusters = checked
-               ? [...eligibility.selectedClusters, clusterId]
-               : eligibility.selectedClusters.filter((id) => id !== clusterId)
-          setEligibility((prev) => ({
-               ...prev,
-               selectedClusters: newClusters,
-               selectedCourses: [],
-               selectedSections: [],
-          }))
+          setEligibility((prev) => {
+               let newClusters = [...prev.selectedClusters]
+               let newCourses = [...prev.selectedCourses]
+               let newSections = [...prev.selectedSections]
+               if (checked) {
+                    if (!newClusters.includes(clusterId)) {
+                         newClusters.push(clusterId)
+                         const clCourses = getCoursesUnderCluster(clusterId)
+                         clCourses.forEach((coId) => {
+                              if (!newCourses.includes(coId)) {
+                                   newCourses.push(coId)
+                                   const coSecs = getSectionsUnderCourse(coId)
+                                   coSecs.forEach((seId) => {
+                                        if (!newSections.includes(seId)) {
+                                             newSections.push(seId)
+                                        }
+                                   })
+                              }
+                         })
+                    }
+               } else {
+                    newClusters = newClusters.filter((id) => id !== clusterId)
+                    const clCourses = getCoursesUnderCluster(clusterId)
+                    newCourses = newCourses.filter((id) => !clCourses.includes(id))
+                    newSections = newSections.filter((seId) => {
+                         const coId = getCourseOfSection(seId)
+                         return coId && !clCourses.includes(coId)
+                    })
+               }
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+               }
+          })
      }
 
      const handleCourseSelect = (courseId: string, checked: boolean) => {
-          const newCourses = checked
-               ? [...eligibility.selectedCourses, courseId]
-               : eligibility.selectedCourses.filter((id) => id !== courseId)
-          setEligibility((prev) => ({ ...prev, selectedCourses: newCourses, selectedSections: [] }))
+          setEligibility((prev) => {
+               let newCourses = [...prev.selectedCourses]
+               let newSections = [...prev.selectedSections]
+               let newClusters = [...prev.selectedClusters]
+               if (checked) {
+                    if (!newCourses.includes(courseId)) {
+                         newCourses.push(courseId)
+                         const coSecs = getSectionsUnderCourse(courseId)
+                         coSecs.forEach((seId) => {
+                              if (!newSections.includes(seId)) {
+                                   newSections.push(seId)
+                              }
+                         })
+                         const clId = getClusterOfCourse(courseId)
+                         if (clId && !newClusters.includes(clId)) {
+                              const clCourses = getCoursesUnderCluster(clId)
+                              const allSelected = clCourses.every((cid) => newCourses.includes(cid))
+                              if (allSelected) {
+                                   newClusters.push(clId)
+                              }
+                         }
+                    }
+               } else {
+                    newCourses = newCourses.filter((id) => id !== courseId)
+                    const coSecs = getSectionsUnderCourse(courseId)
+                    newSections = newSections.filter((id) => !coSecs.includes(id))
+                    const clId = getClusterOfCourse(courseId)
+                    if (clId && newClusters.includes(clId)) {
+                         const clCourses = getCoursesUnderCluster(clId)
+                         const stillAll = clCourses.every((cid) => newCourses.includes(cid))
+                         if (!stillAll) {
+                              newClusters = newClusters.filter((cid) => cid !== clId)
+                         }
+                    }
+               }
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+               }
+          })
      }
 
      const handleSectionSelect = (sectionId: string, checked: boolean) => {
-          const newSections = checked
-               ? [...eligibility.selectedSections, sectionId]
-               : eligibility.selectedSections.filter((id) => id !== sectionId)
-          setEligibility((prev) => ({ ...prev, selectedSections: newSections }))
+          setEligibility((prev) => {
+               let newSections = [...prev.selectedSections]
+               let newCourses = [...prev.selectedCourses]
+               let newClusters = [...prev.selectedClusters]
+               if (checked) {
+                    if (!newSections.includes(sectionId)) {
+                         newSections.push(sectionId)
+                         const coId = getCourseOfSection(sectionId)
+                         if (coId && !newCourses.includes(coId)) {
+                              const coSecs = getSectionsUnderCourse(coId)
+                              const allSelected = coSecs.every((sid) => newSections.includes(sid))
+                              if (allSelected) {
+                                   newCourses.push(coId)
+                                   const clId = getClusterOfCourse(coId)
+                                   if (clId && !newClusters.includes(clId)) {
+                                        const clCourses = getCoursesUnderCluster(clId)
+                                        const allCoursesSel = clCourses.every((cid) =>
+                                             newCourses.includes(cid)
+                                        )
+                                        if (allCoursesSel) {
+                                             newClusters.push(clId)
+                                        }
+                                   }
+                              }
+                         }
+                    }
+               } else {
+                    newSections = newSections.filter((id) => id !== sectionId)
+                    const coId = getCourseOfSection(sectionId)
+                    if (coId && newCourses.includes(coId)) {
+                         const coSecs = getSectionsUnderCourse(coId)
+                         const stillAll = coSecs.every((sid) => newSections.includes(sid))
+                         if (!stillAll) {
+                              newCourses = newCourses.filter((cid) => cid !== coId)
+                              const clId = getClusterOfCourse(coId)
+                              if (clId && newClusters.includes(clId)) {
+                                   const clCourses = getCoursesUnderCluster(clId)
+                                   const stillAllCourses = clCourses.every((cid) =>
+                                        newCourses.includes(cid)
+                                   )
+                                   if (!stillAllCourses) {
+                                        newClusters = newClusters.filter((cid) => cid !== clId)
+                                   }
+                              }
+                         }
+                    }
+               }
+
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+               }
+          })
      }
 
-     const filteredCourses = courses.filter((course) =>
-          eligibility.selectedClusters.includes(course.cluster?.clusterId || "")
-     )
+     const filteredCourses =
+          eligibility.selectedClusters.length === 0
+               ? courses
+               : courses.filter((course) =>
+                      eligibility.selectedClusters.includes(course.cluster?.clusterId || "")
+                 )
 
-     const filteredSections = sections.filter((section) =>
-          eligibility.selectedCourses.includes(section.course?.id || "")
-     )
+     const filteredSections =
+          eligibility.selectedCourses.length === 0
+               ? sections
+               : sections.filter((section) =>
+                      eligibility.selectedCourses.includes(section.course?.id || "")
+                 )
+
+     const isFormComplete =
+          formData.eventName.trim() !== "" &&
+          formData.eventLocationId !== "" &&
+          (eligibility.allStudents ||
+               eligibility.selectedClusters.length > 0 ||
+               eligibility.selectedCourses.length > 0 ||
+               eligibility.selectedSections.length > 0)
 
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
@@ -203,6 +370,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
           setIsSubmitting(true)
           try {
+               const cleaned = cleanEligibility(
+                    eligibility.selectedClusters,
+                    eligibility.selectedCourses,
+                    eligibility.selectedSections
+               )
+
                const newEventData = {
                     eventName: formData.eventName,
                     description: formData.description || undefined,
@@ -217,9 +390,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                          ? { allStudents: true }
                          : {
                                 allStudents: false,
-                                cluster: eligibility.selectedClusters,
-                                course: eligibility.selectedCourses,
-                                sections: eligibility.selectedSections,
+                                cluster: cleaned.selectedClusters,
+                                course: cleaned.selectedCourses,
+                                sections: cleaned.selectedSections,
                            },
                }
                console.log("Sending create payload:", newEventData)
@@ -861,7 +1034,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    </Button>
                                    <Button
                                         type="submit"
-                                        disabled={isSubmitting || loadingHierarchy}
+                                        disabled={
+                                             isSubmitting || loadingHierarchy || !isFormComplete
+                                        }
                                    >
                                         <Plus className="mr-2 h-4 w-4" />
                                         {isSubmitting ? "Creating..." : "Create Event"}
