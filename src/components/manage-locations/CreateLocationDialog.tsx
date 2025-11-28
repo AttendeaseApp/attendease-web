@@ -38,7 +38,6 @@ export default function CreateLocationDialog({
      const [error, setError] = useState<string | null>(null)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
 
-
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
@@ -56,7 +55,6 @@ export default function CreateLocationDialog({
                setError(null)
           }
      }, [open])
-
 
      const handleCreate = async () => {
           setError(null)
