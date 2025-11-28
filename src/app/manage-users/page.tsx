@@ -193,7 +193,7 @@ export default function RetrieveAllUsers() {
                     onOpenChange={setOpenUpdateDialog}
                     user={currentUser}
                     onUpdated={handleUserUpdated}
-                />
+               />
                <AddOSAAccountDialog
                     open={openAddOSA}
                     onOpenChange={setOpenAddOSA}

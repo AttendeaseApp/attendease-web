@@ -49,7 +49,6 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
 
      ADD_OSA_ACCOUNT: `${API_BASE}/api/auth/osa/register`,
      ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
-
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {
