@@ -15,7 +15,6 @@ import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
 
 import EditUserDetailsDialog from "@/components/manage-users/EditUserDetailsDialog"
 
-
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
      const [filteredUsers, setFilteredUsers] = useState<UserStudentResponse[]>([])
@@ -77,15 +76,14 @@ export default function RetrieveAllUsers() {
           setFilteredUsers(filtered)
      }, [searchTerm, selectedType, users])
 
-    const handleUpdateClick = (user: EditUserDetailsPayload) => {
-    setCurrentUser(user)
-    setOpenUpdateDialog(true)
-}
-    const handleUserUpdated = (updatedUser: EditUserDetailsPayload) => {
-        
-        loadUsers()
-        setOpenUpdateDialog(false)
-    }
+     const handleUpdateClick = (user: EditUserDetailsPayload) => {
+          setCurrentUser(user)
+          setOpenUpdateDialog(true)
+     }
+     const handleUserUpdated = (updatedUser: EditUserDetailsPayload) => {
+          loadUsers()
+          setOpenUpdateDialog(false)
+     }
 
      return (
           <ProtectedLayout>
@@ -147,7 +145,11 @@ export default function RetrieveAllUsers() {
                          </Button>
                     </div>
 
-                    <UsersTable users={filteredUsers} loading={loading} onUpdate={handleUpdateClick}/>
+                    <UsersTable
+                         users={filteredUsers}
+                         loading={loading}
+                         onUpdate={handleUpdateClick}
+                    />
 
                     {error && (
                          <div className="w-full max-w-6xl mx-auto mt-4 text-red-500">{error}</div>
@@ -161,10 +163,10 @@ export default function RetrieveAllUsers() {
                />
 
                <EditUserDetailsDialog
-               open={openUpdateDialog}
-               onOpenChange={setOpenUpdateDialog}
-               user={currentUser}
-               onUpdated={handleUserUpdated}
+                    open={openUpdateDialog}
+                    onOpenChange={setOpenUpdateDialog}
+                    user={currentUser}
+                    onUpdated={handleUserUpdated}
                />
           </ProtectedLayout>
      )
