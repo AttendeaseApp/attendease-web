@@ -1,7 +1,7 @@
 "use client"
 import dynamic from "next/dynamic"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -22,12 +22,14 @@ interface CreateLocationModalProps {
      open: boolean
      onClose: () => void
      onSuccess: () => void
+     existingLocations: { locationName: string }[]
 }
 
 export default function CreateLocationDialog({
      open,
      onClose,
      onSuccess,
+     existingLocations,
 }: CreateLocationModalProps) {
      const [locationName, setLocationName] = useState("")
      const [locationType, setLocationType] = useState("INDOOR")
@@ -35,6 +37,7 @@ export default function CreateLocationDialog({
      const [loading, setLoading] = useState(false)
      const [error, setError] = useState<string | null>(null)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
+
 
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
@@ -46,7 +49,32 @@ export default function CreateLocationDialog({
           setStatusDialogOpen(true)
      }
 
+     useEffect(() => {
+          if (!open) {
+               setLocationName("")
+               setPolygon([])
+               setError(null)
+          }
+     }, [open])
+
+
      const handleCreate = async () => {
+          setError(null)
+
+          if (!locationName.trim()) {
+               setError("Location name is required.")
+               return
+          }
+
+          const exists = existingLocations.some(
+               (loc) => loc.locationName.trim().toLowerCase() === locationName.trim().toLowerCase()
+          )
+
+          if (exists) {
+               setError("This location name already exists.")
+               return
+          }
+
           if (!polygon.length) {
                setError("Please draw a polygon on the map.")
                return

@@ -19,12 +19,16 @@ interface CreateCourseDialogProps {
      isOpen: boolean
      onClose: () => void
      onCreate: () => void
+     onError?: (message: string) => void
+     courses: { courseName: string }[]
 }
 export function CreateCourseDialog({
      cluster,
      isOpen,
      onClose,
      onCreate,
+     onError,
+     courses,
 }: CreateCourseDialogProps) {
      const [formData, setFormData] = useState({
           courseName: "",
@@ -46,6 +50,15 @@ export function CreateCourseDialog({
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
+
+          const duplicate = courses.some(
+               (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
+          )
+
+          if (duplicate) {
+               setError("Course name already exists.")
+               return
+          }
           setIsSubmitting(true)
           try {
                const newCourseData = {
@@ -56,8 +69,10 @@ export function CreateCourseDialog({
                onCreate()
                onClose()
           } catch (err) {
+               const message = err + ", " + "Failed to create course."
+               setError(message)
                console.error("Create failed:", err)
-               setError(err instanceof Error ? err.message : "Failed to create course.")
+               if (onError) onError(message)
           } finally {
                setIsSubmitting(false)
           }
