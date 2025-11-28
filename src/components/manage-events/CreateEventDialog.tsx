@@ -346,6 +346,14 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                       eligibility.selectedCourses.includes(section.course?.id || "")
                  )
 
+     const isFormComplete =
+          formData.eventName.trim() !== "" &&
+          formData.eventLocationId !== "" &&
+          (eligibility.allStudents ||
+               eligibility.selectedClusters.length > 0 ||
+               eligibility.selectedCourses.length > 0 ||
+               eligibility.selectedSections.length > 0)
+
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
@@ -1026,7 +1034,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    </Button>
                                    <Button
                                         type="submit"
-                                        disabled={isSubmitting || loadingHierarchy}
+                                        disabled={
+                                             isSubmitting || loadingHierarchy || !isFormComplete
+                                        }
                                    >
                                         <Plus className="mr-2 h-4 w-4" />
                                         {isSubmitting ? "Creating..." : "Create Event"}
