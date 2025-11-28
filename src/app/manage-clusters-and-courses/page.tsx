@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Plus, Search } from "lucide-react"
+import { Plus, Search, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ClusterSession, CourseSession, Section } from "@/interface/cluster-and-course-interface"
 import {
@@ -35,7 +35,6 @@ import {
      SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { X } from "lucide-react"
 import { SectionTable } from "@/components/manage-clusters-and-courses/SectionTable"
 
 export default function ManageClustersPage() {
@@ -49,19 +48,21 @@ export default function ManageClustersPage() {
      })
      const [courses, setCourses] = useState<CourseSession[]>([])
      const [loading, setLoading] = useState(true)
-     const [error, setError] = useState<string | null>(null)
      const [searchTerm, setSearchTerm] = useState("")
+     const [loadingClusters, setLoadingClusters] = useState(true)
+     const [loadingCourses, setLoadingCourses] = useState(true)
+     const [error, setError] = useState<string | null>(null)
+     const [clusterSearchTerm, setClusterSearchTerm] = useState("")
+     const [courseSearchTerm, setCourseSearchTerm] = useState("")
      const [selectedCluster, setSelectedCluster] = useState<ClusterSession | null>(null)
      const [isCreateClusterOpen, setIsCreateClusterOpen] = useState(false)
      const [isChooseClusterOpen, setIsChooseClusterOpen] = useState(false)
      const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false)
      const [clusters, setClusters] = useState<ClusterSession[]>([])
-     const [loadingClusters, setLoadingClusters] = useState(true)
      const [sections, setSections] = useState<Section[]>([])
      const [loadingSections, setLoadingSections] = useState(true)
      const [isChooseCourseOpen, setIsChooseCourseOpen] = useState(false)
      const [selectedCourse, setSelectedCourse] = useState<Section | null>(null)
-     const [loadingCourses, setLoadingCourses] = useState(true)
      const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false)
 
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
@@ -81,16 +82,15 @@ export default function ManageClustersPage() {
                setClusters(data)
           } catch (err) {
                console.error("Failed to load clusters:", err)
+               setError("Failed to load clusters")
           } finally {
                setLoadingClusters(false)
           }
      }
-     useEffect(() => {
-          loadClusters()
-     }, [])
+
      const loadCourses = async () => {
           try {
-               setLoading(true)
+               setLoadingCourses(true)
                setError(null)
                const data = await getAllCourses()
                setCourses(data)
@@ -99,10 +99,12 @@ export default function ManageClustersPage() {
                setError(err instanceof Error ? err.message : "Failed to load courses")
                console.error("Error loading courses:", err)
           } finally {
-               setLoading(false)
+               setLoadingCourses(false)
           }
      }
+
      useEffect(() => {
+          loadClusters()
           loadCourses()
      }, [])
      const loadSections = async () => {
@@ -122,9 +124,25 @@ export default function ManageClustersPage() {
      useEffect(() => {
           loadSections()
      }, [])
-     const filteredCourses = courses.filter((course) =>
-          course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
-     )
+
+     const filteredClusters = clusters.filter((cluster) => {
+          const lowerSearch = clusterSearchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter(Boolean)
+          const fields = [cluster.clusterName]
+          return searchWords.every((sw) =>
+               fields.some((f) => (f?.toLowerCase() || "").includes(sw))
+          )
+     })
+
+     const filteredCourses = courses.filter((course) => {
+          const lowerSearch = courseSearchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter(Boolean)
+          const clusterName = course.cluster?.clusterName ?? ""
+          const fields = [course.courseName, clusterName]
+          return searchWords.every((sw) =>
+               fields.some((f) => (f?.toLowerCase() || "").includes(sw))
+          )
+     })
 
      const handleCreateClusterOpen = () => setIsCreateClusterOpen(true)
      const handleCreateClusterClose = () => setIsCreateClusterOpen(false)
@@ -132,13 +150,14 @@ export default function ManageClustersPage() {
           setIsCreateClusterOpen(false)
           loadClusters()
           loadCourses()
-          showStatus("success", "Succesfully created Cluster.")
+          showStatus("success", "Successfully created Cluster.")
      }
+
      const handleCreateCourseOpen = () => setIsChooseClusterOpen(true)
-     const handleCreateSuccess = () => {
+     const handleCreateCourseSuccess = () => {
           setIsChooseClusterOpen(false)
           loadCourses()
-          showStatus("success", "Succesfully created Course.")
+          showStatus("success", "Successfully created Course.")
      }
      const handleCreateSectionOpen = () => setIsChooseCourseOpen(true)
      const handleCreateSectionSuccess = () => {
@@ -169,8 +188,8 @@ export default function ManageClustersPage() {
                setClusters((prev) => prev.filter((c) => c.clusterId !== cluster.clusterId))
                loadCourses()
                alert("Cluster deleted successfully!")
-          } catch (error) {
-               console.error("Delete failed:", error)
+          } catch (err) {
+               console.error(err)
                alert("Failed to delete cluster. Please try again.")
           }
      }
@@ -184,6 +203,18 @@ export default function ManageClustersPage() {
                alert("Failed to delete section. Please try again.")
           }
      }
+
+     const handleDeleteCourse = async (course: CourseSession) => {
+          try {
+               await deleteCourse(course.id)
+               setCourses((prev) => prev.filter((c) => c.id !== course.id))
+               alert("Course deleted successfully!")
+          } catch (err) {
+               console.error(err)
+               alert("Failed to delete course. Please try again.")
+          }
+     }
+
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
@@ -244,6 +275,7 @@ export default function ManageClustersPage() {
                     </div>
 
                     <div className="flex flex-row w-full h-full min-w-0 gap-12">
+                         {/* clusters */}
                          <div className="w-full">
                               <h2 className="text-lg font-semibold mb-4">CLUSTERS</h2>
                               <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -252,63 +284,55 @@ export default function ManageClustersPage() {
                                         <Input
                                              placeholder="Search clusters..."
                                              className="pl-8"
-                                             value={searchTerm}
-                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                             value={clusterSearchTerm}
+                                             onChange={(e) => setClusterSearchTerm(e.target.value)}
                                         />
                                    </div>
                                    <Button variant="outline" size="sm" onClick={loadClusters}>
                                         Refresh
                                    </Button>
                               </div>
-                              {error && (
-                                   <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
-                                        {error}
-                                   </div>
-                              )}
                               <ClusterTable
-                                   clusters={clusters}
+                                   clusters={filteredClusters}
                                    loading={loadingClusters}
                                    onDeleteAction={handleDeleteCluster}
                               />
                          </div>
 
-                         {/*courses*/}
+                         {/* courses */}
                          <div className="w-full">
                               <h2 className="text-lg font-semibold mb-4">COURSES</h2>
                               <div className="flex flex-col gap-4 md:flex-row md:items-center">
                                    <div className="relative flex-1">
                                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input
-                                             placeholder="Search course..."
+                                             placeholder="Search courses..."
                                              className="pl-8"
-                                             value={searchTerm}
-                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                             value={courseSearchTerm}
+                                             onChange={(e) => setCourseSearchTerm(e.target.value)}
                                         />
                                    </div>
                                    <Button variant="outline" size="sm" onClick={loadCourses}>
                                         Refresh
                                    </Button>
                               </div>
-                              {error && (
-                                   <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
-                                        {error}
-                                   </div>
-                              )}
                               <ClusterAndCourseTable
                                    courses={filteredCourses}
-                                   loading={loading}
-                                   onDelete={handleDelete}
+                                   loading={loadingCourses}
+                                   onDelete={handleDeleteCourse}
                               />
                          </div>
                     </div>
 
-                    {/*dialogs*/}
+                    {/* dialogs */}
                     <CreateClusterDialog
                          isOpen={isCreateClusterOpen}
                          onClose={handleCreateClusterClose}
                          onCreate={handleCreateClusterSuccess}
                          onError={(message) => showStatus("error", message)}
+                         clusters={clusters}
                     />
+
                     <Dialog open={isChooseClusterOpen} onOpenChange={setIsChooseClusterOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                               <DialogHeader>
@@ -351,11 +375,6 @@ export default function ManageClustersPage() {
                                         </SelectContent>
                                    </Select>
                               </div>
-                              {error && (
-                                   <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
-                                        {error}
-                                   </div>
-                              )}
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"
@@ -365,28 +384,27 @@ export default function ManageClustersPage() {
                                         <X className="mr-2 h-4 w-4" />
                                         Cancel
                                    </Button>
-                                   <>
-                                        <Button
-                                             type="button"
-                                             disabled={!selectedCluster}
-                                             onClick={() => {
-                                                  setIsChooseClusterOpen(false)
-                                                  setIsCreateCourseOpen(true)
-                                             }}
-                                        >
-                                             Next
-                                        </Button>
-                                   </>
+                                   <Button
+                                        type="button"
+                                        disabled={!selectedCluster}
+                                        onClick={() => {
+                                             setIsChooseClusterOpen(false)
+                                             setIsCreateCourseOpen(true)
+                                        }}
+                                   >
+                                        Next
+                                   </Button>
                               </DialogFooter>
                          </DialogContent>
                     </Dialog>
+
                     {isCreateCourseOpen && selectedCluster && (
                          <CreateCourseDialog
                               cluster={selectedCluster}
+                              courses={courses}
                               isOpen={isCreateCourseOpen}
                               onClose={() => setIsCreateCourseOpen(false)}
-                              onCreate={handleCreateSuccess}
-                              onError={(message) => showStatus("error", message)}
+                              onCreate={handleCreateCourseSuccess}
                          />
                     )}
                     <Dialog open={isChooseCourseOpen} onOpenChange={setIsChooseCourseOpen}>

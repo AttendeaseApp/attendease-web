@@ -7,6 +7,7 @@ import { UserStudentResponse } from "@/interface/UserStudent"
 import { getOSAProfile } from "@/services/user-management-services"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { logout } from "@/services/auth"
 
 export default function OsaProfilePage() {
      const [user, setUser] = useState<UserStudentResponse | null>(null)
@@ -14,6 +15,12 @@ export default function OsaProfilePage() {
      const [error, setError] = useState<string | null>(null)
 
      const router = useRouter()
+
+     const handleLogout = () => {
+          logout
+          router.push("/login")
+     }
+
      const GoTochangePassword = async () => {
           router.push("/change-password")
      }
@@ -54,10 +61,30 @@ export default function OsaProfilePage() {
                               <p className="text-muted-foreground text-lg mt-1">{user?.userType}</p>
                          </div>
 
-                         <Button className="rounded-sm self-start" onClick={GoTochangePassword}>
-                              {" "}
-                              Change Password
-                         </Button>
+                         {/* buttons for user's edit account, change password and logging out */}
+                         <div className="m-5">
+                              {/* to add onClick */}
+                              <Button className="rounded-sm self-start m-2 w-35">
+                                   {" "}
+                                   Edit Account
+                              </Button>
+
+                              <Button
+                                   className="rounded-sm self-start m-2 w-35"
+                                   onClick={GoTochangePassword}
+                              >
+                                   {" "}
+                                   Change Password
+                              </Button>
+
+                              <Button
+                                   className="rounded-sm self-start m-2 bg-white text-black hover:bg-gray-300 border border-gray-500"
+                                   onClick={handleLogout}
+                              >
+                                   {" "}
+                                   Logout
+                              </Button>
+                         </div>
                     </div>
 
                     {/* osa account details  */}
