@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { ChevronDownIcon, Plus, X } from "lucide-react"
+import { Filter, ChevronRight, ChevronDownIcon, Plus, X } from "lucide-react"
 import {
      Select,
      SelectContent,
@@ -24,9 +24,17 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { createEvent } from "@/services/event-sessions"
 import { getAllLocations } from "@/services/locations-service"
 import { EventLocation } from "@/interface/location-interface"
+import {
+     getAllClusters,
+     getAllCourses,
+     getAllSections,
+} from "@/services/cluster-and-course-sessions"
+import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
+import { Section } from "@/interface/students/SectionInterface"
 import CreateEventStatusDialog from "@/components/manage-events/CreateEventStatusDialog"
 
 interface CreateEventDialogProps {
@@ -36,6 +44,13 @@ interface CreateEventDialogProps {
 }
 
 type DateFields = "timeInRegistrationStartDateTime" | "startDateTime" | "endDateTime"
+
+interface EligibilityState {
+     allStudents: boolean
+     selectedClusters: string[]
+     selectedCourses: string[]
+     selectedSections: string[]
+}
 
 /**
  * CreateEventDialog component for creating a new event session.
@@ -53,11 +68,20 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           endDateTime: addHours(now, 3),
           eventLocationId: "",
      })
+     const [eligibility, setEligibility] = useState<EligibilityState>({
+          allStudents: true,
+          selectedClusters: [],
+          selectedCourses: [],
+          selectedSections: [],
+     })
      const [error, setError] = useState<string>("")
      const [isSubmitting, setIsSubmitting] = useState(false)
      const [locations, setLocations] = useState<EventLocation[]>([])
+     const [clusters, setClusters] = useState<ClusterSession[]>([])
+     const [courses, setCourses] = useState<CourseSession[]>([])
+     const [sections, setSections] = useState<Section[]>([])
      const [loadingLocations, setLoadingLocations] = useState(true)
-
+     const [loadingHierarchy, setLoadingHierarchy] = useState(true)
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
@@ -68,21 +92,68 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           setStatusDialogOpen(true)
      }
 
+     const getCoursesUnderCluster = (clId: string) => {
+          return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
+     }
+
+     const getSectionsUnderCourse = (coId: string) => {
+          return sections.filter((s) => s.course?.id === coId).map((s) => s.id)
+     }
+
+     const getClusterOfCourse = (coId: string) => {
+          const course = courses.find((c) => c.id === coId)
+          return course?.cluster?.clusterId
+     }
+
+     const getCourseOfSection = (seId: string) => {
+          const section = sections.find((s) => s.id === seId)
+          return section?.course?.id
+     }
+
+     const cleanEligibility = (selClusters: string[], selCourses: string[], selSecs: string[]) => {
+          let newCourses = [...selCourses]
+          const newSecs = [...selSecs]
+          let newClusters = [...selClusters]
+          newCourses = newCourses.filter((coId) => {
+               const coSecs = getSectionsUnderCourse(coId)
+               return coSecs.length === 0 || coSecs.every((seId) => selSecs.includes(seId))
+          })
+          newClusters = newClusters.filter((clId) => {
+               const clCourses = getCoursesUnderCluster(clId)
+               return clCourses.length === 0 || clCourses.every((coId) => newCourses.includes(coId))
+          })
+          return {
+               selectedClusters: newClusters,
+               selectedCourses: newCourses,
+               selectedSections: newSecs,
+          }
+     }
+
      useEffect(() => {
-          const loadLocations = async () => {
+          const loadData = async () => {
                try {
                     setLoadingLocations(true)
-                    const data = await getAllLocations()
-                    setLocations(data)
+                    setLoadingHierarchy(true)
+                    const [locData, clustData, courseData, sectData] = await Promise.all([
+                         getAllLocations(),
+                         getAllClusters(),
+                         getAllCourses(),
+                         getAllSections(),
+                    ])
+                    setLocations(locData)
+                    setClusters(clustData)
+                    setCourses(courseData)
+                    setSections(sectData)
                } catch (err) {
-                    console.error("Failed to load locations:", err)
+                    console.error("Failed to load data:", err)
+                    setError("Failed to load required data (locations or academic hierarchy).")
                } finally {
                     setLoadingLocations(false)
+                    setLoadingHierarchy(false)
                }
           }
-
-          loadLocations()
-     }, [])
+          if (isOpen) loadData()
+     }, [isOpen])
 
      useEffect(() => {
           if (isOpen) {
@@ -95,6 +166,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     endDateTime: addHours(now, 3),
                     eventLocationId: "",
                })
+               setEligibility({
+                    allStudents: true,
+                    selectedClusters: [],
+                    selectedCourses: [],
+                    selectedSections: [],
+               })
                setError("")
           }
      }, [isOpen])
@@ -104,12 +181,201 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           if (error) setError("")
      }
 
+     const handleAllStudentsToggle = (checked: boolean) => {
+          setEligibility({
+               allStudents: checked,
+               selectedClusters: checked ? [] : eligibility.selectedClusters,
+               selectedCourses: checked ? [] : eligibility.selectedCourses,
+               selectedSections: checked ? [] : eligibility.selectedSections,
+          })
+     }
+
+     const handleClusterSelect = (clusterId: string, checked: boolean) => {
+          setEligibility((prev) => {
+               let newClusters = [...prev.selectedClusters]
+               let newCourses = [...prev.selectedCourses]
+               let newSections = [...prev.selectedSections]
+               if (checked) {
+                    if (!newClusters.includes(clusterId)) {
+                         newClusters.push(clusterId)
+                         const clCourses = getCoursesUnderCluster(clusterId)
+                         clCourses.forEach((coId) => {
+                              if (!newCourses.includes(coId)) {
+                                   newCourses.push(coId)
+                                   const coSecs = getSectionsUnderCourse(coId)
+                                   coSecs.forEach((seId) => {
+                                        if (!newSections.includes(seId)) {
+                                             newSections.push(seId)
+                                        }
+                                   })
+                              }
+                         })
+                    }
+               } else {
+                    newClusters = newClusters.filter((id) => id !== clusterId)
+                    const clCourses = getCoursesUnderCluster(clusterId)
+                    newCourses = newCourses.filter((id) => !clCourses.includes(id))
+                    newSections = newSections.filter((seId) => {
+                         const coId = getCourseOfSection(seId)
+                         return coId && !clCourses.includes(coId)
+                    })
+               }
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+               }
+          })
+     }
+
+     const handleCourseSelect = (courseId: string, checked: boolean) => {
+          setEligibility((prev) => {
+               let newCourses = [...prev.selectedCourses]
+               let newSections = [...prev.selectedSections]
+               let newClusters = [...prev.selectedClusters]
+               if (checked) {
+                    if (!newCourses.includes(courseId)) {
+                         newCourses.push(courseId)
+                         const coSecs = getSectionsUnderCourse(courseId)
+                         coSecs.forEach((seId) => {
+                              if (!newSections.includes(seId)) {
+                                   newSections.push(seId)
+                              }
+                         })
+                         const clId = getClusterOfCourse(courseId)
+                         if (clId && !newClusters.includes(clId)) {
+                              const clCourses = getCoursesUnderCluster(clId)
+                              const allSelected = clCourses.every((cid) => newCourses.includes(cid))
+                              if (allSelected) {
+                                   newClusters.push(clId)
+                              }
+                         }
+                    }
+               } else {
+                    newCourses = newCourses.filter((id) => id !== courseId)
+                    const coSecs = getSectionsUnderCourse(courseId)
+                    newSections = newSections.filter((id) => !coSecs.includes(id))
+                    const clId = getClusterOfCourse(courseId)
+                    if (clId && newClusters.includes(clId)) {
+                         const clCourses = getCoursesUnderCluster(clId)
+                         const stillAll = clCourses.every((cid) => newCourses.includes(cid))
+                         if (!stillAll) {
+                              newClusters = newClusters.filter((cid) => cid !== clId)
+                         }
+                    }
+               }
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+               }
+          })
+     }
+
+     const handleSectionSelect = (sectionId: string, checked: boolean) => {
+          setEligibility((prev) => {
+               let newSections = [...prev.selectedSections]
+               let newCourses = [...prev.selectedCourses]
+               let newClusters = [...prev.selectedClusters]
+               if (checked) {
+                    if (!newSections.includes(sectionId)) {
+                         newSections.push(sectionId)
+                         const coId = getCourseOfSection(sectionId)
+                         if (coId && !newCourses.includes(coId)) {
+                              const coSecs = getSectionsUnderCourse(coId)
+                              const allSelected = coSecs.every((sid) => newSections.includes(sid))
+                              if (allSelected) {
+                                   newCourses.push(coId)
+                                   const clId = getClusterOfCourse(coId)
+                                   if (clId && !newClusters.includes(clId)) {
+                                        const clCourses = getCoursesUnderCluster(clId)
+                                        const allCoursesSel = clCourses.every((cid) =>
+                                             newCourses.includes(cid)
+                                        )
+                                        if (allCoursesSel) {
+                                             newClusters.push(clId)
+                                        }
+                                   }
+                              }
+                         }
+                    }
+               } else {
+                    newSections = newSections.filter((id) => id !== sectionId)
+                    const coId = getCourseOfSection(sectionId)
+                    if (coId && newCourses.includes(coId)) {
+                         const coSecs = getSectionsUnderCourse(coId)
+                         const stillAll = coSecs.every((sid) => newSections.includes(sid))
+                         if (!stillAll) {
+                              newCourses = newCourses.filter((cid) => cid !== coId)
+                              const clId = getClusterOfCourse(coId)
+                              if (clId && newClusters.includes(clId)) {
+                                   const clCourses = getCoursesUnderCluster(clId)
+                                   const stillAllCourses = clCourses.every((cid) =>
+                                        newCourses.includes(cid)
+                                   )
+                                   if (!stillAllCourses) {
+                                        newClusters = newClusters.filter((cid) => cid !== clId)
+                                   }
+                              }
+                         }
+                    }
+               }
+
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+               }
+          })
+     }
+
+     const filteredCourses =
+          eligibility.selectedClusters.length === 0
+               ? courses
+               : courses.filter((course) =>
+                      eligibility.selectedClusters.includes(course.cluster?.clusterId || "")
+                 )
+
+     const filteredSections =
+          eligibility.selectedCourses.length === 0
+               ? sections
+               : sections.filter((section) =>
+                      eligibility.selectedCourses.includes(section.course?.id || "")
+                 )
+
+     const isFormComplete =
+          formData.eventName.trim() !== "" &&
+          formData.eventLocationId !== "" &&
+          (eligibility.allStudents ||
+               eligibility.selectedClusters.length > 0 ||
+               eligibility.selectedCourses.length > 0 ||
+               eligibility.selectedSections.length > 0)
+
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
 
+          if (
+               !eligibility.allStudents &&
+               eligibility.selectedClusters.length === 0 &&
+               eligibility.selectedCourses.length === 0 &&
+               eligibility.selectedSections.length === 0
+          ) {
+               setError("Select at least one cluster, course, or section for eligibility.")
+               return
+          }
+
           setIsSubmitting(true)
           try {
+               const cleaned = cleanEligibility(
+                    eligibility.selectedClusters,
+                    eligibility.selectedCourses,
+                    eligibility.selectedSections
+               )
+
                const newEventData = {
                     eventName: formData.eventName,
                     description: formData.description || undefined,
@@ -120,6 +386,14 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     startDateTime: format(formData.startDateTime, "yyyy-MM-dd hh:mm:ss a"),
                     endDateTime: format(formData.endDateTime, "yyyy-MM-dd hh:mm:ss a"),
                     eventLocationId: formData.eventLocationId,
+                    eligibleStudents: eligibility.allStudents
+                         ? { allStudents: true }
+                         : {
+                                allStudents: false,
+                                cluster: cleaned.selectedClusters,
+                                course: cleaned.selectedCourses,
+                                sections: cleaned.selectedSections,
+                           },
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
@@ -206,7 +480,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      return (
           <>
                <Dialog open={isOpen} onOpenChange={handleClose}>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                          <DialogHeader>
                               <DialogTitle>Create New Event</DialogTitle>
                               <DialogDescription>
@@ -558,6 +832,190 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    </Select>
                               </div>
 
+                              <div className="space-y-4">
+                                   <Label>Eligible Attendees</Label>
+                                   <div className="p-4 border rounded-md bg-muted/50">
+                                        <div className="space-y-3">
+                                             <div className="flex items-center space-x-2">
+                                                  <Checkbox
+                                                       id="allStudents"
+                                                       checked={eligibility.allStudents}
+                                                       onCheckedChange={handleAllStudentsToggle}
+                                                  />
+                                                  <Label
+                                                       htmlFor="allStudents"
+                                                       className="text-sm font-medium"
+                                                  >
+                                                       All Students
+                                                  </Label>
+                                             </div>
+                                             {!eligibility.allStudents && (
+                                                  <div className="space-y-4 pt-2">
+                                                       {/* Clusters */}
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Clusters
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading clusters...
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {clusters.map((cluster) => (
+                                                                           <div
+                                                                                key={
+                                                                                     cluster.clusterId
+                                                                                }
+                                                                                className="flex items-center space-x-2"
+                                                                           >
+                                                                                <Checkbox
+                                                                                     id={`cluster-${cluster.clusterId}`}
+                                                                                     checked={eligibility.selectedClusters.includes(
+                                                                                          cluster.clusterId ||
+                                                                                               ""
+                                                                                     )}
+                                                                                     onCheckedChange={(
+                                                                                          checked
+                                                                                     ) =>
+                                                                                          handleClusterSelect(
+                                                                                               cluster.clusterId ||
+                                                                                                    "",
+                                                                                               !!checked
+                                                                                          )
+                                                                                     }
+                                                                                />
+                                                                                <Label
+                                                                                     htmlFor={`cluster-${cluster.clusterId}`}
+                                                                                     className="text-sm"
+                                                                                >
+                                                                                     {
+                                                                                          cluster.clusterName
+                                                                                     }
+                                                                                </Label>
+                                                                           </div>
+                                                                      ))}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+
+                                                       {/* Courses (filtered by selected clusters) */}
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Courses{" "}
+                                                                 <ChevronRight className="h-3 w-3" />
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading courses...
+                                                                 </p>
+                                                            ) : filteredCourses.length === 0 &&
+                                                              eligibility.selectedClusters.length >
+                                                                   0 ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      No courses available for
+                                                                      selected clusters.
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {filteredCourses.map(
+                                                                           (course) => (
+                                                                                <div
+                                                                                     key={course.id}
+                                                                                     className="flex items-center space-x-2"
+                                                                                >
+                                                                                     <Checkbox
+                                                                                          id={`course-${course.id}`}
+                                                                                          checked={eligibility.selectedCourses.includes(
+                                                                                               course.id
+                                                                                          )}
+                                                                                          onCheckedChange={(
+                                                                                               checked
+                                                                                          ) =>
+                                                                                               handleCourseSelect(
+                                                                                                    course.id,
+                                                                                                    !!checked
+                                                                                               )
+                                                                                          }
+                                                                                     />
+                                                                                     <Label
+                                                                                          htmlFor={`course-${course.id}`}
+                                                                                          className="text-sm"
+                                                                                     >
+                                                                                          {
+                                                                                               course.courseName
+                                                                                          }
+                                                                                     </Label>
+                                                                                </div>
+                                                                           )
+                                                                      )}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Sections{" "}
+                                                                 <ChevronRight className="h-3 w-3" />
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading sections...
+                                                                 </p>
+                                                            ) : filteredSections.length === 0 &&
+                                                              eligibility.selectedCourses.length >
+                                                                   0 ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      No sections available for
+                                                                      selected courses.
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {filteredSections.map(
+                                                                           (section) => (
+                                                                                <div
+                                                                                     key={
+                                                                                          section.id
+                                                                                     }
+                                                                                     className="flex items-center space-x-2"
+                                                                                >
+                                                                                     <Checkbox
+                                                                                          id={`section-${section.id}`}
+                                                                                          checked={eligibility.selectedSections.includes(
+                                                                                               section.id
+                                                                                          )}
+                                                                                          onCheckedChange={(
+                                                                                               checked
+                                                                                          ) =>
+                                                                                               handleSectionSelect(
+                                                                                                    section.id,
+                                                                                                    !!checked
+                                                                                               )
+                                                                                          }
+                                                                                     />
+                                                                                     <Label
+                                                                                          htmlFor={`section-${section.id}`}
+                                                                                          className="text-sm"
+                                                                                     >
+                                                                                          {
+                                                                                               section.name
+                                                                                          }
+                                                                                     </Label>
+                                                                                </div>
+                                                                           )
+                                                                      )}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+                                                  </div>
+                                             )}
+                                        </div>
+                                   </div>
+                              </div>
+
                               {error && (
                                    <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
                                         {error}
@@ -574,7 +1032,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         <X className="mr-2 h-4 w-4" />
                                         Cancel
                                    </Button>
-                                   <Button type="submit" disabled={isSubmitting}>
+                                   <Button
+                                        type="submit"
+                                        disabled={
+                                             isSubmitting || loadingHierarchy || !isFormComplete
+                                        }
+                                   >
                                         <Plus className="mr-2 h-4 w-4" />
                                         {isSubmitting ? "Creating..." : "Create Event"}
                                    </Button>

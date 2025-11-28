@@ -25,6 +25,8 @@ export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
      CREATE_COURSE: (id: string) => `${API_BASE}/api/courses?clusterId=${id}`,
      DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
      CREATE_CLUSTER: `${API_BASE}/api/clusters`,
+     GET_ALL_SECTIONS: `${API_BASE}/api/sections`,
+     GET_SECTIONS_BY_COURSE: (courseId: string) => `${API_BASE}/api/sections/courses/${courseId}`,
 }
 
 /**

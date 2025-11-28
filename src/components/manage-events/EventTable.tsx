@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
+import { formatEligibility } from "@/lib/formatEligibleStudents"
 
 interface EventTableProps {
      events: EventSession[]
@@ -59,6 +60,9 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                          <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
                          <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
                          <TableHead className="font-semibold text-gray-900">
+                              ELIGIBLE STUDENTS
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">
                               REGISTRATION (DATE-TIME)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
@@ -92,6 +96,9 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                                    <TableCell className="font-medium">{event.eventName}</TableCell>
                                    <TableCell className="font-medium">
                                         {event.eventLocation?.locationName ?? "No location"}
+                                   </TableCell>
+                                   <TableCell className="font-medium">
+                                        {formatEligibility(event.eligibleStudents)}
                                    </TableCell>
                                    <TableCell>
                                         {new Date(

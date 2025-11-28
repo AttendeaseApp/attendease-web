@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,9 +21,19 @@ import {
      DialogTitle,
      DialogFooter,
 } from "@/components/ui/dialog"
-import { Save, X } from "lucide-react"
-import { EventSession, EventStatus } from "@/interface/event/event-interface"
+import { Save, X, Filter, ChevronRight } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { EventSession, EventStatus, EligibilityCriteria } from "@/interface/event/event-interface"
 import { updateEvent } from "@/services/event-sessions"
+import {
+     getAllClusters,
+     getAllCourses,
+     getAllSections,
+} from "@/services/cluster-and-course-sessions"
+import { getAllLocations } from "@/services/locations-service"
+import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
+import { Section } from "@/interface/students/SectionInterface"
+import { EventLocation } from "@/interface/location-interface"
 import EditEventStatusDialog from "./EditEventStatusDialog"
 
 interface EditEventDialogProps {
@@ -31,6 +41,14 @@ interface EditEventDialogProps {
      onUpdate: () => void
      isOpen: boolean
      onClose: () => void
+}
+
+interface EligibilityState {
+     allStudents: boolean
+     selectedClusters: string[]
+     selectedCourses: string[]
+     selectedSections: string[]
+     isDirty: boolean
 }
 
 /**
@@ -41,15 +59,31 @@ interface EditEventDialogProps {
  */
 export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventDialogProps) {
      const [formData, setFormData] = useState({
-          eventName: event.eventName,
-          description: event.description || "",
-          timeInRegistrationStartDateTime: event.timeInRegistrationStartDateTime,
-          startDateTime: event.startDateTime,
-          endDateTime: event.endDateTime,
-          eventStatus: event.eventStatus,
+          eventName: "",
+          description: "",
+          timeInRegistrationStartDateTime: "",
+          startDateTime: "",
+          endDateTime: "",
+          eventStatus: EventStatus.UPCOMING,
+          eventLocationId: "",
      })
+     const [eligibility, setEligibility] = useState<EligibilityState>({
+          allStudents: true,
+          selectedClusters: [],
+          selectedCourses: [],
+          selectedSections: [],
+          isDirty: false,
+     })
+     const [hasChanges, setHasChanges] = useState(false)
      const [errors, setErrors] = useState<Record<string, string>>({})
      const [isSubmitting, setIsSubmitting] = useState(false)
+     const [clusters, setClusters] = useState<ClusterSession[]>([])
+     const [courses, setCourses] = useState<CourseSession[]>([])
+     const [sections, setSections] = useState<Section[]>([])
+     const [locations, setLocations] = useState<EventLocation[]>([])
+     const [loadingHierarchy, setLoadingHierarchy] = useState(true)
+     const [loadingLocations, setLoadingLocations] = useState(true)
+
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [editStatus, setEditStatus] = useState<"success" | "error">("success")
      const [editMessage, setEditMessage] = useState("")
@@ -60,6 +94,157 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           setStatusDialogOpen(true)
      }
 
+     const getCoursesUnderCluster = useCallback(
+          (clId: string) => {
+               return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
+          },
+          [courses]
+     )
+
+     const getSectionsUnderCourse = useCallback(
+          (coId: string) => {
+               return sections.filter((s) => s.course?.id === coId).map((s) => s.id)
+          },
+          [sections]
+     )
+
+     const getClusterOfCourse = useCallback(
+          (coId: string) => {
+               const course = courses.find((c) => c.id === coId)
+               return course?.cluster?.clusterId
+          },
+          [courses]
+     )
+
+     const getCourseOfSection = useCallback(
+          (seId: string) => {
+               const section = sections.find((s) => s.id === seId)
+               return section?.course?.id
+          },
+          [sections]
+     )
+
+     const cleanEligibility = useCallback(
+          (selClusters: string[], selCourses: string[], selSecs: string[]) => {
+               let newCourses = [...selCourses]
+               const newSecs = [...selSecs]
+               let newClusters = [...selClusters]
+               newCourses = newCourses.filter((coId) => {
+                    const coSecs = getSectionsUnderCourse(coId)
+                    return coSecs.length === 0 || coSecs.every((seId) => selSecs.includes(seId))
+               })
+               newClusters = newClusters.filter((clId) => {
+                    const clCourses = getCoursesUnderCluster(clId)
+                    return (
+                         clCourses.length === 0 ||
+                         clCourses.every((coId) => newCourses.includes(coId))
+                    )
+               })
+               return {
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSecs,
+               }
+          },
+          [getSectionsUnderCourse, getCoursesUnderCluster]
+     )
+
+     useEffect(() => {
+          const loadData = async () => {
+               if (!isOpen) return
+               try {
+                    setLoadingHierarchy(true)
+                    setLoadingLocations(true)
+                    const [clustData, courseData, sectData, locData] = await Promise.all([
+                         getAllClusters(),
+                         getAllCourses(),
+                         getAllSections(),
+                         getAllLocations(),
+                    ])
+                    setClusters(clustData)
+                    setCourses(courseData)
+                    setSections(sectData)
+                    setLocations(locData)
+               } catch (err) {
+                    console.error("Failed to load hierarchy data:", err)
+                    setErrors((prev) => ({
+                         ...prev,
+                         general: "Failed to load eligibility options.",
+                    }))
+               } finally {
+                    setLoadingHierarchy(false)
+                    setLoadingLocations(false)
+               }
+          }
+          loadData()
+     }, [isOpen])
+
+     useEffect(() => {
+          if (isOpen && event && clusters.length > 0 && courses.length > 0 && sections.length > 0) {
+               const formatToLocal = (dateStr?: string): string => {
+                    if (!dateStr) return ""
+                    try {
+                         const parsedDate = new Date(dateStr.replace(" ", "T"))
+                         if (isNaN(parsedDate.getTime())) {
+                              return ""
+                         }
+                         const year = parsedDate.getFullYear()
+                         const month = String(parsedDate.getMonth() + 1).padStart(2, "0")
+                         const day = String(parsedDate.getDate()).padStart(2, "0")
+                         const hours = String(parsedDate.getHours()).padStart(2, "0")
+                         const minutes = String(parsedDate.getMinutes()).padStart(2, "0")
+                         return `${year}-${month}-${day}T${hours}:${minutes}`
+                    } catch (err) {
+                         console.error("Date parsing error:", err)
+                         return ""
+                    }
+               }
+
+               setFormData({
+                    eventName: event.eventName || "",
+                    description: event.description || "",
+                    timeInRegistrationStartDateTime: formatToLocal(
+                         event.timeInRegistrationStartDateTime
+                    ),
+                    startDateTime: formatToLocal(event.startDateTime),
+                    endDateTime: formatToLocal(event.endDateTime),
+                    eventStatus: event.eventStatus,
+                    eventLocationId: event.eventLocationId || "",
+               })
+
+               const tempElig = {
+                    allStudents: event.eligibleStudents?.allStudents ?? true,
+                    selectedClusters: event.eligibleStudents?.cluster ?? [],
+                    selectedCourses: event.eligibleStudents?.course ?? [],
+                    selectedSections: event.eligibleStudents?.sections ?? [],
+               }
+
+               let finalElig = { ...tempElig }
+
+               if (!tempElig.allStudents) {
+                    const cleaned = cleanEligibility(
+                         tempElig.selectedClusters,
+                         tempElig.selectedCourses,
+                         tempElig.selectedSections
+                    )
+                    finalElig = {
+                         allStudents: false,
+                         selectedClusters: cleaned.selectedClusters,
+                         selectedCourses: cleaned.selectedCourses,
+                         selectedSections: cleaned.selectedSections,
+                    }
+               }
+
+               setEligibility({
+                    ...finalElig,
+                    isDirty: false,
+               })
+
+               setHasChanges(false)
+               setErrors({})
+          }
+     }, [isOpen, event, clusters.length, courses.length, sections.length, cleanEligibility])
+
      const validateForm = () => {
           const newErrors: Record<string, string> = {}
           if (!formData.eventName.trim()) newErrors.eventName = "Event name is required"
@@ -67,34 +252,266 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                newErrors.timeInRegistrationStartDateTime = "Registration start is required"
           if (!formData.startDateTime) newErrors.startDateTime = "Start date is required"
           if (!formData.endDateTime) newErrors.endDateTime = "End date is required"
+          if (!formData.eventLocationId) newErrors.eventLocationId = "Location is required"
+          if (
+               !eligibility.allStudents &&
+               eligibility.isDirty &&
+               eligibility.selectedClusters.length === 0 &&
+               eligibility.selectedCourses.length === 0 &&
+               eligibility.selectedSections.length === 0
+          ) {
+               newErrors.eligibility = "Select at least one cluster, course, or section."
+          }
           setErrors(newErrors)
           return Object.keys(newErrors).length === 0
      }
 
-     const handleInputChange = (field: keyof typeof formData, value: string) => {
+     const handleInputChange = (field: keyof typeof formData, value: string | Date) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
-          if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }))
+          setHasChanges(true)
+          if (errors[field as string]) setErrors((prev) => ({ ...prev, [field as string]: "" }))
      }
+
+     const handleAllStudentsToggle = (checked: boolean) => {
+          setEligibility({
+               allStudents: checked,
+               selectedClusters: checked ? [] : eligibility.selectedClusters,
+               selectedCourses: checked ? [] : eligibility.selectedCourses,
+               selectedSections: checked ? [] : eligibility.selectedSections,
+               isDirty: true,
+          })
+          setHasChanges(true)
+     }
+
+     const handleClusterSelect = useCallback(
+          (clusterId: string, checked: boolean) => {
+               setEligibility((prev) => {
+                    let newClusters = [...prev.selectedClusters]
+                    let newCourses = [...prev.selectedCourses]
+                    let newSections = [...prev.selectedSections]
+
+                    if (checked) {
+                         if (!newClusters.includes(clusterId)) {
+                              newClusters.push(clusterId)
+                              const clCourses = getCoursesUnderCluster(clusterId)
+                              clCourses.forEach((coId) => {
+                                   if (!newCourses.includes(coId)) {
+                                        newCourses.push(coId)
+                                        const coSecs = getSectionsUnderCourse(coId)
+                                        coSecs.forEach((seId) => {
+                                             if (!newSections.includes(seId)) {
+                                                  newSections.push(seId)
+                                             }
+                                        })
+                                   }
+                              })
+                         }
+                    } else {
+                         newClusters = newClusters.filter((id) => id !== clusterId)
+                         const clCourses = getCoursesUnderCluster(clusterId)
+                         newCourses = newCourses.filter((id) => !clCourses.includes(id))
+                         newSections = newSections.filter((seId) => {
+                              const coId = getCourseOfSection(seId)
+                              return coId && !clCourses.includes(coId)
+                         })
+                    }
+
+                    return {
+                         ...prev,
+                         selectedClusters: newClusters,
+                         selectedCourses: newCourses,
+                         selectedSections: newSections,
+                         isDirty: true,
+                    }
+               })
+               setHasChanges(true)
+          },
+          [getCoursesUnderCluster, getSectionsUnderCourse, getCourseOfSection]
+     )
+
+     const handleCourseSelect = useCallback(
+          (courseId: string, checked: boolean) => {
+               setEligibility((prev) => {
+                    let newCourses = [...prev.selectedCourses]
+                    let newSections = [...prev.selectedSections]
+                    let newClusters = [...prev.selectedClusters]
+                    if (checked) {
+                         if (!newCourses.includes(courseId)) {
+                              newCourses.push(courseId)
+                              const coSecs = getSectionsUnderCourse(courseId)
+                              coSecs.forEach((seId) => {
+                                   if (!newSections.includes(seId)) {
+                                        newSections.push(seId)
+                                   }
+                              })
+                              const clId = getClusterOfCourse(courseId)
+                              if (clId && !newClusters.includes(clId)) {
+                                   const clCourses = getCoursesUnderCluster(clId)
+                                   const allSelected = clCourses.every((cid) =>
+                                        newCourses.includes(cid)
+                                   )
+                                   if (allSelected) {
+                                        newClusters.push(clId)
+                                   }
+                              }
+                         }
+                    } else {
+                         newCourses = newCourses.filter((id) => id !== courseId)
+                         const coSecs = getSectionsUnderCourse(courseId)
+                         newSections = newSections.filter((id) => !coSecs.includes(id))
+                         const clId = getClusterOfCourse(courseId)
+                         if (clId && newClusters.includes(clId)) {
+                              const clCourses = getCoursesUnderCluster(clId)
+                              const stillAll = clCourses.every((cid) => newCourses.includes(cid))
+                              if (!stillAll) {
+                                   newClusters = newClusters.filter((cid) => cid !== clId)
+                              }
+                         }
+                    }
+
+                    return {
+                         ...prev,
+                         selectedClusters: newClusters,
+                         selectedCourses: newCourses,
+                         selectedSections: newSections,
+                         isDirty: true,
+                    }
+               })
+               setHasChanges(true)
+          },
+          [getSectionsUnderCourse, getClusterOfCourse, getCoursesUnderCluster]
+     )
+
+     const handleSectionSelect = useCallback(
+          (sectionId: string, checked: boolean) => {
+               setEligibility((prev) => {
+                    let newSections = [...prev.selectedSections]
+                    let newCourses = [...prev.selectedCourses]
+                    let newClusters = [...prev.selectedClusters]
+                    if (checked) {
+                         if (!newSections.includes(sectionId)) {
+                              newSections.push(sectionId)
+                              const coId = getCourseOfSection(sectionId)
+                              if (coId && !newCourses.includes(coId)) {
+                                   const coSecs = getSectionsUnderCourse(coId)
+                                   const allSelected = coSecs.every((sid) =>
+                                        newSections.includes(sid)
+                                   )
+                                   if (allSelected) {
+                                        newCourses.push(coId)
+                                        const clId = getClusterOfCourse(coId)
+                                        if (clId && !newClusters.includes(clId)) {
+                                             const clCourses = getCoursesUnderCluster(clId)
+                                             const allCoursesSel = clCourses.every((cid) =>
+                                                  newCourses.includes(cid)
+                                             )
+                                             if (allCoursesSel) {
+                                                  newClusters.push(clId)
+                                             }
+                                        }
+                                   }
+                              }
+                         }
+                    } else {
+                         newSections = newSections.filter((id) => id !== sectionId)
+                         const coId = getCourseOfSection(sectionId)
+                         if (coId && newCourses.includes(coId)) {
+                              const coSecs = getSectionsUnderCourse(coId)
+                              const stillAll = coSecs.every((sid) => newSections.includes(sid))
+                              if (!stillAll) {
+                                   newCourses = newCourses.filter((cid) => cid !== coId)
+                                   const clId = getClusterOfCourse(coId)
+                                   if (clId && newClusters.includes(clId)) {
+                                        const clCourses = getCoursesUnderCluster(clId)
+                                        const stillAllCourses = clCourses.every((cid) =>
+                                             newCourses.includes(cid)
+                                        )
+                                        if (!stillAllCourses) {
+                                             newClusters = newClusters.filter((cid) => cid !== clId)
+                                        }
+                                   }
+                              }
+                         }
+                    }
+
+                    return {
+                         ...prev,
+                         selectedClusters: newClusters,
+                         selectedCourses: newCourses,
+                         selectedSections: newSections,
+                         isDirty: true,
+                    }
+               })
+               setHasChanges(true)
+          },
+          [getCourseOfSection, getSectionsUnderCourse, getClusterOfCourse, getCoursesUnderCluster]
+     )
+
+     const filteredCourses =
+          eligibility.selectedClusters.length === 0
+               ? courses
+               : courses.filter((course) =>
+                      eligibility.selectedClusters.some(
+                           (clId) => course.cluster?.clusterId === clId
+                      )
+                 )
+
+     const filteredSections =
+          eligibility.selectedCourses.length === 0
+               ? sections
+               : sections.filter((section) =>
+                      eligibility.selectedCourses.some((coId) => section.course?.id === coId)
+                 )
 
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           if (!validateForm()) return
-
           setIsSubmitting(true)
           try {
-               const updatedData = {
+               const parseDateTime = (dateTimeStr: string): Date => {
+                    return new Date(dateTimeStr)
+               }
+
+               let eligibleStudents: EligibilityCriteria | undefined
+               if (eligibility.isDirty || !eligibility.allStudents) {
+                    const cleaned = cleanEligibility(
+                         eligibility.selectedClusters,
+                         eligibility.selectedCourses,
+                         eligibility.selectedSections
+                    )
+                    eligibleStudents = {
+                         allStudents: eligibility.allStudents,
+                         ...(eligibility.allStudents
+                              ? {}
+                              : {
+                                     cluster: cleaned.selectedClusters,
+                                     course: cleaned.selectedCourses,
+                                     sections: cleaned.selectedSections,
+                                }),
+                    } as EligibilityCriteria
+               }
+
+               const updatedData: Partial<EventSession> = {
                     eventName: formData.eventName,
                     description: formData.description || undefined,
                     timeInRegistrationStartDateTime: format(
-                         new Date(formData.timeInRegistrationStartDateTime),
-                         "yyyy-MM-dd HH:mm:ss"
+                         parseDateTime(formData.timeInRegistrationStartDateTime),
+                         "yyyy-MM-dd hh:mm:ss a"
                     ),
-                    startDateTime: format(new Date(formData.startDateTime), "yyyy-MM-dd HH:mm:ss"),
-                    endDateTime: format(new Date(formData.endDateTime), "yyyy-MM-dd HH:mm:ss"),
+                    startDateTime: format(
+                         parseDateTime(formData.startDateTime),
+                         "yyyy-MM-dd hh:mm:ss a"
+                    ),
+                    endDateTime: format(
+                         parseDateTime(formData.endDateTime),
+                         "yyyy-MM-dd hh:mm:ss a"
+                    ),
                     eventStatus: formData.eventStatus,
+                    eventLocationId: formData.eventLocationId || undefined,
+                    ...(eligibleStudents && { eligibleStudents }),
                }
-               await updateEvent(event.eventId, updatedData)
 
+               await updateEvent(event.eventId, updatedData)
                showStatus("success", "Successfully updated the event.")
           } catch (error) {
                console.error("Update failed:", error)
@@ -111,15 +528,17 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           onClose()
      }
 
+     if (!isOpen) return null
+
      return (
           <>
                <Dialog open={isOpen} onOpenChange={handleClose}>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                          <DialogHeader>
-                              <DialogTitle>Edit Event</DialogTitle>
+                              <DialogTitle>Edit Event: {event.eventName}</DialogTitle>
                               <DialogDescription>Update the event details below.</DialogDescription>
                          </DialogHeader>
-                         <form onSubmit={handleSubmit} className="space-y-4">
+                         <form onSubmit={handleSubmit} className="space-y-6">
                               <div className="space-y-2">
                                    <Label htmlFor="eventName">Event Name</Label>
                                    <Input
@@ -135,7 +554,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         <p className="text-sm text-red-500">{errors.eventName}</p>
                                    )}
                               </div>
-
                               <div className="space-y-2">
                                    <Label htmlFor="description">Description</Label>
                                    <Textarea
@@ -147,7 +565,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         placeholder="Enter description"
                                    />
                               </div>
-
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                    <div className="space-y-2">
                                         <Label htmlFor="regStart">Registration Start</Label>
@@ -173,7 +590,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                              </p>
                                         )}
                                    </div>
-
                                    <div className="space-y-2">
                                         <Label htmlFor="startDate">Start Date</Label>
                                         <Input
@@ -193,7 +609,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                              </p>
                                         )}
                                    </div>
-
                                    <div className="space-y-2">
                                         <Label htmlFor="endDate">End Date</Label>
                                         <Input
@@ -212,32 +627,257 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         )}
                                    </div>
                               </div>
-
                               <div className="space-y-2">
                                    <Label htmlFor="status">Status</Label>
                                    <Select
                                         value={formData.eventStatus}
                                         onValueChange={(value) =>
-                                             handleInputChange("eventStatus", value)
+                                             handleInputChange("eventStatus", value as EventStatus)
                                         }
                                    >
                                         <SelectTrigger id="status">
                                              <SelectValue placeholder="Select status" />
                                         </SelectTrigger>
                                         <SelectContent>
+                                             <SelectItem value={EventStatus.UPCOMING}>
+                                                  {EventStatus.UPCOMING}
+                                             </SelectItem>
+                                             <SelectItem value={EventStatus.ONGOING}>
+                                                  {EventStatus.ONGOING}
+                                             </SelectItem>
                                              <SelectItem value={EventStatus.CANCELLED}>
                                                   {EventStatus.CANCELLED}
+                                             </SelectItem>
+                                             <SelectItem value={EventStatus.CONCLUDED}>
+                                                  {EventStatus.CONCLUDED}
+                                             </SelectItem>
+                                             <SelectItem value={EventStatus.FINALIZED}>
+                                                  {EventStatus.FINALIZED}
                                              </SelectItem>
                                         </SelectContent>
                                    </Select>
                               </div>
-
+                              <div className="space-y-2">
+                                   <Label htmlFor="eventLocationId">Location</Label>
+                                   <Select
+                                        value={formData.eventLocationId}
+                                        onValueChange={(value) =>
+                                             handleInputChange("eventLocationId", value)
+                                        }
+                                        disabled={loadingLocations}
+                                   >
+                                        <SelectTrigger
+                                             className={
+                                                  errors.eventLocationId ? "border-red-500" : ""
+                                             }
+                                        >
+                                             <SelectValue
+                                                  placeholder={
+                                                       loadingLocations
+                                                            ? "Loading locations..."
+                                                            : event.eventLocation?.locationName ||
+                                                              "Select a location"
+                                                  }
+                                             />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             {locations.map((loc) => (
+                                                  <SelectItem
+                                                       key={loc.locationId}
+                                                       value={loc.locationId}
+                                                  >
+                                                       {loc.locationName}
+                                                  </SelectItem>
+                                             ))}
+                                        </SelectContent>
+                                   </Select>
+                                   {errors.eventLocationId && (
+                                        <p className="text-sm text-red-500">
+                                             {errors.eventLocationId}
+                                        </p>
+                                   )}
+                              </div>
+                              <div className="space-y-4">
+                                   <Label>Eligible Attendees</Label>
+                                   <div className="p-4 border rounded-md bg-muted/50">
+                                        <div className="space-y-3">
+                                             <div className="flex items-center space-x-2">
+                                                  <Checkbox
+                                                       id="allStudents"
+                                                       checked={eligibility.allStudents}
+                                                       onCheckedChange={handleAllStudentsToggle}
+                                                  />
+                                                  <Label
+                                                       htmlFor="allStudents"
+                                                       className="text-sm font-medium"
+                                                  >
+                                                       All Students
+                                                  </Label>
+                                             </div>
+                                             {!eligibility.allStudents && (
+                                                  <div className="space-y-4 pt-2">
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Clusters
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading clusters...
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {clusters.map((cluster) => (
+                                                                           <div
+                                                                                key={
+                                                                                     cluster.clusterId
+                                                                                }
+                                                                                className="flex items-center space-x-2"
+                                                                           >
+                                                                                <Checkbox
+                                                                                     id={`cluster-${cluster.clusterId}`}
+                                                                                     checked={eligibility.selectedClusters.includes(
+                                                                                          cluster.clusterId ||
+                                                                                               ""
+                                                                                     )}
+                                                                                     onCheckedChange={(
+                                                                                          checked
+                                                                                     ) =>
+                                                                                          handleClusterSelect(
+                                                                                               cluster.clusterId ||
+                                                                                                    "",
+                                                                                               !!checked
+                                                                                          )
+                                                                                     }
+                                                                                />
+                                                                                <Label
+                                                                                     htmlFor={`cluster-${cluster.clusterId}`}
+                                                                                     className="text-sm"
+                                                                                >
+                                                                                     {
+                                                                                          cluster.clusterName
+                                                                                     }
+                                                                                </Label>
+                                                                           </div>
+                                                                      ))}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Courses{" "}
+                                                                 <ChevronRight className="h-3 w-3" />
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading courses...
+                                                                 </p>
+                                                            ) : filteredCourses.length === 0 ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      No courses available.
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {filteredCourses.map(
+                                                                           (course) => (
+                                                                                <div
+                                                                                     key={course.id}
+                                                                                     className="flex items-center space-x-2"
+                                                                                >
+                                                                                     <Checkbox
+                                                                                          id={`course-${course.id}`}
+                                                                                          checked={eligibility.selectedCourses.includes(
+                                                                                               course.id
+                                                                                          )}
+                                                                                          onCheckedChange={(
+                                                                                               checked
+                                                                                          ) =>
+                                                                                               handleCourseSelect(
+                                                                                                    course.id,
+                                                                                                    !!checked
+                                                                                               )
+                                                                                          }
+                                                                                     />
+                                                                                     <Label
+                                                                                          htmlFor={`course-${course.id}`}
+                                                                                          className="text-sm"
+                                                                                     >
+                                                                                          {
+                                                                                               course.courseName
+                                                                                          }
+                                                                                     </Label>
+                                                                                </div>
+                                                                           )
+                                                                      )}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Sections{" "}
+                                                                 <ChevronRight className="h-3 w-3" />
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading sections...
+                                                                 </p>
+                                                            ) : filteredSections.length === 0 ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      No sections available.
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {filteredSections.map(
+                                                                           (section) => (
+                                                                                <div
+                                                                                     key={
+                                                                                          section.id
+                                                                                     }
+                                                                                     className="flex items-center space-x-2"
+                                                                                >
+                                                                                     <Checkbox
+                                                                                          id={`section-${section.id}`}
+                                                                                          checked={eligibility.selectedSections.includes(
+                                                                                               section.id
+                                                                                          )}
+                                                                                          onCheckedChange={(
+                                                                                               checked
+                                                                                          ) =>
+                                                                                               handleSectionSelect(
+                                                                                                    section.id,
+                                                                                                    !!checked
+                                                                                               )
+                                                                                          }
+                                                                                     />
+                                                                                     <Label
+                                                                                          htmlFor={`section-${section.id}`}
+                                                                                          className="text-sm"
+                                                                                     >
+                                                                                          {
+                                                                                               section.name
+                                                                                          }
+                                                                                     </Label>
+                                                                                </div>
+                                                                           )
+                                                                      )}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+                                                  </div>
+                                             )}
+                                        </div>
+                                   </div>
+                                   {errors.eligibility && (
+                                        <p className="text-sm text-red-500">{errors.eligibility}</p>
+                                   )}
+                              </div>
                               {errors.general && (
                                    <p className="text-sm text-red-500 p-2 bg-red-50 rounded">
                                         {errors.general}
                                    </p>
                               )}
-
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"
@@ -248,7 +888,10 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         <X className="mr-2 h-4 w-4" />
                                         Cancel
                                    </Button>
-                                   <Button type="submit" disabled={!handleInputChange}>
+                                   <Button
+                                        type="submit"
+                                        disabled={isSubmitting || loadingHierarchy || !hasChanges}
+                                   >
                                         <Save className="mr-2 h-4 w-4" />
                                         {isSubmitting ? "Saving..." : "Save Changes"}
                                    </Button>
@@ -256,7 +899,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                          </form>
                     </DialogContent>
                </Dialog>
-
                <EditEventStatusDialog
                     open={statusDialogOpen}
                     status={editStatus}
