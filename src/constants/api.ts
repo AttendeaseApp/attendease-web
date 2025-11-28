@@ -1,4 +1,4 @@
-export const API_BASE = "https://attendease-backend-latest.onrender.com"
+export const API_BASE = "http://127.0.0.1:8082"
 /**
  * constant login endpoint
  */
@@ -43,6 +43,8 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
      RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
      IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
      RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
+     EDIT_USER_DETAILS: (userId: string) =>`${API_BASE}/api/users/information/management/${userId}`,
+
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {

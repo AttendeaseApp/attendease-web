@@ -10,13 +10,15 @@ import {
      TableRow,
 } from "@/components/ui/table"
 import { UserStudentResponse } from "@/interface/UserStudent"
+import{EditUserDetailsPayload} from "@/interface/users/edit-user-details"
 
 interface UsersTableProps {
      users: UserStudentResponse[]
      loading: boolean
+     onUpdate: (user: EditUserDetailsPayload) => void
 }
 
-export default function UsersTable({ users, loading }: UsersTableProps) {
+export default function UsersTable({ users, loading, onUpdate }: UsersTableProps) {
      return (
           <Table>
                <TableHeader className="bg-gray-100">
@@ -58,7 +60,21 @@ export default function UsersTable({ users, loading }: UsersTableProps) {
                                    <TableCell>{user.contactNumber || "N/A"}</TableCell>
                                    <TableCell>{user.accountStatus || "N/A"}</TableCell>
                                    <TableCell>
-                                        <Button variant="outline" className="rounded-sm">
+                                              <Button
+                                             variant="outline"
+                                             className="rounded-sm"
+                                             onClick={() =>
+                                                  onUpdate({
+                                                       userId: String (user.userId),
+                                                       firstName: user.firstName,
+                                                       lastName: user.lastName,
+                                                       contactNumber: user.contactNumber,
+                                                       email: user.email,
+                                                       studentNumber: user.studentNumber,
+                                                  //     sectionId: user.sectionId?.toString()
+                                                  })
+                                             }
+                                        >
                                              Update
                                         </Button>
                                    </TableCell>
