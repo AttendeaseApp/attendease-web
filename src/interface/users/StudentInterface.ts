@@ -3,7 +3,7 @@ export interface StudentAccountPayload {
      lastName: string
      studentNumber: string
      section: string
-     yearLevel: string
+     //yearLevel: string
      contactNumber: string
      email: string
      address: string

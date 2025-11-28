@@ -165,8 +165,16 @@ export default function RetrieveAllUsers() {
                     open={openImportStudents}
                     onOpenChange={setOpenImportStudents}
                />
-               <AddOSAAccountDialog open={openAddOSA} onOpenChange={setOpenAddOSA} />
-               <AddStudentAccountDialog open={openAddStudent} onOpenChange={setOpenAddStudent} />
+               <AddOSAAccountDialog
+                    open={openAddOSA}
+                    onOpenChange={setOpenAddOSA}
+                    onAdd={loadUsers}
+               />
+               <AddStudentAccountDialog
+                    open={openAddStudent}
+                    onOpenChange={setOpenAddStudent}
+                    onAdd={loadUsers}
+               />
           </ProtectedLayout>
      )
 }

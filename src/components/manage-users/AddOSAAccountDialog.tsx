@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { createOSAAccount } from "@/services/user-management-services"
 
-interface AddAccountDialogProps {
+interface AddOSAAccountDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
+     onAdd?: () => void
 }
 
 interface FormState {
@@ -21,7 +22,11 @@ interface FormState {
      contactNumber?: string
 }
 
-export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialogProps) {
+export default function AddOSAAccountDialog({
+     open,
+     onOpenChange,
+     onAdd,
+}: AddOSAAccountDialogProps) {
      const [form, setForm] = useState<FormState>({
           firstName: "",
           lastName: "",
@@ -50,10 +55,7 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
           setLoading(true)
           try {
                const { confirmPassword, ...payload } = form
-
                await createOSAAccount(payload)
-
-               console.log("Account created")
 
                setForm({
                     firstName: "",
@@ -65,6 +67,7 @@ export default function AddAccountDialog({ open, onOpenChange }: AddAccountDialo
                })
 
                onOpenChange(false)
+               onAdd?.()
           } catch (err: unknown) {
                const message = err instanceof Error ? err.message : "Failed to create account"
                setError(message)

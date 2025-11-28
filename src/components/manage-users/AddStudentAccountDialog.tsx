@@ -12,18 +12,20 @@ import { Section } from "@/interface/students/SectionInterface"
 interface AddStudentAccountDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
+     onAdd?: () => void
 }
 
 export default function AddStudentAccountDialog({
      open,
      onOpenChange,
+     onAdd,
 }: AddStudentAccountDialogProps) {
      const [form, setForm] = useState<StudentAccountPayload & { confirmPassword: string }>({
           firstName: "",
           lastName: "",
           studentNumber: "",
           section: "",
-          yearLevel: "",
+          //yearLevel: "",
           contactNumber: "",
           email: "",
           address: "",
@@ -68,7 +70,7 @@ export default function AddStudentAccountDialog({
                !form.lastName ||
                !form.studentNumber ||
                !form.section ||
-               !form.yearLevel ||
+               //!form.yearLevel ||
                !form.contactNumber ||
                !form.email ||
                !form.address ||
@@ -87,7 +89,7 @@ export default function AddStudentAccountDialog({
                     lastName: "",
                     studentNumber: "",
                     section: "",
-                    yearLevel: "",
+                    //yearLevel: "",
                     contactNumber: "",
                     email: "",
                     address: "",
@@ -95,6 +97,7 @@ export default function AddStudentAccountDialog({
                     confirmPassword: "",
                })
                onOpenChange(false)
+               onAdd?.()
           } catch (err: unknown) {
                const message =
                     err instanceof Error ? err.message : "Failed to create student account"
@@ -262,7 +265,7 @@ export default function AddStudentAccountDialog({
                                              lastName: "",
                                              studentNumber: "",
                                              section: "",
-                                             yearLevel: "",
+                                             //yearLevel: "",
                                              contactNumber: "",
                                              email: "",
                                              address: "",
