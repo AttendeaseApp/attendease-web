@@ -30,7 +30,7 @@ export function ClusterAndCourseTable({ courses, loading, onDelete }: CourseTabl
           e.stopPropagation()
           if (
                confirm(
-                    `Are you sure you want to delete the course "${course.courseName}"? This action cannot be undone.`
+                    `Are you sure you want to delete the course "${course.courseName}"? This action cannot be undone and will also delete associated sections.`
                )
           ) {
                onDelete(course)

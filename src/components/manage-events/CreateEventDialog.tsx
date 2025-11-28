@@ -128,7 +128,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           } catch (err) {
                console.error("Create failed:", err)
                setError(err instanceof Error ? err.message : "Failed to create event.")
-               showStatus("error", "Failed to create the event")
+               showStatus("error", "Failed to create the event. Please verify date and location")
           } finally {
                setIsSubmitting(false)
           }
