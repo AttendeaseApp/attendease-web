@@ -20,7 +20,7 @@ import {
      DialogTitle,
      DialogFooter,
 } from "@/components/ui/dialog"
-import { Save, X, Users, Filter, ChevronRight, MapPin } from "lucide-react"
+import { Save, X, Filter, ChevronRight } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { EventSession, EventStatus, EligibilityCriteria } from "@/interface/event/event-interface"
 import { updateEvent } from "@/services/event-sessions"
@@ -33,6 +33,7 @@ import { getAllLocations } from "@/services/locations-service"
 import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
 import { Section } from "@/interface/students/SectionInterface"
 import { EventLocation } from "@/interface/location-interface"
+import EditEventStatusDialog from "./EditEventStatusDialog"
 
 interface EditEventDialogProps {
      event: EventSession
@@ -40,11 +41,6 @@ interface EditEventDialogProps {
      isOpen: boolean
      onClose: () => void
 }
-
-type DateFields = keyof Pick<
-     EventSession,
-     "timeInRegistrationStartDateTime" | "startDateTime" | "endDateTime"
->
 
 interface EligibilityState {
      allStudents: boolean
@@ -87,6 +83,29 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
      const [loadingLocations, setLoadingLocations] = useState(true)
 
      useEffect(() => {
+          if (isOpen && event) {
+               const formatToLocal = (dateStr?: string) => {
+                    if (!dateStr) return ""
+                    const date = new Date(dateStr.replace(" ", "T"))
+                    const year = date.getFullYear()
+                    const month = String(date.getMonth() + 1).padStart(2, "0")
+                    const day = String(date.getDate()).padStart(2, "0")
+                    const hours = String(date.getHours()).padStart(2, "0")
+                    const minutes = String(date.getMinutes()).padStart(2, "0")
+                    return `${year}-${month}-${day}T${hours}:${minutes}`
+               }
+               setFormData((prev) => ({
+                    ...prev,
+                    timeInRegistrationStartDateTime: formatToLocal(
+                         event.timeInRegistrationStartDateTime
+                    ),
+                    startDateTime: formatToLocal(event.startDateTime),
+                    endDateTime: formatToLocal(event.endDateTime),
+               }))
+          }
+     }, [isOpen, event])
+
+     useEffect(() => {
           const loadData = async () => {
                if (!isOpen) return
                try {
@@ -115,6 +134,16 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           }
           loadData()
      }, [isOpen])
+
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [editStatus, setEditStatus] = useState<"success" | "error">("success")
+     const [editMessage, setEditMessage] = useState("")
+
+     const showStatus = (status: "success" | "error", message: string) => {
+          setEditStatus(status)
+          setEditMessage(message)
+          setStatusDialogOpen(true)
+     }
 
      const validateForm = () => {
           const newErrors: Record<string, string> = {}
@@ -208,7 +237,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     startDateTime: format(new Date(formData.startDateTime), "yyyy-MM-dd HH:mm:ss"),
                     endDateTime: format(new Date(formData.endDateTime), "yyyy-MM-dd HH:mm:ss"),
                     eventStatus: formData.eventStatus,
-                    eventLocationId: formData.eventLocationId || undefined, // NEW: Include location if changed
+                    eventLocationId: formData.eventLocationId || undefined,
                }
                if (eligibility.isDirty || !eligibility.allStudents) {
                     updatedData.eligibleStudents = {
@@ -223,11 +252,11 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     } as EligibilityCriteria
                }
                await updateEvent(event.eventId, updatedData)
-               onUpdate()
-               onClose()
+               showStatus("success", "Successfully updated the event.")
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
+               showStatus("error", "Failed to update the event. Please verify time and location")
           } finally {
                setIsSubmitting(false)
           }
@@ -240,363 +269,392 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
      }
 
      return (
-          <Dialog open={isOpen} onOpenChange={handleClose}>
-               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                    {" "}
-                    <DialogHeader>
-                         <DialogTitle>Edit Event: {event.eventName}</DialogTitle>
-                         <DialogDescription>Update the event details below.</DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                         <div className="space-y-2">
-                              <Label htmlFor="eventName">Event Name</Label>
-                              <Input
-                                   id="eventName"
-                                   value={formData.eventName}
-                                   onChange={(e) => handleInputChange("eventName", e.target.value)}
-                                   placeholder="Enter event name"
-                                   className={errors.eventName ? "border-red-500" : ""}
-                              />
-                              {errors.eventName && (
-                                   <p className="text-sm text-red-500">{errors.eventName}</p>
-                              )}
-                         </div>
-
-                         <div className="space-y-2">
-                              <Label htmlFor="description">Description</Label>
-                              <Textarea
-                                   id="description"
-                                   value={formData.description}
-                                   onChange={(e) =>
-                                        handleInputChange("description", e.target.value)
-                                   }
-                                   placeholder="Enter description"
-                              />
-                         </div>
-
-                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <>
+               <Dialog open={isOpen} onOpenChange={handleClose}>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                         <DialogHeader>
+                              <DialogTitle>Edit Event: {event.eventName}</DialogTitle>
+                              <DialogDescription>Update the event details below.</DialogDescription>
+                         </DialogHeader>
+                         <form onSubmit={handleSubmit} className="space-y-6">
                               <div className="space-y-2">
-                                   <Label htmlFor="regStart">Registration Start</Label>
+                                   <Label htmlFor="eventName">Event Name</Label>
                                    <Input
-                                        id="regStart"
-                                        type="datetime-local"
-                                        value={formData.timeInRegistrationStartDateTime}
+                                        id="eventName"
+                                        value={formData.eventName}
                                         onChange={(e) =>
-                                             handleInputChange(
-                                                  "timeInRegistrationStartDateTime",
-                                                  e.target.value
-                                             )
+                                             handleInputChange("eventName", e.target.value)
                                         }
-                                        className={
-                                             errors.timeInRegistrationStartDateTime
-                                                  ? "border-red-500"
-                                                  : ""
-                                        }
+                                        placeholder="Enter event name"
+                                        className={errors.eventName ? "border-red-500" : ""}
                                    />
-                                   {errors.timeInRegistrationStartDateTime && (
-                                        <p className="text-sm text-red-500">
-                                             {errors.timeInRegistrationStartDateTime}
-                                        </p>
+                                   {errors.eventName && (
+                                        <p className="text-sm text-red-500">{errors.eventName}</p>
                                    )}
                               </div>
-
                               <div className="space-y-2">
-                                   <Label htmlFor="startDate">Start Date</Label>
-                                   <Input
-                                        id="startDate"
-                                        type="datetime-local"
-                                        value={formData.startDateTime}
+                                   <Label htmlFor="description">Description</Label>
+                                   <Textarea
+                                        id="description"
+                                        value={formData.description}
                                         onChange={(e) =>
-                                             handleInputChange("startDateTime", e.target.value)
+                                             handleInputChange("description", e.target.value)
                                         }
-                                        className={errors.startDateTime ? "border-red-500" : ""}
+                                        placeholder="Enter description"
                                    />
-                                   {errors.startDateTime && (
-                                        <p className="text-sm text-red-500">
-                                             {errors.startDateTime}
-                                        </p>
-                                   )}
                               </div>
-
-                              <div className="space-y-2">
-                                   <Label htmlFor="endDate">End Date</Label>
-                                   <Input
-                                        id="endDate"
-                                        type="datetime-local"
-                                        value={formData.endDateTime}
-                                        onChange={(e) =>
-                                             handleInputChange("endDateTime", e.target.value)
-                                        }
-                                        className={errors.endDateTime ? "border-red-500" : ""}
-                                   />
-                                   {errors.endDateTime && (
-                                        <p className="text-sm text-red-500">{errors.endDateTime}</p>
-                                   )}
-                              </div>
-                         </div>
-
-                         <div className="space-y-2">
-                              <Label htmlFor="status">Status</Label>
-                              <Select
-                                   value={formData.eventStatus}
-                                   onValueChange={(value) =>
-                                        handleInputChange("eventStatus", value as EventStatus)
-                                   }
-                              >
-                                   <SelectTrigger id="status">
-                                        <SelectValue placeholder="Select status" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                        <SelectItem value={EventStatus.UPCOMING}>
-                                             {EventStatus.UPCOMING}
-                                        </SelectItem>
-                                        <SelectItem value={EventStatus.ONGOING}>
-                                             {EventStatus.ONGOING}
-                                        </SelectItem>
-                                        <SelectItem value={EventStatus.CANCELLED}>
-                                             {EventStatus.CANCELLED}
-                                        </SelectItem>
-                                        <SelectItem value={EventStatus.CONCLUDED}>
-                                             {EventStatus.CONCLUDED}
-                                        </SelectItem>
-                                        <SelectItem value={EventStatus.FINALIZED}>
-                                             {EventStatus.FINALIZED}
-                                        </SelectItem>
-                                   </SelectContent>
-                              </Select>
-                         </div>
-
-                         <div className="space-y-2">
-                              <Label htmlFor="eventLocationId">Location</Label>
-                              <Select
-                                   value={formData.eventLocationId}
-                                   onValueChange={(value) =>
-                                        handleInputChange("eventLocationId", value)
-                                   }
-                                   disabled={loadingLocations}
-                              >
-                                   <SelectTrigger
-                                        className={errors.eventLocationId ? "border-red-500" : ""}
-                                   >
-                                        <SelectValue
-                                             placeholder={
-                                                  loadingLocations
-                                                       ? "Loading locations..."
-                                                       : event.eventLocation?.locationName ||
-                                                         "Select a location"
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                   <div className="space-y-2">
+                                        <Label htmlFor="regStart">Registration Start</Label>
+                                        <Input
+                                             id="regStart"
+                                             type="datetime-local"
+                                             value={formData.timeInRegistrationStartDateTime}
+                                             onChange={(e) =>
+                                                  handleInputChange(
+                                                       "timeInRegistrationStartDateTime",
+                                                       e.target.value
+                                                  )
+                                             }
+                                             className={
+                                                  errors.timeInRegistrationStartDateTime
+                                                       ? "border-red-500"
+                                                       : ""
                                              }
                                         />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                        {locations.map((loc) => (
-                                             <SelectItem
-                                                  key={loc.locationId}
-                                                  value={loc.locationId}
-                                             >
-                                                  {loc.locationName}
+                                        {errors.timeInRegistrationStartDateTime && (
+                                             <p className="text-sm text-red-500">
+                                                  {errors.timeInRegistrationStartDateTime}
+                                             </p>
+                                        )}
+                                   </div>
+                                   <div className="space-y-2">
+                                        <Label htmlFor="startDate">Start Date</Label>
+                                        <Input
+                                             id="startDate"
+                                             type="datetime-local"
+                                             value={formData.startDateTime}
+                                             onChange={(e) =>
+                                                  handleInputChange("startDateTime", e.target.value)
+                                             }
+                                             className={
+                                                  errors.startDateTime ? "border-red-500" : ""
+                                             }
+                                        />
+                                        {errors.startDateTime && (
+                                             <p className="text-sm text-red-500">
+                                                  {errors.startDateTime}
+                                             </p>
+                                        )}
+                                   </div>
+                                   <div className="space-y-2">
+                                        <Label htmlFor="endDate">End Date</Label>
+                                        <Input
+                                             id="endDate"
+                                             type="datetime-local"
+                                             value={formData.endDateTime}
+                                             onChange={(e) =>
+                                                  handleInputChange("endDateTime", e.target.value)
+                                             }
+                                             className={errors.endDateTime ? "border-red-500" : ""}
+                                        />
+                                        {errors.endDateTime && (
+                                             <p className="text-sm text-red-500">
+                                                  {errors.endDateTime}
+                                             </p>
+                                        )}
+                                   </div>
+                              </div>
+                              <div className="space-y-2">
+                                   <Label htmlFor="status">Status</Label>
+                                   <Select
+                                        value={formData.eventStatus}
+                                        onValueChange={(value) =>
+                                             handleInputChange("eventStatus", value as EventStatus)
+                                        }
+                                   >
+                                        <SelectTrigger id="status">
+                                             <SelectValue placeholder="Select status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             <SelectItem value={EventStatus.UPCOMING}>
+                                                  {EventStatus.UPCOMING}
                                              </SelectItem>
-                                        ))}
-                                   </SelectContent>
-                              </Select>
-                              {errors.eventLocationId && (
-                                   <p className="text-sm text-red-500">{errors.eventLocationId}</p>
-                              )}
-                         </div>
-
-                         <div className="space-y-4">
-                              <Label>Eligible Attendees</Label>
-                              <div className="p-4 border rounded-md bg-muted/50">
-                                   <div className="space-y-3">
-                                        <div className="flex items-center space-x-2">
-                                             <Checkbox
-                                                  id="allStudents"
-                                                  checked={eligibility.allStudents}
-                                                  onCheckedChange={handleAllStudentsToggle}
+                                             <SelectItem value={EventStatus.ONGOING}>
+                                                  {EventStatus.ONGOING}
+                                             </SelectItem>
+                                             <SelectItem value={EventStatus.CANCELLED}>
+                                                  {EventStatus.CANCELLED}
+                                             </SelectItem>
+                                             <SelectItem value={EventStatus.CONCLUDED}>
+                                                  {EventStatus.CONCLUDED}
+                                             </SelectItem>
+                                             <SelectItem value={EventStatus.FINALIZED}>
+                                                  {EventStatus.FINALIZED}
+                                             </SelectItem>
+                                        </SelectContent>
+                                   </Select>
+                              </div>
+                              <div className="space-y-2">
+                                   <Label htmlFor="eventLocationId">Location</Label>
+                                   <Select
+                                        value={formData.eventLocationId}
+                                        onValueChange={(value) =>
+                                             handleInputChange("eventLocationId", value)
+                                        }
+                                        disabled={loadingLocations}
+                                   >
+                                        <SelectTrigger
+                                             className={
+                                                  errors.eventLocationId ? "border-red-500" : ""
+                                             }
+                                        >
+                                             <SelectValue
+                                                  placeholder={
+                                                       loadingLocations
+                                                            ? "Loading locations..."
+                                                            : event.eventLocation?.locationName ||
+                                                              "Select a location"
+                                                  }
                                              />
-                                             <Label
-                                                  htmlFor="allStudents"
-                                                  className="text-sm font-medium"
-                                             >
-                                                  All Students
-                                             </Label>
-                                        </div>
-                                        {!eligibility.allStudents && (
-                                             <div className="space-y-4 pt-2">
-                                                  <div className="space-y-2">
-                                                       <Label className="flex items-center gap-2 text-sm font-medium">
-                                                            <Filter className="h-4 w-4" />
-                                                            Select Clusters
-                                                       </Label>
-                                                       {loadingHierarchy ? (
-                                                            <p className="text-sm text-muted-foreground">
-                                                                 Loading clusters...
-                                                            </p>
-                                                       ) : (
-                                                            <div className="space-y-1 max-h-32 overflow-y-auto">
-                                                                 {clusters.map((cluster) => (
-                                                                      <div
-                                                                           key={cluster.clusterId}
-                                                                           className="flex items-center space-x-2"
-                                                                      >
-                                                                           <Checkbox
-                                                                                id={`cluster-${cluster.clusterId}`}
-                                                                                checked={eligibility.selectedClusters.includes(
-                                                                                     cluster.clusterId ||
-                                                                                          ""
-                                                                                )}
-                                                                                onCheckedChange={(
-                                                                                     checked
-                                                                                ) =>
-                                                                                     handleClusterSelect(
-                                                                                          cluster.clusterId ||
-                                                                                               "",
-                                                                                          !!checked
-                                                                                     )
-                                                                                }
-                                                                           />
-                                                                           <Label
-                                                                                htmlFor={`cluster-${cluster.clusterId}`}
-                                                                                className="text-sm"
-                                                                           >
-                                                                                {
-                                                                                     cluster.clusterName
-                                                                                }
-                                                                           </Label>
-                                                                      </div>
-                                                                 ))}
-                                                            </div>
-                                                       )}
-                                                  </div>
-
-                                                  <div className="space-y-2">
-                                                       <Label className="flex items-center gap-2 text-sm font-medium">
-                                                            <Filter className="h-4 w-4" />
-                                                            Select Courses{" "}
-                                                            <ChevronRight className="h-3 w-3" />
-                                                       </Label>
-                                                       {loadingHierarchy ? (
-                                                            <p className="text-sm text-muted-foreground">
-                                                                 Loading courses...
-                                                            </p>
-                                                       ) : filteredCourses.length === 0 &&
-                                                         eligibility.selectedClusters.length > 0 ? (
-                                                            <p className="text-sm text-muted-foreground">
-                                                                 No courses in selected clusters.
-                                                            </p>
-                                                       ) : (
-                                                            <div className="space-y-1 max-h-32 overflow-y-auto">
-                                                                 {filteredCourses.map((course) => (
-                                                                      <div
-                                                                           key={course.id}
-                                                                           className="flex items-center space-x-2"
-                                                                      >
-                                                                           <Checkbox
-                                                                                id={`course-${course.id}`}
-                                                                                checked={eligibility.selectedCourses.includes(
-                                                                                     course.id
-                                                                                )}
-                                                                                onCheckedChange={(
-                                                                                     checked
-                                                                                ) =>
-                                                                                     handleCourseSelect(
-                                                                                          course.id,
-                                                                                          !!checked
-                                                                                     )
-                                                                                }
-                                                                           />
-                                                                           <Label
-                                                                                htmlFor={`course-${course.id}`}
-                                                                                className="text-sm"
-                                                                           >
-                                                                                {course.courseName}
-                                                                           </Label>
-                                                                      </div>
-                                                                 ))}
-                                                            </div>
-                                                       )}
-                                                  </div>
-
-                                                  <div className="space-y-2">
-                                                       <Label className="flex items-center gap-2 text-sm font-medium">
-                                                            <Filter className="h-4 w-4" />
-                                                            Select Sections{" "}
-                                                            <ChevronRight className="h-3 w-3" />
-                                                       </Label>
-                                                       {loadingHierarchy ? (
-                                                            <p className="text-sm text-muted-foreground">
-                                                                 Loading sections...
-                                                            </p>
-                                                       ) : filteredSections.length === 0 &&
-                                                         eligibility.selectedCourses.length > 0 ? (
-                                                            <p className="text-sm text-muted-foreground">
-                                                                 No sections in selected courses.
-                                                            </p>
-                                                       ) : (
-                                                            <div className="space-y-1 max-h-32 overflow-y-auto">
-                                                                 {filteredSections.map(
-                                                                      (section) => (
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             {locations.map((loc) => (
+                                                  <SelectItem
+                                                       key={loc.locationId}
+                                                       value={loc.locationId}
+                                                  >
+                                                       {loc.locationName}
+                                                  </SelectItem>
+                                             ))}
+                                        </SelectContent>
+                                   </Select>
+                                   {errors.eventLocationId && (
+                                        <p className="text-sm text-red-500">
+                                             {errors.eventLocationId}
+                                        </p>
+                                   )}
+                              </div>
+                              <div className="space-y-4">
+                                   <Label>Eligible Attendees</Label>
+                                   <div className="p-4 border rounded-md bg-muted/50">
+                                        <div className="space-y-3">
+                                             <div className="flex items-center space-x-2">
+                                                  <Checkbox
+                                                       id="allStudents"
+                                                       checked={eligibility.allStudents}
+                                                       onCheckedChange={handleAllStudentsToggle}
+                                                  />
+                                                  <Label
+                                                       htmlFor="allStudents"
+                                                       className="text-sm font-medium"
+                                                  >
+                                                       All Students
+                                                  </Label>
+                                             </div>
+                                             {!eligibility.allStudents && (
+                                                  <div className="space-y-4 pt-2">
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Clusters
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading clusters...
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {clusters.map((cluster) => (
                                                                            <div
-                                                                                key={section.id}
+                                                                                key={
+                                                                                     cluster.clusterId
+                                                                                }
                                                                                 className="flex items-center space-x-2"
                                                                            >
                                                                                 <Checkbox
-                                                                                     id={`section-${section.id}`}
-                                                                                     checked={eligibility.selectedSections.includes(
-                                                                                          section.id
+                                                                                     id={`cluster-${cluster.clusterId}`}
+                                                                                     checked={eligibility.selectedClusters.includes(
+                                                                                          cluster.clusterId ||
+                                                                                               ""
                                                                                      )}
                                                                                      onCheckedChange={(
                                                                                           checked
                                                                                      ) =>
-                                                                                          handleSectionSelect(
-                                                                                               section.id,
+                                                                                          handleClusterSelect(
+                                                                                               cluster.clusterId ||
+                                                                                                    "",
                                                                                                !!checked
                                                                                           )
                                                                                      }
                                                                                 />
                                                                                 <Label
-                                                                                     htmlFor={`section-${section.id}`}
+                                                                                     htmlFor={`cluster-${cluster.clusterId}`}
                                                                                      className="text-sm"
                                                                                 >
-                                                                                     {section.name}
+                                                                                     {
+                                                                                          cluster.clusterName
+                                                                                     }
                                                                                 </Label>
                                                                            </div>
-                                                                      )
-                                                                 )}
-                                                            </div>
-                                                       )}
+                                                                      ))}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Courses{" "}
+                                                                 <ChevronRight className="h-3 w-3" />
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading courses...
+                                                                 </p>
+                                                            ) : filteredCourses.length === 0 &&
+                                                              eligibility.selectedClusters.length >
+                                                                   0 ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      No courses in selected
+                                                                      clusters.
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {filteredCourses.map(
+                                                                           (course) => (
+                                                                                <div
+                                                                                     key={course.id}
+                                                                                     className="flex items-center space-x-2"
+                                                                                >
+                                                                                     <Checkbox
+                                                                                          id={`course-${course.id}`}
+                                                                                          checked={eligibility.selectedCourses.includes(
+                                                                                               course.id
+                                                                                          )}
+                                                                                          onCheckedChange={(
+                                                                                               checked
+                                                                                          ) =>
+                                                                                               handleCourseSelect(
+                                                                                                    course.id,
+                                                                                                    !!checked
+                                                                                               )
+                                                                                          }
+                                                                                     />
+                                                                                     <Label
+                                                                                          htmlFor={`course-${course.id}`}
+                                                                                          className="text-sm"
+                                                                                     >
+                                                                                          {
+                                                                                               course.courseName
+                                                                                          }
+                                                                                     </Label>
+                                                                                </div>
+                                                                           )
+                                                                      )}
+                                                                 </div>
+                                                            )}
+                                                       </div>
+                                                       <div className="space-y-2">
+                                                            <Label className="flex items-center gap-2 text-sm font-medium">
+                                                                 <Filter className="h-4 w-4" />
+                                                                 Select Sections{" "}
+                                                                 <ChevronRight className="h-3 w-3" />
+                                                            </Label>
+                                                            {loadingHierarchy ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      Loading sections...
+                                                                 </p>
+                                                            ) : filteredSections.length === 0 &&
+                                                              eligibility.selectedCourses.length >
+                                                                   0 ? (
+                                                                 <p className="text-sm text-muted-foreground">
+                                                                      No sections in selected
+                                                                      courses.
+                                                                 </p>
+                                                            ) : (
+                                                                 <div className="space-y-1 max-h-32 overflow-y-auto">
+                                                                      {filteredSections.map(
+                                                                           (section) => (
+                                                                                <div
+                                                                                     key={
+                                                                                          section.id
+                                                                                     }
+                                                                                     className="flex items-center space-x-2"
+                                                                                >
+                                                                                     <Checkbox
+                                                                                          id={`section-${section.id}`}
+                                                                                          checked={eligibility.selectedSections.includes(
+                                                                                               section.id
+                                                                                          )}
+                                                                                          onCheckedChange={(
+                                                                                               checked
+                                                                                          ) =>
+                                                                                               handleSectionSelect(
+                                                                                                    section.id,
+                                                                                                    !!checked
+                                                                                               )
+                                                                                          }
+                                                                                     />
+                                                                                     <Label
+                                                                                          htmlFor={`section-${section.id}`}
+                                                                                          className="text-sm"
+                                                                                     >
+                                                                                          {
+                                                                                               section.name
+                                                                                          }
+                                                                                     </Label>
+                                                                                </div>
+                                                                           )
+                                                                      )}
+                                                                 </div>
+                                                            )}
+                                                       </div>
                                                   </div>
-                                             </div>
-                                        )}
+                                             )}
+                                        </div>
                                    </div>
+                                   {errors.eligibility && (
+                                        <p className="text-sm text-red-500">{errors.eligibility}</p>
+                                   )}
                               </div>
-                              {errors.eligibility && (
-                                   <p className="text-sm text-red-500">{errors.eligibility}</p>
+                              {errors.general && (
+                                   <p className="text-sm text-red-500 p-2 bg-red-50 rounded">
+                                        {errors.general}
+                                   </p>
                               )}
-                         </div>
-
-                         {errors.general && (
-                              <p className="text-sm text-red-500 p-2 bg-red-50 rounded">
-                                   {errors.general}
-                              </p>
-                         )}
-
-                         <DialogFooter className="flex justify-end space-x-2 pt-4">
-                              <Button
-                                   type="button"
-                                   variant="outline"
-                                   onClick={handleClose}
-                                   disabled={isSubmitting}
-                              >
-                                   <X className="mr-2 h-4 w-4" />
-                                   Cancel
-                              </Button>
-                              <Button type="submit" disabled={isSubmitting || loadingHierarchy}>
-                                   <Save className="mr-2 h-4 w-4" />
-                                   {isSubmitting ? "Saving..." : "Save Changes"}
-                              </Button>
-                         </DialogFooter>
-                    </form>
-               </DialogContent>
-          </Dialog>
+                              <DialogFooter className="flex justify-end space-x-2 pt-4">
+                                   <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleClose}
+                                        disabled={isSubmitting}
+                                   >
+                                        <X className="mr-2 h-4 w-4" />
+                                        Cancel
+                                   </Button>
+                                   <Button
+                                        type="submit"
+                                        disabled={isSubmitting || loadingHierarchy}
+                                   >
+                                        <Save className="mr-2 h-4 w-4" />
+                                        {isSubmitting ? "Saving..." : "Save Changes"}
+                                   </Button>
+                              </DialogFooter>
+                         </form>
+                    </DialogContent>
+               </Dialog>
+               <EditEventStatusDialog
+                    open={statusDialogOpen}
+                    status={editStatus}
+                    message={editMessage}
+                    onClose={() => {
+                         setStatusDialogOpen(false)
+                         if (editStatus === "success") {
+                              onUpdate()
+                              onClose()
+                         }
+                    }}
+               />
+          </>
      )
 }
