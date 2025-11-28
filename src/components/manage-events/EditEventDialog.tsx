@@ -58,19 +58,19 @@ interface EligibilityState {
  */
 export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventDialogProps) {
      const [formData, setFormData] = useState({
-          eventName: event.eventName,
-          description: event.description || "",
-          timeInRegistrationStartDateTime: event.timeInRegistrationStartDateTime,
-          startDateTime: event.startDateTime,
-          endDateTime: event.endDateTime,
-          eventStatus: event.eventStatus,
-          eventLocationId: event.eventLocationId || "",
+          eventName: "",
+          description: "",
+          timeInRegistrationStartDateTime: "",
+          startDateTime: "",
+          endDateTime: "",
+          eventStatus: EventStatus.UPCOMING,
+          eventLocationId: "",
      })
      const [eligibility, setEligibility] = useState<EligibilityState>({
-          allStudents: event.eligibleStudents?.allStudents ?? true,
-          selectedClusters: event.eligibleStudents?.cluster ?? [],
-          selectedCourses: event.eligibleStudents?.course ?? [],
-          selectedSections: event.eligibleStudents?.sections ?? [],
+          allStudents: true,
+          selectedClusters: [],
+          selectedCourses: [],
+          selectedSections: [],
           isDirty: false,
      })
      const [errors, setErrors] = useState<Record<string, string>>({})
@@ -82,28 +82,52 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
      const [loadingHierarchy, setLoadingHierarchy] = useState(true)
      const [loadingLocations, setLoadingLocations] = useState(true)
 
-     useEffect(() => {
-          if (isOpen && event) {
-               const formatToLocal = (dateStr?: string) => {
-                    if (!dateStr) return ""
-                    const date = new Date(dateStr.replace(" ", "T"))
-                    const year = date.getFullYear()
-                    const month = String(date.getMonth() + 1).padStart(2, "0")
-                    const day = String(date.getDate()).padStart(2, "0")
-                    const hours = String(date.getHours()).padStart(2, "0")
-                    const minutes = String(date.getMinutes()).padStart(2, "0")
-                    return `${year}-${month}-${day}T${hours}:${minutes}`
-               }
-               setFormData((prev) => ({
-                    ...prev,
-                    timeInRegistrationStartDateTime: formatToLocal(
-                         event.timeInRegistrationStartDateTime
-                    ),
-                    startDateTime: formatToLocal(event.startDateTime),
-                    endDateTime: formatToLocal(event.endDateTime),
-               }))
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [editStatus, setEditStatus] = useState<"success" | "error">("success")
+     const [editMessage, setEditMessage] = useState("")
+
+     const showStatus = (status: "success" | "error", message: string) => {
+          setEditStatus(status)
+          setEditMessage(message)
+          setStatusDialogOpen(true)
+     }
+
+     const getCoursesUnderCluster = (clId: string) => {
+          return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
+     }
+
+     const getSectionsUnderCourse = (coId: string) => {
+          return sections.filter((s) => s.course?.id === coId).map((s) => s.id)
+     }
+
+     const getClusterOfCourse = (coId: string) => {
+          const course = courses.find((c) => c.id === coId)
+          return course?.cluster?.clusterId
+     }
+
+     const getCourseOfSection = (seId: string) => {
+          const section = sections.find((s) => s.id === seId)
+          return section?.course?.id
+     }
+
+     const cleanEligibility = (selClusters: string[], selCourses: string[], selSecs: string[]) => {
+          let newCourses = [...selCourses]
+          const newSecs = [...selSecs]
+          let newClusters = [...selClusters]
+          newCourses = newCourses.filter((coId) => {
+               const coSecs = getSectionsUnderCourse(coId)
+               return coSecs.length === 0 || coSecs.every((seId) => selSecs.includes(seId))
+          })
+          newClusters = newClusters.filter((clId) => {
+               const clCourses = getCoursesUnderCluster(clId)
+               return clCourses.length === 0 || clCourses.every((coId) => newCourses.includes(coId))
+          })
+          return {
+               selectedClusters: newClusters,
+               selectedCourses: newCourses,
+               selectedSections: newSecs,
           }
-     }, [isOpen, event])
+     }
 
      useEffect(() => {
           const loadData = async () => {
@@ -135,15 +159,70 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           loadData()
      }, [isOpen])
 
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [editStatus, setEditStatus] = useState<"success" | "error">("success")
-     const [editMessage, setEditMessage] = useState("")
+     useEffect(() => {
+          if (isOpen && event && clusters.length > 0 && courses.length > 0 && sections.length > 0) {
+               const formatToLocal = (dateStr?: string): string => {
+                    if (!dateStr) return ""
+                    try {
+                         const parsedDate = new Date(dateStr.replace(" ", "T"))
+                         if (isNaN(parsedDate.getTime())) {
+                              return ""
+                         }
+                         const year = parsedDate.getFullYear()
+                         const month = String(parsedDate.getMonth() + 1).padStart(2, "0")
+                         const day = String(parsedDate.getDate()).padStart(2, "0")
+                         const hours = String(parsedDate.getHours()).padStart(2, "0")
+                         const minutes = String(parsedDate.getMinutes()).padStart(2, "0")
+                         return `${year}-${month}-${day}T${hours}:${minutes}`
+                    } catch (err) {
+                         console.error("Date parsing error:", err)
+                         return ""
+                    }
+               }
 
-     const showStatus = (status: "success" | "error", message: string) => {
-          setEditStatus(status)
-          setEditMessage(message)
-          setStatusDialogOpen(true)
-     }
+               setFormData({
+                    eventName: event.eventName || "",
+                    description: event.description || "",
+                    timeInRegistrationStartDateTime: formatToLocal(
+                         event.timeInRegistrationStartDateTime
+                    ),
+                    startDateTime: formatToLocal(event.startDateTime),
+                    endDateTime: formatToLocal(event.endDateTime),
+                    eventStatus: event.eventStatus,
+                    eventLocationId: event.eventLocationId || "",
+               })
+
+               const tempElig = {
+                    allStudents: event.eligibleStudents?.allStudents ?? true,
+                    selectedClusters: event.eligibleStudents?.cluster ?? [],
+                    selectedCourses: event.eligibleStudents?.course ?? [],
+                    selectedSections: event.eligibleStudents?.sections ?? [],
+               }
+
+               let finalElig = { ...tempElig }
+
+               if (!tempElig.allStudents) {
+                    const cleaned = cleanEligibility(
+                         tempElig.selectedClusters,
+                         tempElig.selectedCourses,
+                         tempElig.selectedSections
+                    )
+                    finalElig = {
+                         allStudents: false,
+                         selectedClusters: cleaned.selectedClusters,
+                         selectedCourses: cleaned.selectedCourses,
+                         selectedSections: cleaned.selectedSections,
+                    }
+               }
+
+               setEligibility({
+                    ...finalElig,
+                    isDirty: false,
+               })
+
+               setErrors({})
+          }
+     }, [isOpen, event, clusters.length, courses.length, sections.length])
 
      const validateForm = () => {
           const newErrors: Record<string, string> = {}
@@ -182,75 +261,217 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
      }
 
      const handleClusterSelect = (clusterId: string, checked: boolean) => {
-          const newClusters = checked
-               ? [...eligibility.selectedClusters, clusterId]
-               : eligibility.selectedClusters.filter((id) => id !== clusterId)
-          setEligibility((prev) => ({
-               ...prev,
-               selectedClusters: newClusters,
-               selectedCourses: [],
-               selectedSections: [],
-               isDirty: true,
-          }))
+          setEligibility((prev) => {
+               let newClusters = [...prev.selectedClusters]
+               let newCourses = [...prev.selectedCourses]
+               let newSections = [...prev.selectedSections]
+
+               if (checked) {
+                    if (!newClusters.includes(clusterId)) {
+                         newClusters.push(clusterId)
+                         const clCourses = getCoursesUnderCluster(clusterId)
+                         clCourses.forEach((coId) => {
+                              if (!newCourses.includes(coId)) {
+                                   newCourses.push(coId)
+                                   const coSecs = getSectionsUnderCourse(coId)
+                                   coSecs.forEach((seId) => {
+                                        if (!newSections.includes(seId)) {
+                                             newSections.push(seId)
+                                        }
+                                   })
+                              }
+                         })
+                    }
+               } else {
+                    newClusters = newClusters.filter((id) => id !== clusterId)
+                    const clCourses = getCoursesUnderCluster(clusterId)
+                    newCourses = newCourses.filter((id) => !clCourses.includes(id))
+                    newSections = newSections.filter((seId) => {
+                         const coId = getCourseOfSection(seId)
+                         return coId && !clCourses.includes(coId)
+                    })
+               }
+
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+                    isDirty: true,
+               }
+          })
      }
 
      const handleCourseSelect = (courseId: string, checked: boolean) => {
-          const newCourses = checked
-               ? [...eligibility.selectedCourses, courseId]
-               : eligibility.selectedCourses.filter((id) => id !== courseId)
-          setEligibility((prev) => ({
-               ...prev,
-               selectedCourses: newCourses,
-               selectedSections: [],
-               isDirty: true,
-          }))
+          setEligibility((prev) => {
+               let newCourses = [...prev.selectedCourses]
+               let newSections = [...prev.selectedSections]
+               let newClusters = [...prev.selectedClusters]
+               if (checked) {
+                    if (!newCourses.includes(courseId)) {
+                         newCourses.push(courseId)
+                         const coSecs = getSectionsUnderCourse(courseId)
+                         coSecs.forEach((seId) => {
+                              if (!newSections.includes(seId)) {
+                                   newSections.push(seId)
+                              }
+                         })
+                         const clId = getClusterOfCourse(courseId)
+                         if (clId && !newClusters.includes(clId)) {
+                              const clCourses = getCoursesUnderCluster(clId)
+                              const allSelected = clCourses.every((cid) => newCourses.includes(cid))
+                              if (allSelected) {
+                                   newClusters.push(clId)
+                              }
+                         }
+                    }
+               } else {
+                    newCourses = newCourses.filter((id) => id !== courseId)
+                    const coSecs = getSectionsUnderCourse(courseId)
+                    newSections = newSections.filter((id) => !coSecs.includes(id))
+                    const clId = getClusterOfCourse(courseId)
+                    if (clId && newClusters.includes(clId)) {
+                         const clCourses = getCoursesUnderCluster(clId)
+                         const stillAll = clCourses.every((cid) => newCourses.includes(cid))
+                         if (!stillAll) {
+                              newClusters = newClusters.filter((cid) => cid !== clId)
+                         }
+                    }
+               }
+
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+                    isDirty: true,
+               }
+          })
      }
 
      const handleSectionSelect = (sectionId: string, checked: boolean) => {
-          const newSections = checked
-               ? [...eligibility.selectedSections, sectionId]
-               : eligibility.selectedSections.filter((id) => id !== sectionId)
-          setEligibility((prev) => ({ ...prev, selectedSections: newSections, isDirty: true }))
+          setEligibility((prev) => {
+               let newSections = [...prev.selectedSections]
+               let newCourses = [...prev.selectedCourses]
+               let newClusters = [...prev.selectedClusters]
+               if (checked) {
+                    if (!newSections.includes(sectionId)) {
+                         newSections.push(sectionId)
+                         const coId = getCourseOfSection(sectionId)
+                         if (coId && !newCourses.includes(coId)) {
+                              const coSecs = getSectionsUnderCourse(coId)
+                              const allSelected = coSecs.every((sid) => newSections.includes(sid))
+                              if (allSelected) {
+                                   newCourses.push(coId)
+                                   const clId = getClusterOfCourse(coId)
+                                   if (clId && !newClusters.includes(clId)) {
+                                        const clCourses = getCoursesUnderCluster(clId)
+                                        const allCoursesSel = clCourses.every((cid) =>
+                                             newCourses.includes(cid)
+                                        )
+                                        if (allCoursesSel) {
+                                             newClusters.push(clId)
+                                        }
+                                   }
+                              }
+                         }
+                    }
+               } else {
+                    newSections = newSections.filter((id) => id !== sectionId)
+                    const coId = getCourseOfSection(sectionId)
+                    if (coId && newCourses.includes(coId)) {
+                         const coSecs = getSectionsUnderCourse(coId)
+                         const stillAll = coSecs.every((sid) => newSections.includes(sid))
+                         if (!stillAll) {
+                              newCourses = newCourses.filter((cid) => cid !== coId)
+                              const clId = getClusterOfCourse(coId)
+                              if (clId && newClusters.includes(clId)) {
+                                   const clCourses = getCoursesUnderCluster(clId)
+                                   const stillAllCourses = clCourses.every((cid) =>
+                                        newCourses.includes(cid)
+                                   )
+                                   if (!stillAllCourses) {
+                                        newClusters = newClusters.filter((cid) => cid !== clId)
+                                   }
+                              }
+                         }
+                    }
+               }
+
+               return {
+                    ...prev,
+                    selectedClusters: newClusters,
+                    selectedCourses: newCourses,
+                    selectedSections: newSections,
+                    isDirty: true,
+               }
+          })
      }
 
-     const filteredCourses = courses.filter((course) =>
-          eligibility.selectedClusters.includes(course.cluster?.clusterId || "")
-     )
+     const filteredCourses =
+          eligibility.selectedClusters.length === 0
+               ? courses
+               : courses.filter((course) =>
+                      eligibility.selectedClusters.some(
+                           (clId) => course.cluster?.clusterId === clId
+                      )
+                 )
 
-     const filteredSections = sections.filter((section) =>
-          eligibility.selectedCourses.includes(section.course?.id || "")
-     )
+     const filteredSections =
+          eligibility.selectedCourses.length === 0
+               ? sections
+               : sections.filter((section) =>
+                      eligibility.selectedCourses.some((coId) => section.course?.id === coId)
+                 )
 
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           if (!validateForm()) return
-
           setIsSubmitting(true)
           try {
-               const updatedData: Partial<EventSession> = {
-                    eventName: formData.eventName,
-                    description: formData.description || undefined,
-                    timeInRegistrationStartDateTime: format(
-                         new Date(formData.timeInRegistrationStartDateTime),
-                         "yyyy-MM-dd HH:mm:ss"
-                    ),
-                    startDateTime: format(new Date(formData.startDateTime), "yyyy-MM-dd HH:mm:ss"),
-                    endDateTime: format(new Date(formData.endDateTime), "yyyy-MM-dd HH:mm:ss"),
-                    eventStatus: formData.eventStatus,
-                    eventLocationId: formData.eventLocationId || undefined,
+               const parseDateTime = (dateTimeStr: string): Date => {
+                    return new Date(dateTimeStr)
                }
+
+               let eligibleStudents: EligibilityCriteria | undefined
                if (eligibility.isDirty || !eligibility.allStudents) {
-                    updatedData.eligibleStudents = {
+                    const cleaned = cleanEligibility(
+                         eligibility.selectedClusters,
+                         eligibility.selectedCourses,
+                         eligibility.selectedSections
+                    )
+                    eligibleStudents = {
                          allStudents: eligibility.allStudents,
                          ...(eligibility.allStudents
                               ? {}
                               : {
-                                     cluster: eligibility.selectedClusters,
-                                     course: eligibility.selectedCourses,
-                                     sections: eligibility.selectedSections,
+                                     cluster: cleaned.selectedClusters,
+                                     course: cleaned.selectedCourses,
+                                     sections: cleaned.selectedSections,
                                 }),
                     } as EligibilityCriteria
                }
+
+               const updatedData: Partial<EventSession> = {
+                    eventName: formData.eventName,
+                    description: formData.description || undefined,
+                    timeInRegistrationStartDateTime: format(
+                         parseDateTime(formData.timeInRegistrationStartDateTime),
+                         "yyyy-MM-dd hh:mm:ss a"
+                    ),
+                    startDateTime: format(
+                         parseDateTime(formData.startDateTime),
+                         "yyyy-MM-dd hh:mm:ss a"
+                    ),
+                    endDateTime: format(
+                         parseDateTime(formData.endDateTime),
+                         "yyyy-MM-dd hh:mm:ss a"
+                    ),
+                    eventStatus: formData.eventStatus,
+                    eventLocationId: formData.eventLocationId || undefined,
+                    ...(eligibleStudents && { eligibleStudents }),
+               }
+
                await updateEvent(event.eventId, updatedData)
                showStatus("success", "Successfully updated the event.")
           } catch (error) {
@@ -267,6 +488,8 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           setIsSubmitting(false)
           onClose()
      }
+
+     if (!isOpen) return null
 
      return (
           <>
@@ -511,12 +734,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                                  <p className="text-sm text-muted-foreground">
                                                                       Loading courses...
                                                                  </p>
-                                                            ) : filteredCourses.length === 0 &&
-                                                              eligibility.selectedClusters.length >
-                                                                   0 ? (
+                                                            ) : filteredCourses.length === 0 ? (
                                                                  <p className="text-sm text-muted-foreground">
-                                                                      No courses in selected
-                                                                      clusters.
+                                                                      No courses available.
                                                                  </p>
                                                             ) : (
                                                                  <div className="space-y-1 max-h-32 overflow-y-auto">
@@ -564,12 +784,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                                  <p className="text-sm text-muted-foreground">
                                                                       Loading sections...
                                                                  </p>
-                                                            ) : filteredSections.length === 0 &&
-                                                              eligibility.selectedCourses.length >
-                                                                   0 ? (
+                                                            ) : filteredSections.length === 0 ? (
                                                                  <p className="text-sm text-muted-foreground">
-                                                                      No sections in selected
-                                                                      courses.
+                                                                      No sections available.
                                                                  </p>
                                                             ) : (
                                                                  <div className="space-y-1 max-h-32 overflow-y-auto">
