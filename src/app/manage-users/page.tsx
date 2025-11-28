@@ -11,9 +11,19 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
 import ImportStudentsDialog from "@/components/manage-users/ImportStudentsDialog"
+
 import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
 
 import EditUserDetailsDialog from "@/components/manage-users/EditUserDetailsDialog"
+
+import AddOSAAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
+import AddStudentAccountDialog from "@/components/manage-users/AddStudentAccountDialog"
+import {
+     DropdownMenu,
+     DropdownMenuContent,
+     DropdownMenuItem,
+     DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -24,6 +34,8 @@ export default function RetrieveAllUsers() {
      const [error, setError] = useState<string | null>(null)
      const [openMoreSettings, setOpenMoreSettings] = useState(false)
      const [openImportStudents, setOpenImportStudents] = useState(false)
+     const [openAddOSA, setOpenAddOSA] = useState(false)
+     const [openAddStudent, setOpenAddStudent] = useState(false)
 
      const [openUpdateDialog, setOpenUpdateDialog] = useState(false)
      const [currentUser, setCurrentUser] = useState<EditUserDetailsPayload | null>(null)
@@ -94,7 +106,21 @@ export default function RetrieveAllUsers() {
                               <p className="text-muted-foreground mt-1">Manage all users here.</p>
                          </div>
                          <div className="flex justify-end space-x-2">
-                              <Button className="sm:w-autom">Manually Add Account</Button>
+                              <DropdownMenu>
+                                   <DropdownMenuTrigger asChild>
+                                        <Button>Manually Add Account ▾</Button>
+                                   </DropdownMenuTrigger>
+
+                                   <DropdownMenuContent>
+                                        <DropdownMenuItem onClick={() => setOpenAddOSA(true)}>
+                                             OSA Account
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setOpenAddStudent(true)}>
+                                             Student Account
+                                        </DropdownMenuItem>
+                                   </DropdownMenuContent>
+                              </DropdownMenu>
+
                               <Button
                                    className="sm:w-auto"
                                    onClick={() => setOpenImportStudents(true)}
@@ -167,6 +193,16 @@ export default function RetrieveAllUsers() {
                     onOpenChange={setOpenUpdateDialog}
                     user={currentUser}
                     onUpdated={handleUserUpdated}
+                />
+               <AddOSAAccountDialog
+                    open={openAddOSA}
+                    onOpenChange={setOpenAddOSA}
+                    onAdd={loadUsers}
+               />
+               <AddStudentAccountDialog
+                    open={openAddStudent}
+                    onOpenChange={setOpenAddStudent}
+                    onAdd={loadUsers}
                />
           </ProtectedLayout>
      )

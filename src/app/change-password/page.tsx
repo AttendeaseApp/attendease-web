@@ -92,9 +92,9 @@ export default function OsaChangePasswordPage() {
                                         className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
                                    >
                                         {showOld ? (
-                                             <EyeOff className="h-5 w-5" />
+                                             <EyeOff className="h-5 w-5 mt-4" />
                                         ) : (
-                                             <Eye className="h-5 w-5" />
+                                             <Eye className="h-5 w-5 mt-4" />
                                         )}
                                    </button>
                               </div>
@@ -122,9 +122,9 @@ export default function OsaChangePasswordPage() {
                                         className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
                                    >
                                         {showNew ? (
-                                             <EyeOff className="h-5 w-5" />
+                                             <EyeOff className="h-5 w-5 mt-4" />
                                         ) : (
-                                             <Eye className="h-5 w-5" />
+                                             <Eye className="h-5 w-5 mt-4" />
                                         )}
                                    </button>
                               </div>
@@ -152,9 +152,9 @@ export default function OsaChangePasswordPage() {
                                         className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
                                    >
                                         {showConfirm ? (
-                                             <EyeOff className="h-5 w-5" />
+                                             <EyeOff className="h-5 w-5 mt-4" />
                                         ) : (
-                                             <Eye className="h-5 w-5" />
+                                             <Eye className="h-5 w-5 mt-4" />
                                         )}
                                    </button>
                               </div>
