@@ -56,13 +56,14 @@ export default function RetrieveAllUsers() {
           const searchWords = lowerSearch.split(" ").filter((w) => w)
 
           const filtered = users.filter((user) => {
-               if (selectedType !== "all" && user.userType?.toLowerCase() !== selectedType) {
+               if (selectedType !== "all" && user.userType !== selectedType) {
                     return false
                }
 
                const fields = [
                     user.firstName,
                     user.lastName,
+                    user.userType,
                     user.section,
                     user.course,
                     user.studentNumber,
