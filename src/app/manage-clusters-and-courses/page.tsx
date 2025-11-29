@@ -178,16 +178,6 @@ export default function ManageClustersPage() {
           setFormSectionData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
-     const handleDelete = async (course: CourseSession) => {
-          try {
-               await deleteCourse(course.id)
-               setCourses((prev) => prev.filter((c) => c.id !== course.id))
-               alert("Course deleted successfully!")
-          } catch (error) {
-               console.error("Delete failed:", error)
-               alert("Failed to delete course. Please try again.")
-          }
-     }
      const handleDeleteCluster = async (cluster: ClusterSession) => {
           try {
                await deleteCluster(cluster.clusterId)
