@@ -35,7 +35,7 @@ import {
      SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { SectionTable } from "@/components/manage-clusters-and-courses/SectionTable" 
+import { SectionTable } from "@/components/manage-clusters-and-courses/SectionTable"
 
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
@@ -413,7 +413,7 @@ export default function ManageClustersPage() {
                               onError={(message) => showStatus("error", message)}
                          />
                     )}
-                    
+
                     <Dialog open={isChooseCourseOpen} onOpenChange={setIsChooseCourseOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                               <DialogHeader>
@@ -430,8 +430,7 @@ export default function ManageClustersPage() {
                                         onValueChange={(value) => {
                                              handleSectionInputChange("courseId", value)
                                              const course =
-                                                  courses.find((c) => c.id === value) ||
-                                                  null
+                                                  courses.find((c) => c.id === value) || null
                                              setSelectedCourse(course)
                                         }}
                                    >
@@ -446,10 +445,7 @@ export default function ManageClustersPage() {
                                         </SelectTrigger>
                                         <SelectContent>
                                              {courses.map((section) => (
-                                                  <SelectItem
-                                                       key={section.id}
-                                                       value={section.id}
-                                                  >
+                                                  <SelectItem key={section.id} value={section.id}>
                                                        {section.courseName}
                                                   </SelectItem>
                                              ))}

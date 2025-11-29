@@ -76,8 +76,7 @@ export function CreateSectionDialog({
                     <DialogHeader>
                          <DialogTitle>Create New Section</DialogTitle>
                          <DialogDescription>
-                              Fill in the details to create a new section in{" "}
-                              {course.courseName}.
+                              Fill in the details to create a new section in {course.courseName}.
                          </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
