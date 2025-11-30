@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { createStudentAccount, getSections } from "@/services/user-management-services"
 import { StudentAccountPayload } from "@/interface/users/StudentInterface"
 import { Section } from "@/interface/students/SectionInterface"
+import CreateUserStatusDialog from "./CreateUserStatusDialog"
 
 interface AddStudentAccountDialogProps {
      open: boolean
@@ -35,6 +36,16 @@ export default function AddStudentAccountDialog({
      const [loading, setLoading] = useState(false)
      const [error, setError] = useState("")
      const [sections, setSections] = useState<Section[]>([])
+           const [importStatus, setCreateStatus] = useState<"success" | "error">("success")
+     const [importMessage, setCreateMessage] = useState("")
+        const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     
+          const showStatus = (status: "success" | "error", message: string) => {
+               setCreateStatus(status)
+               setCreateMessage(message)
+               setStatusDialogOpen(true)
+          }
+     
 
      useEffect(() => {
           if (!open) return
@@ -83,6 +94,7 @@ export default function AddStudentAccountDialog({
           try {
                const { confirmPassword, ...payload } = form
                await createStudentAccount(payload)
+               showStatus("success", "Student account created successfully!")
                setForm({
                     firstName: "",
                     lastName: "",
@@ -100,13 +112,16 @@ export default function AddStudentAccountDialog({
                const message =
                     err instanceof Error ? err.message : "Failed to create student account"
                setError(message)
+               showStatus("error", message)
                console.error(message)
+
           } finally {
                setLoading(false)
           }
      }
 
      return (
+          <>
           <Dialog open={open} onOpenChange={onOpenChange}>
                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
                     <DialogHeader>
@@ -283,5 +298,13 @@ export default function AddStudentAccountDialog({
                     </div>
                </DialogContent>
           </Dialog>
+
+            <CreateUserStatusDialog
+                                        open={statusDialogOpen}
+                                        status={importStatus}
+                                        message={importMessage}
+                                        onClose={() => setStatusDialogOpen(false)}
+                                   />
+                                   </>
      )
 }

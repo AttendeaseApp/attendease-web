@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { createOSAAccount } from "@/services/user-management-services"
+import CreateUserStatusDialog from "./CreateUserStatusDialog"
 
 interface AddOSAAccountDialogProps {
      open: boolean
@@ -35,6 +36,17 @@ export default function AddOSAAccountDialog({
           confirmPassword: "",
           contactNumber: "",
      })
+      const [importStatus, setCreateStatus] = useState<"success" | "error">("success")
+     const [importMessage, setCreateMessage] = useState("")
+        const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     
+          const showStatus = (status: "success" | "error", message: string) => {
+               setCreateStatus(status)
+               setCreateMessage(message)
+               setStatusDialogOpen(true)
+          }
+     
+     
 
      const [loading, setLoading] = useState(false)
      const [error, setError] = useState("")
@@ -56,6 +68,7 @@ export default function AddOSAAccountDialog({
           try {
                const { confirmPassword, ...payload } = form
                await createOSAAccount(payload)
+            showStatus("success", "OSA account created successfully")
 
                setForm({
                     firstName: "",
@@ -71,6 +84,7 @@ export default function AddOSAAccountDialog({
           } catch (err: unknown) {
                const message = err instanceof Error ? err.message : "Failed to create account"
                setError(message)
+               showStatus("error", message)
                console.error(message)
           } finally {
                setLoading(false)
@@ -78,6 +92,7 @@ export default function AddOSAAccountDialog({
      }
 
      return (
+          <>
           <Dialog open={open} onOpenChange={onOpenChange}>
                <DialogContent className="max-w-4xl p-8">
                     <DialogHeader>
@@ -182,5 +197,12 @@ export default function AddOSAAccountDialog({
                     </div>
                </DialogContent>
           </Dialog>
+             <CreateUserStatusDialog
+                              open={statusDialogOpen}
+                              status={importStatus}
+                              message={importMessage}
+                              onClose={() => setStatusDialogOpen(false)}
+                         />
+                         </>
      )
 }
