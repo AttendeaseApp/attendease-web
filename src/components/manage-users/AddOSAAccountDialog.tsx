@@ -36,17 +36,15 @@ export default function AddOSAAccountDialog({
           confirmPassword: "",
           contactNumber: "",
      })
-      const [importStatus, setCreateStatus] = useState<"success" | "error">("success")
+     const [importStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [importMessage, setCreateMessage] = useState("")
-        const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     
-          const showStatus = (status: "success" | "error", message: string) => {
-               setCreateStatus(status)
-               setCreateMessage(message)
-               setStatusDialogOpen(true)
-          }
-     
-     
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+
+     const showStatus = (status: "success" | "error", message: string) => {
+          setCreateStatus(status)
+          setCreateMessage(message)
+          setStatusDialogOpen(true)
+     }
 
      const [loading, setLoading] = useState(false)
      const [error, setError] = useState("")
@@ -68,7 +66,7 @@ export default function AddOSAAccountDialog({
           try {
                const { confirmPassword, ...payload } = form
                await createOSAAccount(payload)
-            showStatus("success", "OSA account created successfully")
+               showStatus("success", "OSA account created successfully")
 
                setForm({
                     firstName: "",
@@ -93,116 +91,118 @@ export default function AddOSAAccountDialog({
 
      return (
           <>
-          <Dialog open={open} onOpenChange={onOpenChange}>
-               <DialogContent className="max-w-4xl p-8">
-                    <DialogHeader>
-                         <DialogTitle className="text-2xl">Create a new OSA account</DialogTitle>
-                         <p className="text-sm text-gray-500">Create new user account here.</p>
-                    </DialogHeader>
+               <Dialog open={open} onOpenChange={onOpenChange}>
+                    <DialogContent className="max-w-4xl p-8">
+                         <DialogHeader>
+                              <DialogTitle className="text-2xl">
+                                   Create a new OSA account
+                              </DialogTitle>
+                              <p className="text-sm text-gray-500">Create new user account here.</p>
+                         </DialogHeader>
 
-                    <div className="space-y-6">
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div className="space-y-6">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <div>
+                                        <Label>First Name</Label>
+                                        <Input
+                                             name="firstName"
+                                             placeholder="Enter First Name"
+                                             value={form.firstName}
+                                             onChange={handleChange}
+                                        />
+                                   </div>
+
+                                   <div>
+                                        <Label>Last Name</Label>
+                                        <Input
+                                             name="lastName"
+                                             placeholder="Enter Last Name"
+                                             value={form.lastName}
+                                             onChange={handleChange}
+                                        />
+                                   </div>
+                              </div>
+
                               <div>
-                                   <Label>First Name</Label>
+                                   <Label>Email Address</Label>
                                    <Input
-                                        name="firstName"
-                                        placeholder="Enter First Name"
-                                        value={form.firstName}
+                                        name="email"
+                                        type="email"
+                                        placeholder="Enter OSA Email"
+                                        value={form.email}
                                         onChange={handleChange}
                                    />
                               </div>
 
-                              <div>
-                                   <Label>Last Name</Label>
-                                   <Input
-                                        name="lastName"
-                                        placeholder="Enter Last Name"
-                                        value={form.lastName}
-                                        onChange={handleChange}
-                                   />
-                              </div>
-                         </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <div>
+                                        <Label>Password</Label>
+                                        <Input
+                                             name="password"
+                                             type="password"
+                                             placeholder="Password"
+                                             value={form.password}
+                                             onChange={handleChange}
+                                        />
+                                   </div>
 
-                         <div>
-                              <Label>Email Address</Label>
-                              <Input
-                                   name="email"
-                                   type="email"
-                                   placeholder="Enter OSA Email"
-                                   value={form.email}
-                                   onChange={handleChange}
-                              />
-                         </div>
-
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                   <Label>Password</Label>
-                                   <Input
-                                        name="password"
-                                        type="password"
-                                        placeholder="Password"
-                                        value={form.password}
-                                        onChange={handleChange}
-                                   />
+                                   <div>
+                                        <Label>Confirm Password</Label>
+                                        <Input
+                                             name="confirmPassword"
+                                             type="password"
+                                             placeholder="Confirm Password"
+                                             value={form.confirmPassword}
+                                             onChange={handleChange}
+                                        />
+                                   </div>
                               </div>
 
                               <div>
-                                   <Label>Confirm Password</Label>
+                                   <Label>Contact No.</Label>
                                    <Input
-                                        name="confirmPassword"
-                                        type="password"
-                                        placeholder="Confirm Password"
-                                        value={form.confirmPassword}
+                                        name="contactNumber"
+                                        type="text"
+                                        inputMode="numeric"
+                                        placeholder="Contact No."
+                                        value={form.contactNumber}
                                         onChange={handleChange}
                                    />
                               </div>
+
+                              {error && <p className="text-red-500">{error}</p>}
+
+                              <div className="flex justify-end gap-2">
+                                   <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                             setForm({
+                                                  firstName: "",
+                                                  lastName: "",
+                                                  email: "",
+                                                  password: "",
+                                                  confirmPassword: "",
+                                                  contactNumber: "",
+                                             })
+                                             onOpenChange(false)
+                                        }}
+                                   >
+                                        Cancel
+                                   </Button>
+
+                                   <Button onClick={handleSubmit} disabled={loading}>
+                                        {loading ? "Registering..." : "Register"}
+                                   </Button>
+                              </div>
                          </div>
-
-                         <div>
-                              <Label>Contact No.</Label>
-                              <Input
-                                   name="contactNumber"
-                                   type="text"
-                                   inputMode="numeric"
-                                   placeholder="Contact No."
-                                   value={form.contactNumber}
-                                   onChange={handleChange}
-                              />
-                         </div>
-
-                         {error && <p className="text-red-500">{error}</p>}
-
-                         <div className="flex justify-end gap-2">
-                              <Button
-                                   variant="outline"
-                                   onClick={() => {
-                                        setForm({
-                                             firstName: "",
-                                             lastName: "",
-                                             email: "",
-                                             password: "",
-                                             confirmPassword: "",
-                                             contactNumber: "",
-                                        })
-                                        onOpenChange(false)
-                                   }}
-                              >
-                                   Cancel
-                              </Button>
-
-                              <Button onClick={handleSubmit} disabled={loading}>
-                                   {loading ? "Registering..." : "Register"}
-                              </Button>
-                         </div>
-                    </div>
-               </DialogContent>
-          </Dialog>
-             <CreateUserStatusDialog
-                              open={statusDialogOpen}
-                              status={importStatus}
-                              message={importMessage}
-                              onClose={() => setStatusDialogOpen(false)}
-                         />
-                         </>
+                    </DialogContent>
+               </Dialog>
+               <CreateUserStatusDialog
+                    open={statusDialogOpen}
+                    status={importStatus}
+                    message={importMessage}
+                    onClose={() => setStatusDialogOpen(false)}
+               />
+          </>
      )
 }
