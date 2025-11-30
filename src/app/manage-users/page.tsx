@@ -11,6 +11,11 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
 import ImportStudentsDialog from "@/components/manage-users/ImportStudentsDialog"
+
+import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
+
+import EditUserDetailsDialog from "@/components/manage-users/EditUserDetailsDialog"
+
 import AddOSAAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
 import AddStudentAccountDialog from "@/components/manage-users/AddStudentAccountDialog"
 import {
@@ -31,6 +36,9 @@ export default function RetrieveAllUsers() {
      const [openImportStudents, setOpenImportStudents] = useState(false)
      const [openAddOSA, setOpenAddOSA] = useState(false)
      const [openAddStudent, setOpenAddStudent] = useState(false)
+
+     const [openUpdateDialog, setOpenUpdateDialog] = useState(false)
+     const [currentUser, setCurrentUser] = useState<EditUserDetailsPayload | null>(null)
 
      const loadUsers = async () => {
           try {
@@ -79,6 +87,15 @@ export default function RetrieveAllUsers() {
 
           setFilteredUsers(filtered)
      }, [searchTerm, selectedType, users])
+
+     const handleUpdateClick = (user: EditUserDetailsPayload) => {
+          setCurrentUser(user)
+          setOpenUpdateDialog(true)
+     }
+     const handleUserUpdated = (updatedUser: EditUserDetailsPayload) => {
+          loadUsers()
+          setOpenUpdateDialog(false)
+     }
 
      return (
           <ProtectedLayout>
@@ -154,7 +171,11 @@ export default function RetrieveAllUsers() {
                          </Button>
                     </div>
 
-                    <UsersTable users={filteredUsers} loading={loading} />
+                    <UsersTable
+                         users={filteredUsers}
+                         loading={loading}
+                         onUpdate={handleUpdateClick}
+                    />
 
                     {error && (
                          <div className="w-full max-w-6xl mx-auto mt-4 text-red-500">{error}</div>
@@ -165,6 +186,13 @@ export default function RetrieveAllUsers() {
                <ImportStudentsDialog
                     open={openImportStudents}
                     onOpenChange={setOpenImportStudents}
+               />
+
+               <EditUserDetailsDialog
+                    open={openUpdateDialog}
+                    onOpenChange={setOpenUpdateDialog}
+                    user={currentUser}
+                    onUpdated={handleUserUpdated}
                />
                <AddOSAAccountDialog
                     open={openAddOSA}
