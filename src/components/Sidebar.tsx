@@ -50,7 +50,7 @@ const menu = [
           icon: Users,
      },
      {
-          title: "Clusters & Courses",
+          title: "Clusters, Courses & Sections",
           url: "/manage-clusters-and-courses",
           icon: GraduationCap,
      },

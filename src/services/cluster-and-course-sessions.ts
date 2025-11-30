@@ -1,6 +1,4 @@
-import { CourseSession } from "@/interface/cluster-and-course-interface"
-import { Section } from "@/interface/students/SectionInterface"
-import { ClusterSession } from "@/interface/cluster-and-course-interface"
+import { CourseSession, ClusterSession, Section } from "@/interface/cluster-and-course-interface"
 import { authFetch } from "./auth-fetch"
 import { CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 
@@ -190,6 +188,74 @@ export const deleteCluster = async (id: string): Promise<void> => {
           }
      } catch (error) {
           console.error("Error deleting course:", error)
+          throw error
+     }
+}
+
+export const createSection = async (
+     id: string,
+     newSectionData: Partial<Section>
+): Promise<Section> => {
+     try {
+          const payload = { ...newSectionData }
+          const res = await authFetch(
+               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.CREATE_SECTION(id),
+               {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+               }
+          )
+
+          if (!res.ok) {
+               let errorMsg = `Failed to create section: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.error ||
+                         errorBody.message ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : errorBody)
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
+          }
+
+          const data = await res.json()
+          return data as Section
+     } catch (error) {
+          console.error("Error creating section:", error)
+          throw error
+     }
+}
+
+export const deleteSection = async (id: string): Promise<void> => {
+     try {
+          const res = await authFetch(
+               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.DELETE_SECTION(id),
+               {
+                    method: "DELETE",
+               }
+          )
+          if (!res.ok) {
+               let errorMsg = `Failed to delete section: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.error ||
+                         errorBody.message ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : errorBody)
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
+          }
+     } catch (error) {
+          console.error("Error deleting section:", error)
           throw error
      }
 }
