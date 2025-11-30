@@ -67,13 +67,15 @@ export default function UpdateUserDialog({
                onUpdated(updated)
                alert("successfully updated")
                onOpenChange(false)
-          } catch (err) {
-               const message = err instanceof Error ? err.message : "Failed to update user"
-               setError(message)
-               alert("failed to update")
-          } finally {
-               setLoading(false)
-          }
+        } catch (err) {
+     
+     const message = err instanceof Error && err.message ? err.message : "Failed to update user"
+     setError(message)
+     alert(message) 
+     } finally {
+        setLoading(false)  
+    }
+
      }
 
      if (!user) return null

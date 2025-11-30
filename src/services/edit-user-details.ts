@@ -12,11 +12,18 @@ export async function updateUser(
           body: JSON.stringify(payload),
      })
 
-     if (!res.ok) {
-          const errorData = await res.json().catch(() => null)
-          throw new Error(errorData?.message || "Failed to update user")
-     }
+ if (!res.ok) {
+        const errorData = await res.json().catch(() => null)
 
-     const data: EditUserDetailsPayload = await res.json()
-     return data
+        
+        if (errorData?.details) {
+            const detailedMessage = Object.values(errorData.details).join(", ")
+            throw new Error(detailedMessage)
+        }
+        throw new Error(errorData?.message || "Failed to update user")
+    }
+    
+    const data: EditUserDetailsPayload = await res.json()
+    return data
+    
 }
