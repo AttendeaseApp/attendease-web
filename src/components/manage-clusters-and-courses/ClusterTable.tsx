@@ -14,18 +14,25 @@ import {
      DropdownMenuContent,
      DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash } from "lucide-react"
+import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { ClusterSession } from "@/interface/cluster-and-course-interface"
 export function ClusterTable({
      clusters,
      loading,
+     onEdit,
      onDeleteAction,
 }: {
      clusters: ClusterSession[]
      loading: boolean
+     onEdit: (cluster: ClusterSession) => void
      onDeleteAction: (cluster: ClusterSession) => void
 }) {
+     const handleEdit = (cluster: ClusterSession, e: React.MouseEvent) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onEdit(cluster)
+     }
      const handleDelete = (cluster: ClusterSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
@@ -63,13 +70,36 @@ export function ClusterTable({
                               <TableRow key={cluster.clusterId}>
                                    <TableCell>{cluster.clusterName || " –"}</TableCell>
                                    <TableCell className="text-right">
-                                        <Button
+                                        <DropdownMenu>
+                                             <DropdownMenuTrigger asChild>
+                                                  <Button variant="ghost" size="sm">
+                                                       <MoreHorizontal className="h-4 w-4" />
+                                                       <span className="sr-only">Open menu</span>
+                                                  </Button>
+                                             </DropdownMenuTrigger>
+                                             <DropdownMenuContent align="end">
+                                                  <DropdownMenuItem
+                                                       onClick={(e) => handleEdit(cluster, e)}
+                                                  >
+                                                       <Pencil className="mr-2 h-4 w-4" />
+                                                       Edit
+                                                  </DropdownMenuItem>
+                                                  <DropdownMenuItem
+                                                       onClick={(e) => handleDelete(cluster, e)}
+                                                  >
+                                                       <Trash className="mr-2 h-4 w-4" />
+                                                       Delete
+                                                  </DropdownMenuItem>
+                                                  <DropdownMenuSeparator />
+                                             </DropdownMenuContent>
+                                        </DropdownMenu>
+                                        {/* <Button
                                              variant="ghost"
                                              size="sm"
                                              onClick={(e) => handleDelete(cluster, e)}
                                         >
                                              Delete
-                                        </Button>
+                                        </Button> */}
                                    </TableCell>
                               </TableRow>
                          ))

@@ -8,13 +8,27 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
+import {
+     DropdownMenu,
+     DropdownMenuTrigger,
+     DropdownMenuContent,
+     DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal, Trash, Pencil } from "lucide-react"
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { Section } from "@/interface/cluster-and-course-interface"
 interface SectionProps {
      sections: Section[]
      loading: boolean
+     onEdit: (section: Section) => void
      onDelete: (section: Section) => void
 }
-export function SectionTable({ sections, loading, onDelete }: SectionProps) {
+export function SectionTable({ sections, loading, onEdit, onDelete }: SectionProps) {
+     const handleEdit = (section: Section, e: React.MouseEvent) => {
+                         e.preventDefault()
+                         e.stopPropagation()
+                         onEdit(section)
+          }
      const handleDelete = (section: Section, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
@@ -54,13 +68,36 @@ export function SectionTable({ sections, loading, onDelete }: SectionProps) {
                                    <TableCell>{section.name || " –"}</TableCell>
                                    <TableCell>{section.course?.courseName || " –"}</TableCell>
                                    <TableCell className="text-right">
-                                        <Button
+                                        <DropdownMenu>
+                                             <DropdownMenuTrigger asChild>
+                                                  <Button variant="ghost" size="sm">
+                                                       <MoreHorizontal className="h-4 w-4" />
+                                                       <span className="sr-only">Open menu</span>
+                                                  </Button>
+                                             </DropdownMenuTrigger>
+                                             <DropdownMenuContent align="end">
+                                                  <DropdownMenuItem
+                                                       onClick={(e) => handleEdit(section, e)}
+                                                  >
+                                                       <Pencil className="mr-2 h-4 w-4" />
+                                                       Edit
+                                                  </DropdownMenuItem>
+                                                  <DropdownMenuItem
+                                                       onClick={(e) => handleDelete(section, e)}
+                                                  >
+                                                       <Trash className="mr-2 h-4 w-4" />
+                                                       Delete
+                                                  </DropdownMenuItem>
+                                                  <DropdownMenuSeparator />
+                                             </DropdownMenuContent>
+                                        </DropdownMenu>
+                                        {/* <Button
                                              variant="ghost"
                                              size="sm"
                                              onClick={(e) => handleDelete(section, e)}
                                         >
                                              Delete
-                                        </Button>
+                                        </Button> */}
                                    </TableCell>
                               </TableRow>
                          ))

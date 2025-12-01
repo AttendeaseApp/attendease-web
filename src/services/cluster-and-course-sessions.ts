@@ -259,3 +259,117 @@ export const deleteSection = async (id: string): Promise<void> => {
           throw error
      }
 }
+
+export const updateCluster = async (
+     id: string,
+     updateClusterData: Partial<ClusterSession>
+): Promise<ClusterSession> => {
+     try {
+          const payload = { ...updateClusterData }
+          const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.UPDATE_CLUSTER(id), {
+               method: "PUT",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify(payload),
+          })
+
+          if (!res.ok) {
+               let errorMsg = `Failed to update cluster: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.error ||
+                         errorBody.message ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : errorBody)
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
+          }
+
+          const data = await res.json()
+          return data as ClusterSession
+     } catch (error) {
+          console.error("Error updating cluster:", error)
+          throw error
+     }
+}
+
+export const updateCourse = async (
+     id: string,
+     updateCourseData: Partial<CourseSession>
+): Promise<CourseSession> => {
+     try {
+          const payload = { ...updateCourseData }
+          const res = await authFetch(
+               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.UPDATE_COURSE(id),
+               {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+               }
+          )
+
+          if (!res.ok) {
+               let errorMsg = `Failed to update course: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.error ||
+                         errorBody.message ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : errorBody)
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
+          }
+
+          const data = await res.json()
+          return data as CourseSession
+     } catch (error) {
+          console.error("Error updating course:", error)
+          throw error
+     }
+}
+
+export const updateSection = async (
+     id: string,
+     updateSectionData: Partial<Section>
+): Promise<Section> => {
+     try {
+          const payload = { ...updateSectionData }
+          const res = await authFetch(
+               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.UPDATE_SECTION(id),
+               {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+               }
+          )
+
+          if (!res.ok) {
+               let errorMsg = `Failed to update section: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.error ||
+                         errorBody.message ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : errorBody)
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
+          }
+
+          const data = await res.json()
+          return data as Section
+     } catch (error) {
+          console.error("Error updating section:", error)
+          throw error
+     }
+}
