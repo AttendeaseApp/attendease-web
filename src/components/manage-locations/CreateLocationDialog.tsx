@@ -34,6 +34,18 @@ interface CreateLocationModalProps {
      existingLocations: { locationName: string }[]
 }
 
+/**
+ * CreateLocationDialog component.
+ *
+ * A modal dialog for creating a new event location, including name, type,
+ * and geofenced polygon boundary via an interactive Leaflet map.
+ *
+ * Handles form validation (including duplicate names), API submission,
+ * and user feedback via toasts and status alerts. Supports Esri satellite
+ * or OpenStreetMap tile layers.
+ *
+ * @param {CreateLocationModalProps} props - Component props.
+ */
 export default function CreateLocationDialog({
      open,
      onClose,

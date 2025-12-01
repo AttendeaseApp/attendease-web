@@ -13,9 +13,10 @@ import UpdateLocationDialog from "@/components/manage-locations/UpdateLocationDi
 import { toast } from "sonner"
 
 /**
- * ManageLocationsPage component for managing event locations(CREATE, READ, UPDATE, DELETE).
+ * ManageLocationsPage component for managing event locations (CREATE, READ, UPDATE, DELETE).
  *
- * @returns JSX.Element The ManageLocationsPage component.
+ * Displays a table of existing locations with search, refresh, create, edit, and delete functionality.
+ * Uses conditional rendering to show either create or update modals based on state.
  */
 export default function ManageLocationsPage() {
      const [locations, setLocations] = useState<EventLocation[]>([])

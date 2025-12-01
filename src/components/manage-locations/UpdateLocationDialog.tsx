@@ -25,12 +25,25 @@ import { EventLocation, EventLocationRequest } from "@/interface/location-interf
 import { toast } from "sonner"
 import L from "leaflet"
 const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false })
+
 interface UpdateLocationModalProps {
      open: boolean
      onClose: () => void
      onSuccess: () => void
      location: EventLocation
 }
+
+/**
+ * UpdateLocationDialog component.
+ *
+ * A modal dialog for updating an existing event location, including name, type,
+ * and geofenced polygon boundary via an interactive Leaflet map.
+ *
+ * Handles form validation, API submission, and user feedback via toasts and
+ * status alerts. Supports Esri satellite or OpenStreetMap tile layers.
+ *
+ * @param {UpdateLocationModalProps} props - Component props.
+ */
 export default function UpdateLocationDialog({
      open,
      onClose,
@@ -84,7 +97,6 @@ export default function UpdateLocationDialog({
                await updateLocation(location.locationId, payload)
                onSuccess()
                showStatus("success", "Successfully updated location")
-               // REMOVED: onClose() here—moved to AlertDialogAction
           } catch (err) {
                toast.error("Failed: " + (err instanceof Error ? err.message : "Unknown error"))
                console.error(err)

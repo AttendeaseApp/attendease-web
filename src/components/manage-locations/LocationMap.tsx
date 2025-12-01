@@ -12,6 +12,17 @@ interface MapProps {
      initialPolygon?: number[][]
 }
 
+/**
+ * LocationMap component.
+ *
+ * An interactive Leaflet map for drawing and editing geofenced polygons.
+ * Supports Esri World Imagery with labels or OpenStreetMap tiles.
+ * Includes draw/edit controls limited to polygons only.
+ *
+ * On mount with initialPolygon, clears and adds the polygon layer.
+ *
+ * @param {MapProps} props - Component props.
+ */
 export default function LocationMap({
      onCreated,
      onDeleted,
