@@ -54,13 +54,13 @@ export const deleteLocation = async (id: string): Promise<void> => {
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg
+                    errorMsg = res.statusText || errorMsg + parseErr
                }
                throw new Error(errorMsg)
           }

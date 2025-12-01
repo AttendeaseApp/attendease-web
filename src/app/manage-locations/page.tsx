@@ -9,6 +9,7 @@ import { LocationsTable } from "@/components/manage-locations/LocationsTable"
 import { EventLocation } from "@/interface/location-interface"
 import { deleteLocation, getAllLocations } from "@/services/locations-service"
 import CreateLocationDialog from "@/components/manage-locations/CreateLocationDialog"
+import { toast } from "sonner"
 
 /**
  * ManageLocationsPage component for managing event locations(CREATE, READ, UPDATE, DELETE).
@@ -39,9 +40,7 @@ export default function ManageLocationsPage() {
      useEffect(() => {
           loadLocations()
      }, [])
-
-     const [selectedType, setSelectedType] = useState("all")
-
+     const [selectedType] = useState("all")
      const filteredEvents = locations.filter((location) => {
           const lowerSearch = searchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter((w) => w)
@@ -65,10 +64,12 @@ export default function ManageLocationsPage() {
           try {
                await deleteLocation(location.locationId)
                setLocations((prev) => prev.filter((e) => e.locationId !== location.locationId))
-               alert("Location deleted successfully!")
+               toast.info("Location deleted successfully!")
           } catch (error) {
                console.error("Delete failed:", error)
-               alert("Failed to delete location. Please try again.")
+               const errorMessage =
+                    error instanceof Error ? error.message : "Unknown error occurred"
+               toast.warning(`Failed to delete location: ${errorMessage}`)
           }
      }
 
@@ -84,15 +85,14 @@ export default function ManageLocationsPage() {
                          </div>
                          <Button className="sm:w-auto" onClick={() => setOpenModal(true)}>
                               <Plus className="mr-2 h-4 w-4" />
-                              Add New Location
+                              Create New Location
                          </Button>
                     </div>
-
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
                          <div className="relative flex-1">
                               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                               <Input
-                                   placeholder="Search events..."
+                                   placeholder="Search locations..."
                                    className="pl-8"
                                    value={searchTerm}
                                    onChange={(e) => setSearchTerm(e.target.value)}
