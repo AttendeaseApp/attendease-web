@@ -50,27 +50,27 @@ export function UpdateClusterDialog({
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
-
-          //   const duplicate = clusters.some(
-          //        (c) =>
-          //             c.clusterName.toLowerCase().trim() === formData.clusterName.toLowerCase().trim()
-          //   )
-
-          //   if (duplicate) {
-          //        setError("Cluster name already exists.")
-          //        return
-          //   }
+          // const duplicate = clusters.some(
+          // (c) =>
+          // c.clusterName.toLowerCase().trim() === formData.clusterName.toLowerCase().trim()
+          // )
+          // if (duplicate) {
+          // setError("Cluster name already exists.")
+          // return
+          // }
           setIsSubmitting(true)
           try {
                const updateClusterData = {
                     clusterName: formData.clusterName,
                }
                console.log("Sending update payload:", updateClusterData)
-               await updateCluster(clusters.clusterName, updateClusterData)
+               await updateCluster(clusters.clusterId, updateClusterData)
                onUpdate()
                onClose()
           } catch (err) {
-               const message = err + ", " + "Failed to update cluster."
+               const message =
+                    (err instanceof Error ? err.message : String(err)) +
+                    " Failed to update cluster."
                setError(message)
                console.error("Update failed:", err)
                if (onError) onError(message)

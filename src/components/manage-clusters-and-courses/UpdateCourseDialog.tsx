@@ -39,11 +39,11 @@ export function UpdateCourseDialog({
      useEffect(() => {
           if (isOpen) {
                setFormData({
-                    courseName: "",
+                    courseName: courses.courseName || "",
                })
                setError("")
           }
-     }, [isOpen])
+     }, [isOpen, courses.courseName])
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
@@ -51,26 +51,25 @@ export function UpdateCourseDialog({
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
-
-          //   const duplicate = courses.some(
-          //        (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
-          //   )
-
-          //   if (duplicate) {
-          //        setError("Course name already exists.")
-          //        return
-          //   }
+          // const duplicate = courses.some(
+          // (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
+          // )
+          // if (duplicate) {
+          // setError("Course name already exists.")
+          // return
+          // }
           setIsSubmitting(true)
           try {
                const updateCourseData = {
                     courseName: formData.courseName,
                }
                console.log("Sending update payload:", updateCourseData)
-               await updateCourse(cluster.clusterId, updateCourseData)
+               await updateCourse(courses.id, updateCourseData)
                onUpdate()
                onClose()
           } catch (err) {
-               const message = err + ", " + "Failed to update course."
+               const message =
+                    (err instanceof Error ? err.message : String(err)) + " Failed to update course."
                setError(message)
                console.error("Update failed:", err)
                if (onError) onError(message)

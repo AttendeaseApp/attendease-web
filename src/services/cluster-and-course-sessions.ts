@@ -1,7 +1,6 @@
 import { CourseSession, ClusterSession, Section } from "@/interface/cluster-and-course-interface"
 import { authFetch } from "./auth-fetch"
 import { CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
-
 export const getAllCourses = async (): Promise<CourseSession[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_COURSES)
@@ -15,7 +14,6 @@ export const getAllCourses = async (): Promise<CourseSession[]> => {
           throw error
      }
 }
-
 export const getAllClusters = async (): Promise<ClusterSession[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_CLUSTERS)
@@ -29,7 +27,6 @@ export const getAllClusters = async (): Promise<ClusterSession[]> => {
           throw error
      }
 }
-
 export const getAllSections = async (): Promise<Section[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_SECTIONS)
@@ -43,7 +40,6 @@ export const getAllSections = async (): Promise<Section[]> => {
           throw error
      }
 }
-
 export const getSectionsByCourse = async (courseId: string): Promise<Section[]> => {
      try {
           const res = await authFetch(
@@ -59,7 +55,6 @@ export const getSectionsByCourse = async (courseId: string): Promise<Section[]> 
           throw error
      }
 }
-
 export const deleteCourse = async (id: string): Promise<void> => {
      try {
           const res = await authFetch(
@@ -88,7 +83,6 @@ export const deleteCourse = async (id: string): Promise<void> => {
           throw error
      }
 }
-
 export const createCluster = async (
      newClusterData: Partial<ClusterSession>
 ): Promise<ClusterSession> => {
@@ -99,7 +93,6 @@ export const createCluster = async (
                headers: { "Content-Type": "application/json" },
                body: JSON.stringify(payload),
           })
-
           if (!res.ok) {
                let errorMsg = `Failed to create cluster: ${res.status}`
                try {
@@ -115,7 +108,6 @@ export const createCluster = async (
                }
                throw new Error(errorMsg)
           }
-
           const data = await res.json()
           return data as ClusterSession
      } catch (error) {
@@ -123,7 +115,6 @@ export const createCluster = async (
           throw error
      }
 }
-
 export const createCourse = async (
      id: string,
      newCourseData: Partial<CourseSession>
@@ -138,7 +129,6 @@ export const createCourse = async (
                     body: JSON.stringify(payload),
                }
           )
-
           if (!res.ok) {
                let errorMsg = `Failed to create course: ${res.status}`
                try {
@@ -154,7 +144,6 @@ export const createCourse = async (
                }
                throw new Error(errorMsg)
           }
-
           const data = await res.json()
           return data as CourseSession
      } catch (error) {
@@ -162,7 +151,6 @@ export const createCourse = async (
           throw error
      }
 }
-
 export const deleteCluster = async (id: string): Promise<void> => {
      try {
           const res = await authFetch(
@@ -172,7 +160,7 @@ export const deleteCluster = async (id: string): Promise<void> => {
                }
           )
           if (!res.ok) {
-               let errorMsg = `Failed to delete course: ${res.status}`
+               let errorMsg = `Failed to delete cluster: ${res.status}`
                try {
                     const errorBody = await res.json()
                     errorMsg =
@@ -187,11 +175,10 @@ export const deleteCluster = async (id: string): Promise<void> => {
                throw new Error(errorMsg)
           }
      } catch (error) {
-          console.error("Error deleting course:", error)
+          console.error("Error deleting cluster:", error)
           throw error
      }
 }
-
 export const createSection = async (
      id: string,
      newSectionData: Partial<Section>
@@ -206,7 +193,6 @@ export const createSection = async (
                     body: JSON.stringify(payload),
                }
           )
-
           if (!res.ok) {
                let errorMsg = `Failed to create section: ${res.status}`
                try {
@@ -222,7 +208,6 @@ export const createSection = async (
                }
                throw new Error(errorMsg)
           }
-
           const data = await res.json()
           return data as Section
      } catch (error) {
@@ -230,7 +215,6 @@ export const createSection = async (
           throw error
      }
 }
-
 export const deleteSection = async (id: string): Promise<void> => {
      try {
           const res = await authFetch(
@@ -259,7 +243,6 @@ export const deleteSection = async (id: string): Promise<void> => {
           throw error
      }
 }
-
 export const updateCluster = async (
      id: string,
      updateClusterData: Partial<ClusterSession>
@@ -274,7 +257,6 @@ export const updateCluster = async (
                     body: JSON.stringify(payload),
                }
           )
-
           if (!res.ok) {
                let errorMsg = `Failed to update cluster: ${res.status}`
                try {
@@ -290,7 +272,6 @@ export const updateCluster = async (
                }
                throw new Error(errorMsg)
           }
-
           const data = await res.json()
           return data as ClusterSession
      } catch (error) {
@@ -298,7 +279,6 @@ export const updateCluster = async (
           throw error
      }
 }
-
 export const updateCourse = async (
      id: string,
      updateCourseData: Partial<CourseSession>
@@ -313,7 +293,6 @@ export const updateCourse = async (
                     body: JSON.stringify(payload),
                }
           )
-
           if (!res.ok) {
                let errorMsg = `Failed to update course: ${res.status}`
                try {
@@ -329,7 +308,6 @@ export const updateCourse = async (
                }
                throw new Error(errorMsg)
           }
-
           const data = await res.json()
           return data as CourseSession
      } catch (error) {
@@ -337,7 +315,6 @@ export const updateCourse = async (
           throw error
      }
 }
-
 export const updateSection = async (
      id: string,
      updateSectionData: Partial<Section>
@@ -352,7 +329,6 @@ export const updateSection = async (
                     body: JSON.stringify(payload),
                }
           )
-
           if (!res.ok) {
                let errorMsg = `Failed to update section: ${res.status}`
                try {
@@ -368,7 +344,6 @@ export const updateSection = async (
                }
                throw new Error(errorMsg)
           }
-
           const data = await res.json()
           return data as Section
      } catch (error) {
