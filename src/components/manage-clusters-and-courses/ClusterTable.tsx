@@ -29,9 +29,9 @@ export function ClusterTable({
      onDeleteAction: (cluster: ClusterSession) => void
 }) {
      const handleEdit = (cluster: ClusterSession, e: React.MouseEvent) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onEdit(cluster)
+          e.preventDefault()
+          e.stopPropagation()
+          onEdit(cluster)
      }
      const handleDelete = (cluster: ClusterSession, e: React.MouseEvent) => {
           e.preventDefault()

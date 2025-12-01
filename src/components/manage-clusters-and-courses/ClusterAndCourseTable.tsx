@@ -27,9 +27,9 @@ interface CourseTableProps {
 }
 export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
      const handleEdit = (course: CourseSession, e: React.MouseEvent) => {
-               e.preventDefault()
-               e.stopPropagation()
-               onEdit(course)
+          e.preventDefault()
+          e.stopPropagation()
+          onEdit(course)
      }
      const handleDelete = (course: CourseSession, e: React.MouseEvent) => {
           e.preventDefault()

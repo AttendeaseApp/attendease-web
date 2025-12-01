@@ -553,7 +553,7 @@ export default function ManageClustersPage() {
                     )}
                     {selectedSections && selectedSections.course && (
                          <UpdateSectionDialog
-                              course={selectedSections.course}                         
+                              course={selectedSections.course}
                               isOpen={isEditSectionOpen}
                               onClose={handleEditSectionClose}
                               onUpdate={handleEditSectionUpdate}

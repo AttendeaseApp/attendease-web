@@ -31,7 +31,7 @@ export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
      GET_SECTIONS_BY_COURSE: (courseId: string) => `${API_BASE}/api/sections/courses/${courseId}`,
      UPDATE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
      UPDATE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
-     UPDATE_SECTION: (id: string) => `${API_BASE}/api/sections/${id}`
+     UPDATE_SECTION: (id: string) => `${API_BASE}/api/sections/${id}`,
 }
 
 /**

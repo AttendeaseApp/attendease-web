@@ -21,7 +21,7 @@ interface UpdateCourseDialogProps {
      onUpdate: () => void
      onError?: (message: string) => void
      courses: CourseSession
-    //  courses: { courseName: string }[]
+     //  courses: { courseName: string }[]
 }
 export function UpdateCourseDialog({
      cluster,
@@ -52,14 +52,14 @@ export function UpdateCourseDialog({
           e.preventDefault()
           setError("")
 
-        //   const duplicate = courses.some(
-        //        (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
-        //   )
+          //   const duplicate = courses.some(
+          //        (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
+          //   )
 
-        //   if (duplicate) {
-        //        setError("Course name already exists.")
-        //        return
-        //   }
+          //   if (duplicate) {
+          //        setError("Course name already exists.")
+          //        return
+          //   }
           setIsSubmitting(true)
           try {
                const updateCourseData = {

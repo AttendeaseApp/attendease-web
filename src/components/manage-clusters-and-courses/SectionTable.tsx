@@ -25,10 +25,10 @@ interface SectionProps {
 }
 export function SectionTable({ sections, loading, onEdit, onDelete }: SectionProps) {
      const handleEdit = (section: Section, e: React.MouseEvent) => {
-                         e.preventDefault()
-                         e.stopPropagation()
-                         onEdit(section)
-          }
+          e.preventDefault()
+          e.stopPropagation()
+          onEdit(section)
+     }
      const handleDelete = (section: Section, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()

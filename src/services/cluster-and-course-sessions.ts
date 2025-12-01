@@ -266,11 +266,14 @@ export const updateCluster = async (
 ): Promise<ClusterSession> => {
      try {
           const payload = { ...updateClusterData }
-          const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.UPDATE_CLUSTER(id), {
-               method: "PUT",
-               headers: { "Content-Type": "application/json" },
-               body: JSON.stringify(payload),
-          })
+          const res = await authFetch(
+               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.UPDATE_CLUSTER(id),
+               {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+               }
+          )
 
           if (!res.ok) {
                let errorMsg = `Failed to update cluster: ${res.status}`

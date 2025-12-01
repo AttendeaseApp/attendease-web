@@ -20,7 +20,7 @@ interface UpdateClusterDialogProps {
      onUpdate: () => void
      onError?: (message: string) => void
      clusters: ClusterSession
-    //  clusters: { clusterName: string }[]
+     //  clusters: { clusterName: string }[]
 }
 export function UpdateClusterDialog({
      isOpen,
@@ -51,15 +51,15 @@ export function UpdateClusterDialog({
           e.preventDefault()
           setError("")
 
-        //   const duplicate = clusters.some(
-        //        (c) =>
-        //             c.clusterName.toLowerCase().trim() === formData.clusterName.toLowerCase().trim()
-        //   )
+          //   const duplicate = clusters.some(
+          //        (c) =>
+          //             c.clusterName.toLowerCase().trim() === formData.clusterName.toLowerCase().trim()
+          //   )
 
-        //   if (duplicate) {
-        //        setError("Cluster name already exists.")
-        //        return
-        //   }
+          //   if (duplicate) {
+          //        setError("Cluster name already exists.")
+          //        return
+          //   }
           setIsSubmitting(true)
           try {
                const updateClusterData = {
