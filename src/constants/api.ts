@@ -50,6 +50,10 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
      RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
      IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
      RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
+
+     EDIT_USER_DETAILS: (userId: string) =>
+          `${API_BASE}/api/users/information/management/${userId}`,
+
      ADD_OSA_ACCOUNT: `${API_BASE}/api/auth/osa/register`,
      ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
 }
