@@ -1,6 +1,5 @@
 "use client"
 import dynamic from "next/dynamic"
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,28 +20,26 @@ import {
      AlertDialogTitle,
      AlertDialogContent,
 } from "@/components/ui/alert-dialog"
-import { createLocation } from "@/services/locations-service"
-import { EventLocationRequest } from "@/interface/location-interface"
+import { updateLocation } from "@/services/locations-service"
+import { EventLocation, EventLocationRequest } from "@/interface/location-interface"
 import { toast } from "sonner"
 import L from "leaflet"
 const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false })
-
-interface CreateLocationModalProps {
+interface UpdateLocationModalProps {
      open: boolean
      onClose: () => void
      onSuccess: () => void
-     existingLocations: { locationName: string }[]
+     location: EventLocation
 }
-
-export default function CreateLocationDialog({
+export default function UpdateLocationDialog({
      open,
      onClose,
      onSuccess,
-     existingLocations,
-}: CreateLocationModalProps) {
-     const [locationName, setLocationName] = useState("")
-     const [locationType, setLocationType] = useState("INDOOR")
-     const [polygon, setPolygon] = useState<number[][]>([])
+     location,
+}: UpdateLocationModalProps) {
+     const [locationName, setLocationName] = useState(location.locationName || "")
+     const [locationType, setLocationType] = useState(location.locationType || "INDOOR")
+     const [polygon, setPolygon] = useState<number[][]>(location.coordinates || [])
      const [loading, setLoading] = useState(false)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
@@ -58,46 +55,38 @@ export default function CreateLocationDialog({
           if (!open) {
                setLocationName("")
                setPolygon([])
+          } else if (open && location) {
+               setLocationName(location.locationName || "")
+               setLocationType(location.locationType || "INDOOR")
+               setPolygon(location.coordinates || [])
           }
-     }, [open])
+     }, [open, location])
 
-     const handleCreate = async () => {
+     const handleUpdate = async () => {
           if (!locationName.trim()) {
                toast.error("Location name is required.")
                return
           }
-
-          const exists = existingLocations.some(
-               (loc) => loc.locationName.trim().toLowerCase() === locationName.trim().toLowerCase()
-          )
-
-          if (exists) {
-               toast.error("This location name already exists.")
-               return
-          }
-
           if (!polygon.length) {
-               toast.error("Please draw a polygon on the map.")
+               toast.error("Please draw or adjust the polygon on the map.")
                return
           }
-
-          const payload: EventLocationRequest = {
-               locationName,
+          const payload: Partial<EventLocationRequest> = {
+               locationName: locationName.trim(),
                locationType,
                geoJsonData: {
                     type: "Polygon",
                     coordinates: [polygon],
                },
           }
-
           try {
                setLoading(true)
-               await createLocation(payload)
+               await updateLocation(location.locationId, payload)
                onSuccess()
-               showStatus("success", "Successfully created location")
-               onClose()
+               showStatus("success", "Successfully updated location")
+               // REMOVED: onClose() here—moved to AlertDialogAction
           } catch (err) {
-               toast.error("Failed to create location.")
+               toast.error("Failed: " + (err instanceof Error ? err.message : "Unknown error"))
                console.error(err)
           } finally {
                setLoading(false)
@@ -114,31 +103,34 @@ export default function CreateLocationDialog({
      const onDeleted = () => {
           setPolygon([])
      }
+
      const isSuccess = createStatus === "success"
-     const title = isSuccess ? "Create Successful" : "Create Failed"
+     const title = isSuccess ? "Update Successful" : "Update Failed"
      const titleColor = isSuccess ? "text-green-600" : "text-red-600"
+
+     const closeStatusAndParent = () => {
+          setStatusDialogOpen(false)
+          onClose()
+     }
+
      return (
           <Dialog open={open} onOpenChange={onClose}>
                <DialogContent_ className="max-w-7xl">
                     <DialogHeader>
-                         <DialogTitle>Create New Location</DialogTitle>
+                         <DialogTitle>Update Location</DialogTitle>
                          <DialogDescription className="text-sm text-muted-foreground mb-4">
-                              Create a geofenced event area that is reusable when creating new event
-                              sessions.
+                              Update the geofenced area for {location.locationName}:
                          </DialogDescription>
                     </DialogHeader>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         {/* Left column: Inputs and selects */}
-                         <div className="flex flex-col gap-4">
-                              <div className="flex flex-col gap-2 mb-6">
+                         <div className="flex flex-col">
+                              <div className="flex flex-col gap-2 mb-5">
                                    <label className="font-medium">Venue Details</label>
                                    <Input
                                         placeholder="Location Name"
                                         value={locationName}
                                         onChange={(e) => setLocationName(e.target.value)}
                                    />
-
                                    <select
                                         className="border rounded-md px-3 py-2"
                                         value={locationType}
@@ -149,7 +141,7 @@ export default function CreateLocationDialog({
                                    </select>
                               </div>
 
-                              <div className="flex flex-col gap-2 mb-6">
+                              <div className="flex flex-col gap-2 mb-5">
                                    <label className="font-medium">Map Layers</label>
                                    <select
                                         className="border rounded-md px-3 py-2 w-full"
@@ -164,46 +156,51 @@ export default function CreateLocationDialog({
                               </div>
 
                               <div className="mb-6 p-4 bg-amber-50 rounded-md border border-amber-200">
-                                   <label className="font-medium">
-                                        Need help on creating an event location? Follow these steps:
+                                   <label className="font-medium block mb-2">
+                                        Update Rules (Data Integrity)
                                    </label>
-                                   <ol className="space-y-1 list-decimal list-inside text-sm text-muted-foreground">
-                                        <li>Enter a unique name for the location.</li>
-                                        <li>Select whether it&rsquo;s indoor or outdoor.</li>
-                                        <li>
-                                             Choose a map style (Esri for satellite imagery or
-                                             OpenStreetMap for standard tiles).
-                                        </li>
-                                        <li>
-                                             Draw the location boundary on the map: Click the
-                                             polygon tool (top-right), click points to outline the
-                                             area, and double-click or click finish to close the
-                                             shape. You can edit or delete it as needed.
-                                        </li>
-                                        <li>
-                                             Click &quot;Create Location&quot; to save. Remember,
-                                             the boundary must be a closed polygon.
-                                        </li>
+                                   <p className="text-sm text-muted-foreground mb-2">
+                                        This location can be updated if it&apos;s only used in
+                                        events with status <strong>UPCOMING</strong> or{" "}
+                                        <strong>CANCELLED</strong> (safe to change).
+                                   </p>
+                                   <p className="text-sm text-muted-foreground mb-2">
+                                        Updates are <strong>blocked</strong> for events in{" "}
+                                        <strong>REGISTRATION</strong>, <strong>ONGOING</strong>,{" "}
+                                        <strong>CONCLUDED</strong>, or <strong>FINALIZED</strong> to
+                                        protect attendance records and historical data. Reassign or
+                                        cancel those events first.
+                                   </p>
+                                   <p className="text-xs text-muted-foreground italic mb-2">
+                                        If blocked, you&apos;ll see an error toast with details.
+                                   </p>
+                                   <label className="font-medium block mb-2">
+                                        Need help on updating an event location? Follow these steps:
+                                   </label>
+                                   <ol className="list-decimal list-inside text-sm text-muted-foreground">
+                                        <li>Modify the name if needed.</li>
+                                        <li>Update the type (indoor/outdoor).</li>
+                                        <li>Adjust the boundary on the map.</li>
+                                        <li>Click &quot;Update Location&quot; to save.</li>
                                    </ol>
                               </div>
                          </div>
-
-                         {/* Right column: Map */}
                          <div className="h-[500px]">
                               <LocationMap
                                    onCreated={onCreated}
                                    onDeleted={onDeleted}
                                    tileType={tileType}
+                                   initialPolygon={polygon}
                               />
                          </div>
                     </div>
-
                     <DialogFooter>
                          <Button variant="outline" onClick={onClose}>
                               Cancel
                          </Button>
-                         <Button onClick={handleCreate} disabled={loading}>
-                              {loading ? "Creating..." : "Create Location"}
+                         <Button onClick={handleUpdate} disabled={loading}>
+                              {" "}
+                              {loading ? "Updating..." : "Update Location"}
                          </Button>
                     </DialogFooter>
                </DialogContent_>
@@ -216,7 +213,7 @@ export default function CreateLocationDialog({
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogAction onClick={() => setStatusDialogOpen(false)}>
+                              <AlertDialogAction onClick={closeStatusAndParent}>
                                    OK
                               </AlertDialogAction>
                          </AlertDialogFooter>

@@ -69,3 +69,45 @@ export const deleteLocation = async (id: string): Promise<void> => {
           throw error
      }
 }
+
+/**
+ * Update an existing event location (PATCH - partial updates supported).
+ *
+ * @param id The ID of the location to update.
+ * @param payload Partial EventLocationRequest object (optional fields).
+ * @returns The updated EventLocation.
+ */
+export const updateLocation = async (
+     id: string,
+     payload: Partial<EventLocationRequest>
+): Promise<EventLocation> => {
+     try {
+          const res = await authFetch(LOCATION_MANAGEMENT_API_ENDPOINTS.UPDATE_LOCATION(id), {
+               method: "PATCH",
+               headers: {
+                    "Content-Type": "application/json",
+               },
+               body: JSON.stringify(payload),
+          })
+          if (!res.ok) {
+               let errorMsg = `Failed to update location: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
+          }
+          const data = await res.json()
+          return data as EventLocation
+     } catch (error) {
+          console.error("Error updating location:", error)
+          throw error
+     }
+}

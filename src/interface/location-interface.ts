@@ -9,6 +9,7 @@ export interface EventLocation {
      longitude: number
      createdAt: string
      updatedAt: string
+     coordinates?: number[][]
 }
 
 /**

@@ -9,6 +9,7 @@ import { LocationsTable } from "@/components/manage-locations/LocationsTable"
 import { EventLocation } from "@/interface/location-interface"
 import { deleteLocation, getAllLocations } from "@/services/locations-service"
 import CreateLocationDialog from "@/components/manage-locations/CreateLocationDialog"
+import UpdateLocationDialog from "@/components/manage-locations/UpdateLocationDialog"
 import { toast } from "sonner"
 
 /**
@@ -19,18 +20,19 @@ import { toast } from "sonner"
 export default function ManageLocationsPage() {
      const [locations, setLocations] = useState<EventLocation[]>([])
      const [loading, setLoading] = useState(true)
-     const [error, setError] = useState<string | null>(null)
      const [searchTerm, setSearchTerm] = useState("")
      const [openDialog, setOpenModal] = useState(false)
+     const [editingLocation, setEditingLocation] = useState<EventLocation | null>(null)
+     const [isEditMode, setIsEditMode] = useState(false)
 
      const loadLocations = async () => {
           try {
                setLoading(true)
-               setError(null)
                const data = await getAllLocations()
                setLocations(data)
           } catch (err) {
-               setError(err instanceof Error ? err.message : "Failed to load locations")
+               const errorMessage = err instanceof Error ? err.message : "Failed to load locations"
+               toast.error(errorMessage)
                console.error("Error loading locations:", err)
           } finally {
                setLoading(false)
@@ -64,13 +66,25 @@ export default function ManageLocationsPage() {
           try {
                await deleteLocation(location.locationId)
                setLocations((prev) => prev.filter((e) => e.locationId !== location.locationId))
-               toast.info("Location deleted successfully!")
+               toast.success("Location deleted successfully!")
           } catch (error) {
                console.error("Delete failed:", error)
                const errorMessage =
                     error instanceof Error ? error.message : "Unknown error occurred"
                toast.warning(`Failed to delete location: ${errorMessage}`)
           }
+     }
+
+     const handleEdit = (location: EventLocation) => {
+          setEditingLocation(location)
+          setIsEditMode(true)
+          setOpenModal(true)
+     }
+
+     const closeDialog = () => {
+          setOpenModal(false)
+          setEditingLocation(null)
+          setIsEditMode(false)
      }
 
      return (
@@ -103,24 +117,27 @@ export default function ManageLocationsPage() {
                          </Button>
                     </div>
 
-                    {error && (
-                         <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
-                              {error}
-                         </div>
-                    )}
-
                     <LocationsTable
                          locations={filteredEvents}
                          loading={loading}
                          onDelete={handleDelete}
+                         onEdit={handleEdit}
                     />
-
-                    <CreateLocationDialog
-                         open={openDialog}
-                         onClose={() => setOpenModal(false)}
-                         onSuccess={loadLocations}
-                         existingLocations={locations}
-                    />
+                    {isEditMode && editingLocation ? (
+                         <UpdateLocationDialog
+                              open={openDialog}
+                              onClose={closeDialog}
+                              onSuccess={loadLocations}
+                              location={editingLocation}
+                         />
+                    ) : (
+                         <CreateLocationDialog
+                              open={openDialog}
+                              onClose={closeDialog}
+                              onSuccess={loadLocations}
+                              existingLocations={locations}
+                         />
+                    )}
                </div>
           </ProtectedLayout>
      )

@@ -28,6 +28,7 @@ interface LocationsTableProps {
      locations: EventLocation[]
      loading: boolean
      onDelete: (location: EventLocation) => void
+     onEdit: (location: EventLocation) => void
 }
 
 /**
@@ -36,7 +37,7 @@ interface LocationsTableProps {
  * @param param0 as LocationsTableProps
  * @returns JSX.Element The LocationsTable component.
  */
-export function LocationsTable({ locations, loading, onDelete }: LocationsTableProps) {
+export function LocationsTable({ locations, loading, onDelete, onEdit }: LocationsTableProps) {
      return (
           <Table>
                <TableHeader className="font-semibold text-gray-900">
@@ -64,7 +65,7 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
                                              </EmptyMedia>
                                              <EmptyTitle>No locations yet</EmptyTitle>
                                              <EmptyDescription>
-                                                  You haven&lsquo;t created any locations. Start by
+                                                  You haven&rsquo;t created any locations. Start by
                                                   adding a new one to define physical venues for
                                                   events.
                                              </EmptyDescription>
@@ -83,33 +84,47 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
                                         {new Date(eventLocation.createdAt).toLocaleString()}
                                    </TableCell>
                                    <TableCell className="text-right">
-                                        <AlertDialog>
-                                             <AlertDialogTrigger asChild>
-                                                  <Button variant="ghost" size="sm">
-                                                       Delete
-                                                  </Button>
-                                             </AlertDialogTrigger>
-                                             <AlertDialogContent>
-                                                  <AlertDialogHeader>
-                                                       <AlertDialogTitle>
-                                                            Confirm Deletion
-                                                       </AlertDialogTitle>
-                                                       <AlertDialogDescription>
-                                                            Are you sure you want to delete the
-                                                            location {eventLocation.locationName}?
-                                                            This action cannot be undone.
-                                                       </AlertDialogDescription>
-                                                  </AlertDialogHeader>
-                                                  <AlertDialogFooter>
-                                                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                       <AlertDialogAction
-                                                            onClick={() => onDelete(eventLocation)}
-                                                       >
+                                        <div className="flex justify-end space-x-2">
+                                             <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  onClick={() => onEdit(eventLocation)}
+                                             >
+                                                  Edit
+                                             </Button>
+                                             <AlertDialog>
+                                                  <AlertDialogTrigger asChild>
+                                                       <Button variant="ghost" size="sm">
                                                             Delete
-                                                       </AlertDialogAction>
-                                                  </AlertDialogFooter>
-                                             </AlertDialogContent>
-                                        </AlertDialog>
+                                                       </Button>
+                                                  </AlertDialogTrigger>
+                                                  <AlertDialogContent>
+                                                       <AlertDialogHeader>
+                                                            <AlertDialogTitle>
+                                                                 Confirm Deletion
+                                                            </AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                 Are you sure you want to delete the
+                                                                 location{" "}
+                                                                 {eventLocation.locationName}? This
+                                                                 action cannot be undone.
+                                                            </AlertDialogDescription>
+                                                       </AlertDialogHeader>
+                                                       <AlertDialogFooter>
+                                                            <AlertDialogCancel>
+                                                                 Cancel
+                                                            </AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                 onClick={() =>
+                                                                      onDelete(eventLocation)
+                                                                 }
+                                                            >
+                                                                 Delete
+                                                            </AlertDialogAction>
+                                                       </AlertDialogFooter>
+                                                  </AlertDialogContent>
+                                             </AlertDialog>
+                                        </div>
                                    </TableCell>
                               </TableRow>
                          ))

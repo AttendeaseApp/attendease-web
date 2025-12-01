@@ -41,6 +41,7 @@ export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
      GET_ALL_LOCATIONS: `${API_BASE}/api/locations`,
      CREATE_LOCATION: `${API_BASE}/api/locations`,
      DELETE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
+     UPDATE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
 }
 
 /**

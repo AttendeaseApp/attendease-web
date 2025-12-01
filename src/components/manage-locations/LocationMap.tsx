@@ -3,17 +3,34 @@
 import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet"
 import { EditControl } from "react-leaflet-draw"
 import "leaflet-draw"
-import type L from "leaflet"
-
+import L from "leaflet"
+import { useEffect, useRef } from "react"
 interface MapProps {
      onCreated: (e: L.DrawEvents.Created) => void
      onDeleted: (e: L.DrawEvents.Deleted) => void
      tileType?: "esri" | "osm"
+     initialPolygon?: number[][]
 }
 
-export default function LocationMap({ onCreated, onDeleted, tileType = "esri" }: MapProps) {
+export default function LocationMap({
+     onCreated,
+     onDeleted,
+     tileType = "esri",
+     initialPolygon,
+}: MapProps) {
+     const mapRef = useRef<L.Map>(null)
+     const featureGroupRef = useRef<L.FeatureGroup>(null)
+     useEffect(() => {
+          if (featureGroupRef.current && initialPolygon && initialPolygon.length > 0) {
+               featureGroupRef.current.clearLayers()
+               const latLngs = initialPolygon.map(([lng, lat]) => L.latLng(lat, lng)) as L.LatLng[]
+               L.polygon(latLngs, { color: "blue" }).addTo(featureGroupRef.current)
+          }
+     }, [initialPolygon])
+
      return (
           <MapContainer
+               ref={mapRef}
                center={[14.149, 120.955]}
                zoom={18}
                style={{ height: "100%", width: "100%" }}
@@ -36,8 +53,8 @@ export default function LocationMap({ onCreated, onDeleted, tileType = "esri" }:
                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
                )}
-
-               <FeatureGroup>
+               <FeatureGroup ref={featureGroupRef}>
+                    {" "}
                     <EditControl
                          position="topright"
                          onCreated={onCreated}
