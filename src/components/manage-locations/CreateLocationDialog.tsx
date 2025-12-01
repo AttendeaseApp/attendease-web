@@ -6,15 +6,24 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
      Dialog,
-     DialogContent,
+     DialogContent as DialogContent_,
      DialogHeader,
      DialogTitle,
+     DialogDescription,
      DialogFooter,
 } from "@/components/ui/dialog"
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogContent,
+} from "@/components/ui/alert-dialog"
 import { createLocation } from "@/services/locations-service"
 import { EventLocationRequest } from "@/interface/location-interface"
-import CreateLocationStatusDialog from "@/components/manage-locations/CreateLocationStatusDialog"
-
+import { toast } from "sonner"
 import L from "leaflet"
 const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false })
 
@@ -35,13 +44,10 @@ export default function CreateLocationDialog({
      const [locationType, setLocationType] = useState("INDOOR")
      const [polygon, setPolygon] = useState<number[][]>([])
      const [loading, setLoading] = useState(false)
-     const [error, setError] = useState<string | null>(null)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
-
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
-
      const showStatus = (status: "success" | "error", message: string) => {
           setCreateStatus(status)
           setCreateMessage(message)
@@ -52,15 +58,12 @@ export default function CreateLocationDialog({
           if (!open) {
                setLocationName("")
                setPolygon([])
-               setError(null)
           }
      }, [open])
 
      const handleCreate = async () => {
-          setError(null)
-
           if (!locationName.trim()) {
-               setError("Location name is required.")
+               toast.error("Location name is required.")
                return
           }
 
@@ -69,12 +72,12 @@ export default function CreateLocationDialog({
           )
 
           if (exists) {
-               setError("This location name already exists.")
+               toast.error("This location name already exists.")
                return
           }
 
           if (!polygon.length) {
-               setError("Please draw a polygon on the map.")
+               toast.error("Please draw a polygon on the map.")
                return
           }
 
@@ -91,10 +94,10 @@ export default function CreateLocationDialog({
                setLoading(true)
                await createLocation(payload)
                onSuccess()
-               showStatus("success", "Succesully created locataion")
+               showStatus("success", "Successfully created location")
                onClose()
           } catch (err) {
-               setError("Failed to create location.")
+               toast.error("Failed to create location.")
                console.error(err)
           } finally {
                setLoading(false)
@@ -111,43 +114,78 @@ export default function CreateLocationDialog({
      const onDeleted = () => {
           setPolygon([])
      }
-
+     const isSuccess = createStatus === "success"
+     const title = isSuccess ? "Create Successful" : "Create Failed"
+     const titleColor = isSuccess ? "text-green-600" : "text-red-600"
      return (
           <Dialog open={open} onOpenChange={onClose}>
-               <DialogContent className="max-w-7xl">
+               <DialogContent_ className="max-w-7xl">
                     <DialogHeader>
                          <DialogTitle>Create New Location</DialogTitle>
+                         <DialogDescription className="text-sm text-muted-foreground mb-4">
+                              Create a geofenced event area that is reusable when creating new event
+                              sessions.
+                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                          {/* Left column: Inputs and selects */}
                          <div className="flex flex-col gap-4">
-                              <Input
-                                   placeholder="Location Name"
-                                   value={locationName}
-                                   onChange={(e) => setLocationName(e.target.value)}
-                              />
+                              <div className="flex flex-col gap-2 mb-6">
+                                   <label className="font-medium">Venue Details</label>
+                                   <Input
+                                        placeholder="Location Name"
+                                        value={locationName}
+                                        onChange={(e) => setLocationName(e.target.value)}
+                                   />
 
-                              <select
-                                   className="border rounded-md px-3 py-2"
-                                   value={locationType}
-                                   onChange={(e) => setLocationType(e.target.value)}
-                              >
-                                   <option value="INDOOR">Indoor</option>
-                                   <option value="OUTDOOR">Outdoor</option>
-                              </select>
+                                   <select
+                                        className="border rounded-md px-3 py-2"
+                                        value={locationType}
+                                        onChange={(e) => setLocationType(e.target.value)}
+                                   >
+                                        <option value="INDOOR">Indoor</option>
+                                        <option value="OUTDOOR">Outdoor</option>
+                                   </select>
+                              </div>
 
-                              <label className="font-medium">Map Options</label>
-                              <select
-                                   className="border rounded-md px-3 py-2"
-                                   value={tileType}
-                                   onChange={(e) => setTileType(e.target.value as "esri" | "osm")}
-                              >
-                                   <option value="esri">Esri Satellite + Labels</option>
-                                   <option value="osm">OpenStreetMap</option>
-                              </select>
+                              <div className="flex flex-col gap-2 mb-6">
+                                   <label className="font-medium">Map Options</label>
+                                   <select
+                                        className="border rounded-md px-3 py-2 w-full"
+                                        value={tileType}
+                                        onChange={(e) =>
+                                             setTileType(e.target.value as "esri" | "osm")
+                                        }
+                                   >
+                                        <option value="esri">Esri Satellite + Labels</option>
+                                        <option value="osm">OpenStreetMap</option>
+                                   </select>
+                              </div>
 
-                              {error && <div className="text-red-500 text-sm">{error}</div>}
+                              <div className="mb-6">
+                                   <label className="font-medium">
+                                        Need help on creating an event location? Follow these steps:
+                                   </label>
+                                   <ol className="space-y-1 list-decimal list-inside text-sm text-muted-foreground">
+                                        <li>Enter a unique name for the location.</li>
+                                        <li>Select whether it&rsquo;s indoor or outdoor.</li>
+                                        <li>
+                                             Choose a map style (Esri for satellite imagery or
+                                             OpenStreetMap for standard tiles).
+                                        </li>
+                                        <li>
+                                             Draw the location boundary on the map: Click the
+                                             polygon tool (top-right), click points to outline the
+                                             area, and double-click or click finish to close the
+                                             shape. You can edit or delete it as needed.
+                                        </li>
+                                        <li>
+                                             Click &quot;Create Location&quot; to save. Remember,
+                                             the boundary must be a closed polygon.
+                                        </li>
+                                   </ol>
+                              </div>
                          </div>
 
                          {/* Right column: Map */}
@@ -168,13 +206,22 @@ export default function CreateLocationDialog({
                               {loading ? "Creating..." : "Create Location"}
                          </Button>
                     </DialogFooter>
-               </DialogContent>
-               <CreateLocationStatusDialog
-                    open={statusDialogOpen}
-                    status={createStatus}
-                    message={createMessage}
-                    onClose={() => setStatusDialogOpen(false)}
-               />
+               </DialogContent_>
+               <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                    <AlertDialogContent className="sm:max-w-md">
+                         <AlertDialogHeader>
+                              <AlertDialogTitle className={titleColor}>{title}</AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm text-muted-foreground">
+                                   {createMessage}
+                              </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                              <AlertDialogAction onClick={() => setStatusDialogOpen(false)}>
+                                   OK
+                              </AlertDialogAction>
+                         </AlertDialogFooter>
+                    </AlertDialogContent>
+               </AlertDialog>
           </Dialog>
      )
 }

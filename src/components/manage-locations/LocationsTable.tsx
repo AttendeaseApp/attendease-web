@@ -8,16 +8,21 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
-import {
-     DropdownMenu,
-     DropdownMenuTrigger,
-     DropdownMenuContent,
-     DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash } from "lucide-react"
-import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { EventLocation } from "@/interface/location-interface"
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogCancel,
+     AlertDialogContent,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
+import { Plus } from "lucide-react"
 
 interface LocationsTableProps {
      locations: EventLocation[]
@@ -32,17 +37,6 @@ interface LocationsTableProps {
  * @returns JSX.Element The LocationsTable component.
  */
 export function LocationsTable({ locations, loading, onDelete }: LocationsTableProps) {
-     const handleDelete = (location: EventLocation, e: React.MouseEvent) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (
-               confirm(
-                    `Are you sure you want to delete the location "${location.locationName}"? This action cannot be undone.`
-               )
-          ) {
-               onDelete(location)
-          }
-     }
      return (
           <Table>
                <TableHeader className="font-semibold text-gray-900">
@@ -56,14 +50,26 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
                <TableBody>
                     {loading ? (
                          <TableRow>
-                              <TableCell colSpan={6} className="text-center py-8">
+                              <TableCell colSpan={4} className="text-center py-8">
                                    Loading locations...
                               </TableCell>
                          </TableRow>
                     ) : locations.length === 0 ? (
                          <TableRow>
-                              <TableCell colSpan={6} className="text-center py-8">
-                                   No locations found
+                              <TableCell colSpan={4} className="text-center py-8">
+                                   <Empty className="border-0">
+                                        <EmptyHeader>
+                                             <EmptyMedia className="bg-transparent">
+                                                  <Plus className="h-8 w-8 text-muted-foreground" />
+                                             </EmptyMedia>
+                                             <EmptyTitle>No locations yet</EmptyTitle>
+                                             <EmptyDescription>
+                                                  You haven&lsquo;t created any locations. Start by
+                                                  adding a new one to define physical venues for
+                                                  events.
+                                             </EmptyDescription>
+                                        </EmptyHeader>
+                                   </Empty>
                               </TableCell>
                          </TableRow>
                     ) : (
@@ -76,15 +82,34 @@ export function LocationsTable({ locations, loading, onDelete }: LocationsTableP
                                    <TableCell>
                                         {new Date(eventLocation.createdAt).toLocaleString()}
                                    </TableCell>
-
                                    <TableCell className="text-right">
-                                        <Button
-                                             variant="ghost"
-                                             size="sm"
-                                             onClick={(e) => handleDelete(eventLocation, e)}
-                                        >
-                                             Delete
-                                        </Button>
+                                        <AlertDialog>
+                                             <AlertDialogTrigger asChild>
+                                                  <Button variant="ghost" size="sm">
+                                                       Delete
+                                                  </Button>
+                                             </AlertDialogTrigger>
+                                             <AlertDialogContent>
+                                                  <AlertDialogHeader>
+                                                       <AlertDialogTitle>
+                                                            Confirm Deletion
+                                                       </AlertDialogTitle>
+                                                       <AlertDialogDescription>
+                                                            Are you sure you want to delete the
+                                                            location {eventLocation.locationName}?
+                                                            This action cannot be undone.
+                                                       </AlertDialogDescription>
+                                                  </AlertDialogHeader>
+                                                  <AlertDialogFooter>
+                                                       <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                       <AlertDialogAction
+                                                            onClick={() => onDelete(eventLocation)}
+                                                       >
+                                                            Delete
+                                                       </AlertDialogAction>
+                                                  </AlertDialogFooter>
+                                             </AlertDialogContent>
+                                        </AlertDialog>
                                    </TableCell>
                               </TableRow>
                          ))
