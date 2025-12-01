@@ -182,6 +182,7 @@ export default function ManageClustersPage() {
           setIsEditCourseOpen(false)
           setSelectedCourse(null)
           loadCourses()
+          showStatus("success", "Successfully updated Course.")
      }
 
      const handleEditSection = (section: Section) => {
@@ -196,6 +197,7 @@ export default function ManageClustersPage() {
           setIsEditSectionOpen(false)
           setSelectedSections(null)
           loadSections()
+          showStatus("success", "Successfully updated Section.")
      }
 
      const handleCreateClusterOpen = () => setIsCreateClusterOpen(true)

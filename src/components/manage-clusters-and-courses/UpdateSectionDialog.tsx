@@ -38,11 +38,11 @@ export function UpdateSectionDialog({
      useEffect(() => {
           if (isOpen) {
                setFormData({
-                    sectionName: "",
+                    sectionName: section.name || "",
                })
                setError("")
           }
-     }, [isOpen])
+     }, [isOpen, section.name])
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
@@ -52,15 +52,16 @@ export function UpdateSectionDialog({
           setError("")
           setIsSubmitting(true)
           try {
-               const newSectionData = {
+               const updateSectionData = {
                     name: formData.sectionName,
                }
-               console.log("Sending update payload:", newSectionData)
-               await updateSection(course.id, newSectionData)
+               console.log("Sending update payload:", updateSectionData)
+               await updateSection(section.id, updateSectionData)
                onUpdate()
                onClose()
           } catch (err) {
-               const message = err + ", " + "Failed to update section."
+               const message =
+                    (err instanceof Error ? err.message : String(err)) + "Failed to update section."
                setError(message)
                console.error("Update failed:", err)
                if (onError) onError(message)
