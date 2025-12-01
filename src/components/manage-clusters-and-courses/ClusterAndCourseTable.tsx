@@ -16,15 +16,21 @@ import {
      DropdownMenuContent,
      DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash } from "lucide-react"
+import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { CourseSession } from "@/interface/cluster-and-course-interface"
 interface CourseTableProps {
      courses: CourseSession[]
      loading: boolean
+     onEdit: (course: CourseSession) => void
      onDelete: (course: CourseSession) => void
 }
-export function ClusterAndCourseTable({ courses, loading, onDelete }: CourseTableProps) {
+export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
+     const handleEdit = (course: CourseSession, e: React.MouseEvent) => {
+          e.preventDefault()
+          e.stopPropagation()
+          onEdit(course)
+     }
      const handleDelete = (course: CourseSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
@@ -64,13 +70,36 @@ export function ClusterAndCourseTable({ courses, loading, onDelete }: CourseTabl
                                    <TableCell>{course.courseName || " –"}</TableCell>
                                    <TableCell>{course.cluster?.clusterName || " –"}</TableCell>
                                    <TableCell className="text-right">
-                                        <Button
+                                        <DropdownMenu>
+                                             <DropdownMenuTrigger asChild>
+                                                  <Button variant="ghost" size="sm">
+                                                       <MoreHorizontal className="h-4 w-4" />
+                                                       <span className="sr-only">Open menu</span>
+                                                  </Button>
+                                             </DropdownMenuTrigger>
+                                             <DropdownMenuContent align="end">
+                                                  <DropdownMenuItem
+                                                       onClick={(e) => handleEdit(course, e)}
+                                                  >
+                                                       <Pencil className="mr-2 h-4 w-4" />
+                                                       Edit
+                                                  </DropdownMenuItem>
+                                                  <DropdownMenuItem
+                                                       onClick={(e) => handleDelete(course, e)}
+                                                  >
+                                                       <Trash className="mr-2 h-4 w-4" />
+                                                       Delete
+                                                  </DropdownMenuItem>
+                                                  <DropdownMenuSeparator />
+                                             </DropdownMenuContent>
+                                        </DropdownMenu>
+                                        {/* <Button
                                              variant="ghost"
                                              size="sm"
                                              onClick={(e) => handleDelete(course, e)}
                                         >
                                              Delete
-                                        </Button>
+                                        </Button> */}
                                    </TableCell>
                               </TableRow>
                          ))

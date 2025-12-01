@@ -36,6 +36,9 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { SectionTable } from "@/components/manage-clusters-and-courses/SectionTable"
+import { UpdateClusterDialog } from "@/components/manage-clusters-and-courses/UpdateClusterDialog"
+import { UpdateCourseDialog } from "@/components/manage-clusters-and-courses/UpdateCourseDialog"
+import { UpdateSectionDialog } from "@/components/manage-clusters-and-courses/UpdateSectionDialog"
 
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
@@ -63,7 +66,10 @@ export default function ManageClustersPage() {
      const [isChooseCourseOpen, setIsChooseCourseOpen] = useState(false)
      const [selectedCourse, setSelectedCourse] = useState<CourseSession | null>(null)
      const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false)
-
+     const [selectedSections, setSelectedSections] = useState<Section | null>(null)
+     const [isEditClusterOpen, setIsEditClusterOpen] = useState(false)
+     const [isEditCourseOpen, setIsEditCourseOpen] = useState(false)
+     const [isEditSectionOpen, setIsEditSectionOpen] = useState(false)
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
@@ -148,6 +154,51 @@ export default function ManageClustersPage() {
                fields.some((f) => (f?.toLowerCase() || "").includes(sw))
           )
      })
+
+     const handleEditCluster = (cluster: ClusterSession) => {
+          setSelectedCluster(cluster)
+          setIsEditClusterOpen(true)
+     }
+     const handleEditClusterClose = () => {
+          setIsEditClusterOpen(false)
+          setSelectedCluster(null)
+     }
+     const handleEditClusterUpdate = () => {
+          setIsEditClusterOpen(false)
+          setSelectedCluster(null)
+          loadClusters()
+          showStatus("success", "Successfully updated Cluster.")
+     }
+
+     const handleEditCourse = (course: CourseSession) => {
+          setSelectedCourse(course)
+          setIsEditCourseOpen(true)
+     }
+     const handleEditCourseClose = () => {
+          setIsEditCourseOpen(false)
+          setSelectedCourse(null)
+     }
+     const handleEditCourseUpdate = () => {
+          setIsEditCourseOpen(false)
+          setSelectedCourse(null)
+          loadCourses()
+          showStatus("success", "Successfully updated Course.")
+     }
+
+     const handleEditSection = (section: Section) => {
+          setSelectedSections(section)
+          setIsEditSectionOpen(true)
+     }
+     const handleEditSectionClose = () => {
+          setIsEditSectionOpen(false)
+          setSelectedSections(null)
+     }
+     const handleEditSectionUpdate = () => {
+          setIsEditSectionOpen(false)
+          setSelectedSections(null)
+          loadSections()
+          showStatus("success", "Successfully updated Section.")
+     }
 
      const handleCreateClusterOpen = () => setIsCreateClusterOpen(true)
      const handleCreateClusterClose = () => setIsCreateClusterOpen(false)
@@ -260,6 +311,7 @@ export default function ManageClustersPage() {
                               <ClusterTable
                                    clusters={filteredClusters}
                                    loading={loadingClusters}
+                                   onEdit={handleEditCluster}
                                    onDeleteAction={handleDeleteCluster}
                               />
                          </div>
@@ -284,6 +336,7 @@ export default function ManageClustersPage() {
                               <ClusterAndCourseTable
                                    courses={filteredCourses}
                                    loading={loadingCourses}
+                                   onEdit={handleEditCourse}
                                    onDelete={handleDeleteCourse}
                               />
                          </div>
@@ -315,6 +368,7 @@ export default function ManageClustersPage() {
                               <SectionTable
                                    sections={filteredSections}
                                    loading={loadingSections}
+                                   onEdit={handleEditSection}
                                    onDelete={handleDeleteSection}
                               />
                          </div>
@@ -478,6 +532,35 @@ export default function ManageClustersPage() {
                               onClose={() => setIsCreateSectionOpen(false)}
                               onCreate={handleCreateSectionSuccess}
                               onError={(message) => showStatus("error", message)}
+                         />
+                    )}
+                    {selectedCluster && (
+                         <UpdateClusterDialog
+                              isOpen={isEditClusterOpen}
+                              onClose={handleEditClusterClose}
+                              onUpdate={handleEditClusterUpdate}
+                              onError={(message) => showStatus("error", message)}
+                              clusters={selectedCluster}
+                         />
+                    )}
+                    {selectedCourse && selectedCourse.cluster && (
+                         <UpdateCourseDialog
+                              cluster={selectedCourse.cluster}
+                              isOpen={isEditCourseOpen}
+                              onClose={handleEditCourseClose}
+                              onUpdate={handleEditCourseUpdate}
+                              onError={(message) => showStatus("error", message)}
+                              courses={selectedCourse}
+                         />
+                    )}
+                    {selectedSections && selectedSections.course && (
+                         <UpdateSectionDialog
+                              course={selectedSections.course}
+                              isOpen={isEditSectionOpen}
+                              onClose={handleEditSectionClose}
+                              onUpdate={handleEditSectionUpdate}
+                              onError={(message) => showStatus("error", message)}
+                              section={selectedSections}
                          />
                     )}
                     <ClusterCourseStatusDialog
