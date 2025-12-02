@@ -11,6 +11,7 @@ import { deleteEvent } from "@/services/event-sessions"
 import { EventSession } from "@/interface/event/event-interface"
 import { EditEventDialog } from "@/components/manage-events/EditEventDialog"
 import { CreateEventDialog } from "@/components/manage-events/CreateEventDialog"
+import { toast } from "sonner"
 
 /**
  * ManageEventsPage component for managing event sessions(CREATE, READ, UPDATE, DELETE).
@@ -20,7 +21,6 @@ import { CreateEventDialog } from "@/components/manage-events/CreateEventDialog"
 export default function ManageEventsPage() {
      const [events, setEvents] = useState<EventSession[]>([])
      const [loading, setLoading] = useState(true)
-     const [error, setError] = useState<string | null>(null)
      const [searchTerm, setSearchTerm] = useState("")
      const [isEditOpen, setIsEditOpen] = useState(false)
      const [selectedEvent, setSelectedEvent] = useState<EventSession | null>(null)
@@ -29,11 +29,11 @@ export default function ManageEventsPage() {
      const loadEvents = async () => {
           try {
                setLoading(true)
-               setError(null)
                const data = await getAllEvents()
                setEvents(data)
           } catch (err) {
-               setError(err instanceof Error ? err.message : "Failed to load events")
+               const errorMessage = err instanceof Error ? err.message : "Failed to load events"
+               toast.error(errorMessage)
                console.error("Error loading events:", err)
           } finally {
                setLoading(false)
@@ -74,6 +74,7 @@ export default function ManageEventsPage() {
           setIsEditOpen(false)
           setSelectedEvent(null)
           loadEvents()
+          toast.success("Event updated successfully!")
      }
 
      const handleCreateOpen = () => setIsCreateOpen(true)
@@ -81,16 +82,17 @@ export default function ManageEventsPage() {
      const handleCreateSuccess = () => {
           setIsCreateOpen(false)
           loadEvents()
+          toast.success("Event created successfully!")
      }
 
      const handleDelete = async (event: EventSession) => {
           try {
                await deleteEvent(event.eventId)
                setEvents((prev) => prev.filter((e) => e.eventId !== event.eventId))
-               alert("Event deleted successfully!")
+               toast.success("Event deleted successfully!")
           } catch (error) {
                console.error("Delete failed:", error)
-               alert("Failed to delete event. Please try again.")
+               toast.error("Failed to delete event. Please try again.")
           }
      }
 
@@ -124,13 +126,6 @@ export default function ManageEventsPage() {
                               Refresh
                          </Button>
                     </div>
-
-                    {error && (
-                         <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
-                              {error}
-                         </div>
-                    )}
-
                     <EventTable
                          events={filteredEvents}
                          loading={loading}

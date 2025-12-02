@@ -11,7 +11,19 @@ export const getAllEvents = async (): Promise<EventSession[]> => {
      try {
           const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.GET_ALL_EVENTS)
           if (!res.ok) {
-               throw new Error(`Failed to fetch events: ${res.status}`)
+               let errorMsg = `Failed to fetch events: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
           }
           const data = await res.json()
           return data as EventSession[]
@@ -48,14 +60,25 @@ export const updateEvent = async (
           if (payload.endDateTime) {
                payload.endDateTime = format(new Date(payload.endDateTime), "yyyy-MM-dd HH:mm:ss")
           }
-
           const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.UPDATE_EVENT(id), {
                method: "PATCH",
                headers: { "Content-Type": "application/json" },
                body: JSON.stringify(payload),
           })
           if (!res.ok) {
-               throw new Error(`Failed to update event: ${res.status}`)
+               let errorMsg = `Failed to update event: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
           }
           const data = await res.json()
           return data as EventSession
@@ -66,7 +89,7 @@ export const updateEvent = async (
 }
 
 /**
- * Update an event by sending a POST request to the API.
+ * Create an event by sending a POST request to the API.
  *
  * @param newEventData
  * @returns data as EventSession
@@ -91,29 +114,26 @@ export const createEvent = async (
           if (payload.endDateTime) {
                payload.endDateTime = format(new Date(payload.endDateTime), "yyyy-MM-dd HH:mm:ss")
           }
-
           const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.CREATE_EVENT, {
                method: "POST",
                headers: { "Content-Type": "application/json" },
                body: JSON.stringify(payload),
           })
-
           if (!res.ok) {
                let errorMsg = `Failed to create event: ${res.status}`
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg
+                    errorMsg = res.statusText || errorMsg + parseErr
                }
                throw new Error(errorMsg)
           }
-
           const data = await res.json()
           return data as EventSession
      } catch (error) {
@@ -137,13 +157,13 @@ export const deleteEvent = async (id: string): Promise<void> => {
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg
+                    errorMsg = res.statusText || errorMsg + parseErr
                }
                throw new Error(errorMsg)
           }

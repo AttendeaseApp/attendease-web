@@ -7,9 +7,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 interface MoreSettingsDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
+     setOpenDeleteModal: (open: boolean) => void
 }
 
-export default function MoreSettingsDialog({ open, onOpenChange }: MoreSettingsDialogProps) {
+export default function MoreSettingsDialog({
+     open,
+     onOpenChange,
+     setOpenDeleteModal,
+}: MoreSettingsDialogProps) {
      return (
           <Dialog open={open} onOpenChange={onOpenChange}>
                <DialogContent className="max-w-fit">
@@ -19,7 +24,21 @@ export default function MoreSettingsDialog({ open, onOpenChange }: MoreSettingsD
                               Account deactivation, deletion, and facial data removal.
                          </p>
                     </DialogHeader>
-
+                    <div className="flex flex-col gap-4 mt-4 w-full">
+                         <Button
+                              variant="outline"
+                              className="flex flex-col items-start justify-center gap-1 rounded-md bg-white text-red-500 w-full h-16"
+                              onClick={() => setOpenDeleteModal(true)}
+                         >
+                              <span className="text-sm font-semibold leading-none">
+                                   Delete account by section
+                              </span>
+                              <span className="text-xs text-black leading-tight">
+                                   This action will allow you to delete accounts from a specific
+                                   section.
+                              </span>
+                         </Button>
+                    </div>
                     <div className="flex flex-col gap-4 mt-4 w-full max-w-fit">
                          <Button
                               variant="outline"

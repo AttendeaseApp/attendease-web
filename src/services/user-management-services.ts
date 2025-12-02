@@ -104,3 +104,30 @@ export const getSections = async (): Promise<Section[]> => {
           return []
      }
 }
+
+/**
+ * Delete account by section
+ */
+export const deleteStudentAccountBySection = async (section: string) => {
+     try {
+          const res = await authFetch(
+               `${API_BASE}/api/users/management/section/${encodeURIComponent(section)}`,
+               {
+                    method: "DELETE",
+               }
+          )
+
+          if (!res.ok) {
+               const text = await res.text()
+               throw new Error(text || "Failed to delete users")
+          }
+
+          const contentType = res.headers.get("content-type")
+          return contentType && contentType.includes("application/json")
+               ? await res.json()
+               : await res.text()
+     } catch (err) {
+          console.error("Error deleting users by section:", err)
+          throw err
+     }
+}

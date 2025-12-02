@@ -5,7 +5,19 @@ export const getAllCourses = async (): Promise<CourseSession[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_COURSES)
           if (!res.ok) {
-               throw new Error("Failed to fetch courses: ${res.status}")
+               let errorMsg = `Failed to fetch courses: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         errorBody.error ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
+               }
+               throw new Error(errorMsg)
           }
           const data = await res.json()
           return data as CourseSession[]
@@ -18,7 +30,19 @@ export const getAllClusters = async (): Promise<ClusterSession[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_CLUSTERS)
           if (!res.ok) {
-               throw new Error(`Failed to fetch clusters: ${res.status}`)
+               let errorMsg = `Failed to fetch clusters: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         errorBody.error ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
+               }
+               throw new Error(errorMsg)
           }
           const data = await res.json()
           return data as ClusterSession[]
@@ -31,7 +55,19 @@ export const getAllSections = async (): Promise<Section[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_SECTIONS)
           if (!res.ok) {
-               throw new Error(`Failed to fetch sections: ${res.status}`)
+               let errorMsg = `Failed to fetch sections: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         errorBody.error ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
+               }
+               throw new Error(errorMsg)
           }
           const data = await res.json()
           return data as Section[]
@@ -46,7 +82,19 @@ export const getSectionsByCourse = async (courseId: string): Promise<Section[]> 
                CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_SECTIONS_BY_COURSE(courseId)
           )
           if (!res.ok) {
-               throw new Error(`Failed to fetch sections for course: ${res.status}`)
+               let errorMsg = `Failed to fetch sections for course: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         errorBody.error ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
+               }
+               throw new Error(errorMsg)
           }
           const data = await res.json()
           return data as Section[]
@@ -68,13 +116,13 @@ export const deleteCourse = async (id: string): Promise<void> => {
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -98,13 +146,13 @@ export const createCluster = async (
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -134,13 +182,13 @@ export const createCourse = async (
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -164,13 +212,13 @@ export const deleteCluster = async (id: string): Promise<void> => {
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -198,13 +246,13 @@ export const createSection = async (
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -228,13 +276,13 @@ export const deleteSection = async (id: string): Promise<void> => {
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -262,13 +310,13 @@ export const updateCluster = async (
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -298,13 +346,13 @@ export const updateCourse = async (
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
@@ -334,13 +382,13 @@ export const updateSection = async (
                try {
                     const errorBody = await res.json()
                     errorMsg =
-                         errorBody.error ||
                          errorBody.message ||
+                         errorBody.error ||
                          (Array.isArray(errorBody.errors)
                               ? errorBody.errors[0]?.defaultMessage
-                              : errorBody)
+                              : JSON.stringify(errorBody))
                } catch (parseErr) {
-                    errorMsg = res.statusText || errorMsg + parseErr
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
                }
                throw new Error(errorMsg)
           }
