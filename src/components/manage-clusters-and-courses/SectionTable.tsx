@@ -17,6 +17,20 @@ import {
 import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { Section } from "@/interface/cluster-and-course-interface"
+
+import { useState } from "react"
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogCancel,
+     AlertDialogContent,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+
 interface SectionProps {
      sections: Section[]
      loading: boolean
@@ -24,23 +38,34 @@ interface SectionProps {
      onDelete: (section: Section) => void
 }
 export function SectionTable({ sections, loading, onEdit, onDelete }: SectionProps) {
+
+const [deleteTarget, setDeleteTarget] = useState<Section | null>(null)
+const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
      const handleEdit = (section: Section, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           onEdit(section)
      }
-     const handleDelete = (section: Section, e: React.MouseEvent) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (
-               confirm(
-                    `Are you sure you want to delete the section "${section.name}"? This action cannot be undone.`
-               )
-          ) {
-               onDelete(section)
-          }
+   const openDeleteDialog = (section: Section, e: React.MouseEvent) => {
+     e.preventDefault()
+     e.stopPropagation()
+     setDeleteTarget(section)
+     setDeleteDialogOpen(true)
+}
+
+const confirmDelete = () => {
+     if (deleteTarget) {
+          onDelete(deleteTarget)
+          toast.success(`Section "${deleteTarget.name}" deleted successfully.`)
      }
+     setDeleteTarget(null)
+     setDeleteDialogOpen(false)
+}
+
+
      return (
+          <>
           <Table className="w-full">
                <TableHeader>
                     <TableRow>
@@ -82,12 +107,11 @@ export function SectionTable({ sections, loading, onEdit, onDelete }: SectionPro
                                                        <Pencil className="mr-2 h-4 w-4" />
                                                        Edit
                                                   </DropdownMenuItem>
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleDelete(section, e)}
-                                                  >
-                                                       <Trash className="mr-2 h-4 w-4" />
+                                                 <DropdownMenuItem onClick={(e) => openDeleteDialog(section, e)}>
+     <                                                      Trash className="mr-2 h-4 w-4" />
                                                        Delete
-                                                  </DropdownMenuItem>
+                                                                      </DropdownMenuItem>
+
                                                   <DropdownMenuSeparator />
                                              </DropdownMenuContent>
                                         </DropdownMenu>
@@ -104,5 +128,23 @@ export function SectionTable({ sections, loading, onEdit, onDelete }: SectionPro
                     )}
                </TableBody>
           </Table>
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+     <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+               <AlertDialogDescription>
+                    Are you sure you want to delete the section "{deleteTarget?.name}"? 
+                    This action cannot be undone.
+               </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+               <AlertDialogCancel>Cancel</AlertDialogCancel>
+               <AlertDialogAction  onClick={confirmDelete}>
+                    Delete
+               </AlertDialogAction>
+          </AlertDialogFooter>
+     </AlertDialogContent>
+</AlertDialog>
+</>
      )
 }

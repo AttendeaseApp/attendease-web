@@ -234,7 +234,7 @@ export default function ManageClustersPage() {
                await deleteCluster(cluster.clusterId)
                setClusters((prev) => prev.filter((c) => c.clusterId !== cluster.clusterId))
                loadCourses()
-               alert("Cluster deleted successfully!")
+          
           } catch (err) {
                console.error(err)
                alert("Failed to delete cluster. Please try again.")
@@ -244,7 +244,7 @@ export default function ManageClustersPage() {
           try {
                await deleteSection(section.id)
                setSections((prev) => prev.filter((s) => s.id !== section.id))
-               alert("Section deleted successfully!")
+              
           } catch (error) {
                console.error("Delete failed:", error)
                alert("Failed to delete section. Please try again.")
@@ -255,7 +255,7 @@ export default function ManageClustersPage() {
           try {
                await deleteCourse(course.id)
                setCourses((prev) => prev.filter((c) => c.id !== course.id))
-               alert("Course deleted successfully!")
+              
           } catch (err) {
                console.error(err)
                alert("Failed to delete course. Please try again.")

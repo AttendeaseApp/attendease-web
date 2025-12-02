@@ -17,6 +17,21 @@ import {
 import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { ClusterSession } from "@/interface/cluster-and-course-interface"
+
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogCancel,
+     AlertDialogContent,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+import { useState } from "react"
+
 export function ClusterTable({
      clusters,
      loading,
@@ -28,23 +43,34 @@ export function ClusterTable({
      onEdit: (cluster: ClusterSession) => void
      onDeleteAction: (cluster: ClusterSession) => void
 }) {
+
+const [deleteTarget, setDeleteTarget] = useState<ClusterSession | null>(null)
+const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
      const handleEdit = (cluster: ClusterSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           onEdit(cluster)
      }
-     const handleDelete = (cluster: ClusterSession, e: React.MouseEvent) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (
-               confirm(
-                    `Are you sure you want to delete the cluster "${cluster.clusterName}"? This action cannot be undone and will also delete associated courses.`
-               )
-          ) {
-               onDeleteAction(cluster)
-          }
-     }
+    const openDeleteDialog = (cluster: ClusterSession, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDeleteTarget(cluster)
+    setDeleteDialogOpen(true)
+}
+
+const confirmDelete = () => {
+    if (deleteTarget) {
+        onDeleteAction(deleteTarget)
+        toast.success(`Cluster "${deleteTarget.clusterName}" deleted successfully.`)
+    }
+    setDeleteTarget(null)
+    setDeleteDialogOpen(false)
+}
+
+
      return (
+          <>
           <Table className="w-full">
                <TableHeader>
                     <TableRow>
@@ -84,12 +110,12 @@ export function ClusterTable({
                                                        <Pencil className="mr-2 h-4 w-4" />
                                                        Edit
                                                   </DropdownMenuItem>
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleDelete(cluster, e)}
-                                                  >
-                                                       <Trash className="mr-2 h-4 w-4" />
-                                                       Delete
+                                                  
+                                                  <DropdownMenuItem onClick={(e) => openDeleteDialog(cluster, e)}>
+                                                  <Trash className="mr-2 h-4 w-4" />
+                                                  Delete
                                                   </DropdownMenuItem>
+
                                                   <DropdownMenuSeparator />
                                              </DropdownMenuContent>
                                         </DropdownMenu>
@@ -106,5 +132,25 @@ export function ClusterTable({
                     )}
                </TableBody>
           </Table>
+
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+    <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+                Are you sure you want to delete the cluster "{deleteTarget?.clusterName}"? 
+                This action cannot be undone and will also delete associated courses.
+            </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction  onClick={confirmDelete}>
+                Delete
+            </AlertDialogAction>
+        </AlertDialogFooter>
+    </AlertDialogContent>
+</AlertDialog>
+</>
+
      )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
      Table,
@@ -19,6 +19,20 @@ import {
 import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { CourseSession } from "@/interface/cluster-and-course-interface"
+
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogCancel,
+     AlertDialogContent,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+
 interface CourseTableProps {
      courses: CourseSession[]
      loading: boolean
@@ -26,23 +40,34 @@ interface CourseTableProps {
      onDelete: (course: CourseSession) => void
 }
 export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
+
+const [deleteTarget, setDeleteTarget] = useState<CourseSession | null>(null)
+const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
+
      const handleEdit = (course: CourseSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           onEdit(course)
      }
-     const handleDelete = (course: CourseSession, e: React.MouseEvent) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (
-               confirm(
-                    `Are you sure you want to delete the course "${course.courseName}"? This action cannot be undone.`
-               )
-          ) {
-               onDelete(course)
-          }
+    const openDeleteDialog = (course: CourseSession, e: React.MouseEvent) => {
+     e.preventDefault()
+     e.stopPropagation()
+     setDeleteTarget(course)
+     setDeleteDialogOpen(true)
+}
+
+const confirmDelete = () => {
+     if (deleteTarget) {
+          onDelete(deleteTarget) 
+          toast.success(`Course "${deleteTarget.courseName}" deleted successfully.`)
      }
+     setDeleteTarget(null)
+     setDeleteDialogOpen(false)
+}
+
      return (
+          <>
           <Table className="w-full">
                <TableHeader>
                     <TableRow>
@@ -84,12 +109,13 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                                                        <Pencil className="mr-2 h-4 w-4" />
                                                        Edit
                                                   </DropdownMenuItem>
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleDelete(course, e)}
-                                                  >
-                                                       <Trash className="mr-2 h-4 w-4" />
-                                                       Delete
-                                                  </DropdownMenuItem>
+
+                                               <DropdownMenuItem onClick={(e) => openDeleteDialog(course, e)}>
+                                             <Trash className="mr-2 h-4 w-4" />
+                                                  Delete
+                                             </DropdownMenuItem>
+
+
                                                   <DropdownMenuSeparator />
                                              </DropdownMenuContent>
                                         </DropdownMenu>
@@ -106,5 +132,24 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                     )}
                </TableBody>
           </Table>
+       
+<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+     <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+               <AlertDialogDescription>
+                    Are you sure you want to delete the course "
+                    {deleteTarget?.courseName}"? This action cannot be undone.
+               </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+               <AlertDialogCancel>Cancel</AlertDialogCancel>
+               <AlertDialogAction  onClick={confirmDelete}>
+                    Delete
+               </AlertDialogAction>
+          </AlertDialogFooter>
+     </AlertDialogContent>
+</AlertDialog>
+</>
      )
 }
