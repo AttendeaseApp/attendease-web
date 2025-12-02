@@ -1,4 +1,5 @@
 "use client"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
      Table,
@@ -17,7 +18,6 @@ import {
 import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { ClusterSession } from "@/interface/cluster-and-course-interface"
-
 import {
      AlertDialog,
      AlertDialogAction,
@@ -28,8 +28,6 @@ import {
      AlertDialogHeader,
      AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
-import { useState } from "react"
 
 export function ClusterTable({
      clusters,
@@ -40,11 +38,10 @@ export function ClusterTable({
      clusters: ClusterSession[]
      loading: boolean
      onEdit: (cluster: ClusterSession) => void
-     onDeleteAction: (cluster: ClusterSession) => void
+     onDeleteAction: (cluster: ClusterSession) => Promise<void>
 }) {
      const [deleteTarget, setDeleteTarget] = useState<ClusterSession | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-
      const handleEdit = (cluster: ClusterSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
@@ -56,16 +53,11 @@ export function ClusterTable({
           setDeleteTarget(cluster)
           setDeleteDialogOpen(true)
      }
-
-     const confirmDelete = () => {
+     const confirmDelete = async () => {
           if (deleteTarget) {
                onDeleteAction(deleteTarget)
-               toast.success(`Cluster "${deleteTarget.clusterName}" deleted successfully.`)
           }
-          setDeleteTarget(null)
-          setDeleteDialogOpen(false)
      }
-
      return (
           <>
                <Table className="w-full">
@@ -109,7 +101,6 @@ export function ClusterTable({
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
-
                                                        <DropdownMenuItem
                                                             onClick={(e) =>
                                                                  openDeleteDialog(cluster, e)
@@ -118,7 +109,6 @@ export function ClusterTable({
                                                             <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
-
                                                        <DropdownMenuSeparator />
                                                   </DropdownMenuContent>
                                              </DropdownMenu>
@@ -128,7 +118,6 @@ export function ClusterTable({
                          )}
                     </TableBody>
                </Table>
-
                <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <AlertDialogContent className="sm:max-w-md">
                          <AlertDialogHeader>

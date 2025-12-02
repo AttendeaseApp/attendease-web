@@ -39,7 +39,7 @@ import { SectionTable } from "@/components/manage-clusters-and-courses/SectionTa
 import { UpdateClusterDialog } from "@/components/manage-clusters-and-courses/UpdateClusterDialog"
 import { UpdateCourseDialog } from "@/components/manage-clusters-and-courses/UpdateCourseDialog"
 import { UpdateSectionDialog } from "@/components/manage-clusters-and-courses/UpdateSectionDialog"
-
+import { toast } from "sonner"
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
           clusterId: "",
@@ -73,13 +73,11 @@ export default function ManageClustersPage() {
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
-
      const showStatus = (status: "success" | "error", message: string) => {
           setCreateStatus(status)
           setCreateMessage(message)
           setStatusDialogOpen(true)
      }
-
      const loadClusters = async () => {
           try {
                setLoadingClusters(true)
@@ -87,12 +85,13 @@ export default function ManageClustersPage() {
                setClusters(data)
           } catch (err) {
                console.error("Failed to load clusters:", err)
-               setError("Failed to load clusters")
+               const errorMessage = err instanceof Error ? err.message : "Failed to load clusters"
+               toast.error(errorMessage)
+               setError(errorMessage)
           } finally {
                setLoadingClusters(false)
           }
      }
-
      const loadCourses = async () => {
           try {
                setLoadingCourses(true)
@@ -101,7 +100,9 @@ export default function ManageClustersPage() {
                setCourses(data)
                console.log("successfully get all courses")
           } catch (err) {
-               setError(err instanceof Error ? err.message : "Failed to load courses")
+               const errorMessage = err instanceof Error ? err.message : "Failed to load courses"
+               toast.error(errorMessage)
+               setError(errorMessage)
                console.error("Error loading courses:", err)
           } finally {
                setLoadingCourses(false)
@@ -115,7 +116,9 @@ export default function ManageClustersPage() {
                setSections(data)
                console.log("successfully get all sections")
           } catch (err) {
-               setError(err instanceof Error ? err.message : "Failed to load sections")
+               const errorMessage = err instanceof Error ? err.message : "Failed to load sections"
+               toast.error(errorMessage)
+               setError(errorMessage)
                console.error("Error loading sections:", err)
           } finally {
                setLoadingSections(false)
@@ -134,7 +137,6 @@ export default function ManageClustersPage() {
                fields.some((f) => (f?.toLowerCase() || "").includes(sw))
           )
      })
-
      const filteredCourses = courses.filter((course) => {
           const lowerSearch = courseSearchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
@@ -144,7 +146,6 @@ export default function ManageClustersPage() {
                fields.some((f) => (f?.toLowerCase() || "").includes(sw))
           )
      })
-
      const filteredSections = sections.filter((section) => {
           const lowerSearch = sectionSearchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
@@ -154,7 +155,6 @@ export default function ManageClustersPage() {
                fields.some((f) => (f?.toLowerCase() || "").includes(sw))
           )
      })
-
      const handleEditCluster = (cluster: ClusterSession) => {
           setSelectedCluster(cluster)
           setIsEditClusterOpen(true)
@@ -169,7 +169,6 @@ export default function ManageClustersPage() {
           loadClusters()
           showStatus("success", "Successfully updated Cluster.")
      }
-
      const handleEditCourse = (course: CourseSession) => {
           setSelectedCourse(course)
           setIsEditCourseOpen(true)
@@ -184,7 +183,6 @@ export default function ManageClustersPage() {
           loadCourses()
           showStatus("success", "Successfully updated Course.")
      }
-
      const handleEditSection = (section: Section) => {
           setSelectedSections(section)
           setIsEditSectionOpen(true)
@@ -199,7 +197,6 @@ export default function ManageClustersPage() {
           loadSections()
           showStatus("success", "Successfully updated Section.")
      }
-
      const handleCreateClusterOpen = () => setIsCreateClusterOpen(true)
      const handleCreateClusterClose = () => setIsCreateClusterOpen(false)
      const handleCreateClusterSuccess = () => {
@@ -208,7 +205,6 @@ export default function ManageClustersPage() {
           loadCourses()
           showStatus("success", "Successfully created Cluster.")
      }
-
      const handleCreateCourseOpen = () => setIsChooseClusterOpen(true)
      const handleCreateCourseSuccess = () => {
           setIsChooseClusterOpen(false)
@@ -234,31 +230,44 @@ export default function ManageClustersPage() {
                await deleteCluster(cluster.clusterId)
                setClusters((prev) => prev.filter((c) => c.clusterId !== cluster.clusterId))
                loadCourses()
+               toast.success(`Cluster "${cluster.clusterName}" deleted successfully.`)
           } catch (err) {
                console.error(err)
-               alert("Failed to delete cluster. Please try again.")
+               const errorMessage =
+                    err instanceof Error
+                         ? err.message
+                         : "Failed to delete cluster. Please try again."
+               toast.error(errorMessage)
           }
      }
      const handleDeleteSection = async (section: Section) => {
           try {
                await deleteSection(section.id)
                setSections((prev) => prev.filter((s) => s.id !== section.id))
+               toast.success(`Section "${section.name}" deleted successfully.`)
           } catch (error) {
                console.error("Delete failed:", error)
-               alert("Failed to delete section. Please try again.")
+               const errorMessage =
+                    error instanceof Error
+                         ? error.message
+                         : "Failed to delete section. Please try again."
+               toast.error(errorMessage)
           }
      }
-
      const handleDeleteCourse = async (course: CourseSession) => {
           try {
                await deleteCourse(course.id)
                setCourses((prev) => prev.filter((c) => c.id !== course.id))
+               toast.success(`Course "${course.courseName}" deleted successfully.`)
           } catch (err) {
                console.error(err)
-               alert("Failed to delete course. Please try again.")
+               const errorMessage =
+                    err instanceof Error
+                         ? err.message
+                         : "Failed to delete course. Please try again."
+               toast.error(errorMessage)
           }
      }
-
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
@@ -286,7 +295,6 @@ export default function ManageClustersPage() {
                               </Button>
                          </div>
                     </div>
-
                     <div className="flex flex-row w-full h-full min-w-0 gap-12">
                          {/* clusters */}
                          <div className="w-full">
@@ -312,7 +320,6 @@ export default function ManageClustersPage() {
                                    onDeleteAction={handleDeleteCluster}
                               />
                          </div>
-
                          {/* courses */}
                          <div className="w-full">
                               <h2 className="text-lg font-semibold mb-4">COURSES</h2>
@@ -338,7 +345,6 @@ export default function ManageClustersPage() {
                               />
                          </div>
                     </div>
-
                     {/* section */}
                     <div>
                          <div className="w-full">
@@ -370,7 +376,6 @@ export default function ManageClustersPage() {
                               />
                          </div>
                     </div>
-
                     {/* dialogs */}
                     <CreateClusterDialog
                          isOpen={isCreateClusterOpen}
@@ -379,7 +384,6 @@ export default function ManageClustersPage() {
                          onError={(message) => showStatus("error", message)}
                          clusters={clusters}
                     />
-
                     <Dialog open={isChooseClusterOpen} onOpenChange={setIsChooseClusterOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                               <DialogHeader>
@@ -454,7 +458,6 @@ export default function ManageClustersPage() {
                               onError={(message) => showStatus("error", message)}
                          />
                     )}
-
                     <Dialog open={isChooseCourseOpen} onOpenChange={setIsChooseCourseOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                               <DialogHeader>

@@ -29,7 +29,6 @@ import {
      AlertDialogHeader,
      AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
 
 interface SectionProps {
      sections: Section[]
@@ -58,7 +57,6 @@ export function SectionTable({ sections, loading, onEdit, onDelete }: SectionPro
      const confirmDelete = () => {
           if (deleteTarget) {
                onDelete(deleteTarget)
-               toast.success(`Section "${deleteTarget.name}" deleted successfully.`)
           }
           setDeleteTarget(null)
           setDeleteDialogOpen(false)

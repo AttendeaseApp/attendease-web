@@ -1,5 +1,4 @@
 "use client"
-
 import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,7 +18,6 @@ import {
 import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { CourseSession } from "@/interface/cluster-and-course-interface"
-
 import {
      AlertDialog,
      AlertDialogAction,
@@ -30,41 +28,45 @@ import {
      AlertDialogHeader,
      AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
-
+// import { toast } from "sonner"
+//
 interface CourseTableProps {
      courses: CourseSession[]
      loading: boolean
      onEdit: (course: CourseSession) => void
-     onDelete: (course: CourseSession) => void
+     onDelete: (course: CourseSession) => Promise<void>
 }
 
 export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
      const [deleteTarget, setDeleteTarget] = useState<CourseSession | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-
      const handleEdit = (course: CourseSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           onEdit(course)
      }
-
      const openDeleteDialog = (course: CourseSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           setDeleteTarget(course)
           setDeleteDialogOpen(true)
      }
-
-     const confirmDelete = () => {
+     const confirmDelete = async () => {
           if (deleteTarget) {
-               onDelete(deleteTarget)
-               toast.success(`Course "${deleteTarget.courseName}" deleted successfully.`)
+               try {
+                    await onDelete(deleteTarget)
+                    // toast.success(`Course "${deleteTarget.courseName}" deleted successfully.`)
+               } catch (err) {
+                    console.error("Delete failed:", err)
+                    // const errorMessage =
+                    //      err instanceof Error ? err.message : "Unknown error occurred"
+                    // toast.warning(`Failed to delete location: ${errorMessage}`)
+               } finally {
+                    setDeleteTarget(null)
+                    setDeleteDialogOpen(false)
+               }
           }
-          setDeleteTarget(null)
-          setDeleteDialogOpen(false)
      }
-
      return (
           <>
                <Table className="w-full">
