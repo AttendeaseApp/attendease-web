@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { format, addHours } from "date-fns"
 import { Button } from "@/components/ui/button"
@@ -35,7 +34,7 @@ import {
 } from "@/services/cluster-and-course-sessions"
 import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
 import { Section } from "@/interface/students/SectionInterface"
-import CreateEventStatusDialog from "@/components/manage-events/CreateEventStatusDialog"
+import { toast } from "sonner"
 
 interface CreateEventDialogProps {
      isOpen: boolean
@@ -82,15 +81,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [sections, setSections] = useState<Section[]>([])
      const [loadingLocations, setLoadingLocations] = useState(true)
      const [loadingHierarchy, setLoadingHierarchy] = useState(true)
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
-     const [createMessage, setCreateMessage] = useState("")
-
-     const showStatus = (status: "success" | "error", message: string) => {
-          setCreateStatus(status)
-          setCreateMessage(message)
-          setStatusDialogOpen(true)
-     }
 
      const getCoursesUnderCluster = (clId: string) => {
           return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
@@ -322,7 +312,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                          }
                     }
                }
-
                return {
                     ...prev,
                     selectedClusters: newClusters,
@@ -397,12 +386,14 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
-
-               showStatus("success", "Succesfully created the event.")
+               toast.success("Successfully created the event.")
+               onClose()
+               onCreate()
           } catch (err) {
                console.error("Create failed:", err)
-               setError(err instanceof Error ? err.message : "Failed to create event.")
-               showStatus("error", "Failed to create the event")
+               const message = err instanceof Error ? err.message : "Failed to create event."
+               setError(message)
+               toast.error(message)
           } finally {
                setIsSubmitting(false)
           }
@@ -1016,12 +1007,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    </div>
                               </div>
 
-                              {error && (
-                                   <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
-                                        {error}
-                                   </div>
-                              )}
-
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"
@@ -1045,19 +1030,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                          </form>
                     </DialogContent>
                </Dialog>
-
-               <CreateEventStatusDialog
-                    open={statusDialogOpen}
-                    status={createStatus}
-                    message={createMessage}
-                    onClose={() => {
-                         setStatusDialogOpen(false)
-                         if (createStatus === "success") {
-                              onClose()
-                              onCreate()
-                         }
-                    }}
-               />
           </>
      )
 }
