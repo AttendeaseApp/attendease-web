@@ -6,151 +6,153 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { updateUser } from "@/services/edit-user-details"
-
 import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
+import { Section } from "@/interface/students/SectionInterface"
+import { getSections } from "@/services/user-management-services"
 
 interface EditUserDetailsDialogProps {
-     open: boolean
-     onOpenChange: (open: boolean) => void
-     user: EditUserDetailsPayload | null
-     onUpdated: (updatedUser: EditUserDetailsPayload) => void
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    user: EditUserDetailsPayload | null
+    onUpdated: (updatedUser: EditUserDetailsPayload) => void
 }
 
-export default function UpdateUserDialog({
-     open,
-     onOpenChange,
-     user,
-     onUpdated,
+export default function EditUserDetailsDialog({
+    open,
+    onOpenChange,
+    user,
+    onUpdated,
 }: EditUserDetailsDialogProps) {
-     const [form, setForm] = useState<EditUserDetailsPayload>({
-          firstName: "",
-          lastName: "",
-          contactNumber: "",
-          email: "",
-          studentNumber: "",
-          sectionId: "",
-          userId: "",
-     })
+    const [form, setForm] = useState<EditUserDetailsPayload>({
+        userId: "",
+        firstName: "",
+        lastName: "",
+        contactNumber: "",
+        email: "",
+        studentNumber: "",
+        sectionId: "",
+    })
 
-     const [loading, setLoading] = useState(false)
-     const [error, setError] = useState("")
+    const [sections, setSections] = useState<Section[]>([])
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
 
-     useEffect(() => {
-          if (!user) return
+    useEffect(() => {
+        if (!user) return
+        setForm({
+            userId: user.userId,
+            firstName: user.firstName ?? "",
+            lastName: user.lastName ?? "",
+            contactNumber: user.contactNumber ?? "",
+            email: user.email ?? "",
+            studentNumber: user.studentNumber ?? "",
+            sectionId: user.sectionId ?? "",
+        })
+    }, [user])
 
-          setForm({
-               firstName: user.firstName ?? "",
-               lastName: user.lastName ?? "",
-               contactNumber: user.contactNumber ?? "",
-               email: user.email ?? "",
-               studentNumber: user.studentNumber ?? "",
-               sectionId: user.sectionId ?? "",
-               userId: user.userId,
-          })
-     }, [user])
+    useEffect(() => {
+        if (!open) return
+        const fetchSections = async () => {
+            try {
+                const data = await getSections()
+                setSections(data)
+            } catch (err) {
+                console.error("Failed to fetch sections:", err)
+            }
+        }
+        fetchSections()
+    }, [open])
 
-     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          const { name, value } = e.target
-          setForm((prev) => ({
-               ...prev,
-               [name]: value,
-          }))
-     }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target
+        setForm((prev) => ({ ...prev, [name]: value }))
+    }
 
-     const handleSubmit = async () => {
-          setLoading(true)
-          setError("")
+    const handleSubmit = async () => {
+        setLoading(true)
+        setError("")
+        try {
+            const { userId, ...body } = form
+            const updated = await updateUser(userId, body)
+            onUpdated(updated)
+            alert("Successfully updated")
+            onOpenChange(false)
+        } catch (err) {
+            const message =
+                err instanceof Error && err.message ? err.message : "Failed to update user"
+            setError(message)
+            alert(message)
+        } finally {
+            setLoading(false)
+        }
+    }
 
-          try {
-               const { userId, ...body } = form
-               const updated = await updateUser(userId, body)
-               onUpdated(updated)
-               alert("successfully updated")
-               onOpenChange(false)
-          } catch (err) {
-               const message =
-                    err instanceof Error && err.message ? err.message : "Failed to update user"
-               setError(message)
-               alert(message)
-          } finally {
-               setLoading(false)
-          }
-     }
+    if (!user) return null
 
-     if (!user) return null
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
+                <DialogHeader>
+                    <DialogTitle>Update User</DialogTitle>
+                    <p className="text-sm text-gray-500">Edit user details below.</p>
+                </DialogHeader>
 
-     return (
-          <Dialog open={open} onOpenChange={onOpenChange}>
-               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
-                    <DialogHeader>
-                         <DialogTitle>Update User</DialogTitle>
-                         <p className="text-sm text-gray-500">Edit user details below.</p>
-                    </DialogHeader>
-
-                    <div className="space-y-4 mt-4">
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                   <Label>First Name</Label>
-                                   <Input
-                                        name="firstName"
-                                        value={form.firstName}
-                                        onChange={handleChange}
-                                   />
-                              </div>
-                              <div>
-                                   <Label>Last Name</Label>
-                                   <Input
-                                        name="lastName"
-                                        value={form.lastName}
-                                        onChange={handleChange}
-                                   />
-                              </div>
-                         </div>
-
-                         <div>
-                              <Label>Student Number</Label>
-                              <Input
-                                   name="studentNumber"
-                                   value={form.studentNumber}
-                                   onChange={handleChange}
-                              />
-                         </div>
-
-                         <div>
-                              <Label>Section ID</Label>
-                              <Input
-                                   name="sectionId"
-                                   value={form.sectionId}
-                                   onChange={handleChange}
-                              />
-                         </div>
-
-                         <div>
-                              <Label>Contact Number</Label>
-                              <Input
-                                   name="contactNumber"
-                                   value={form.contactNumber}
-                                   onChange={handleChange}
-                              />
-                         </div>
-
-                         <div>
-                              <Label>Email</Label>
-                              <Input name="email" value={form.email} onChange={handleChange} />
-                         </div>
-
-                         {error && <p className="text-red-500">{error}</p>}
-
-                         <div className="flex justify-end gap-2">
-                              <Button variant="outline" onClick={() => onOpenChange(false)}>
-                                   Cancel
-                              </Button>
-                              <Button onClick={handleSubmit} disabled={loading}>
-                                   {loading ? "Updating..." : "Update"}
-                              </Button>
-                         </div>
+                <div className="space-y-4 mt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label>First Name</Label>
+                            <Input name="firstName" value={form.firstName} onChange={handleChange} />
+                        </div>
+                        <div>
+                            <Label>Last Name</Label>
+                            <Input name="lastName" value={form.lastName} onChange={handleChange} />
+                        </div>
                     </div>
-               </DialogContent>
-          </Dialog>
-     )
+
+                    <div>
+                        <Label>Student Number</Label>
+                        <Input name="studentNumber" value={form.studentNumber} onChange={handleChange} />
+                    </div>
+
+                    <div>
+                        <Label>Section</Label>
+                        <select
+                            name="sectionId"
+                            value={form.sectionId}
+                            onChange={handleChange}
+                            className="w-full border rounded px-2 py-1"
+                        >
+                            <option value="">Select Section</option>
+                            {sections.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                    {s.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <Label>Contact Number</Label>
+                        <Input name="contactNumber" value={form.contactNumber} onChange={handleChange} />
+                    </div>
+
+                    <div>
+                        <Label>Email</Label>
+                        <Input name="email" value={form.email} onChange={handleChange} />
+                    </div>
+
+                    {error && <p className="text-red-500">{error}</p>}
+
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => onOpenChange(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleSubmit} disabled={loading}>
+                            {loading ? "Updating..." : "Update"}
+                        </Button>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
 }
