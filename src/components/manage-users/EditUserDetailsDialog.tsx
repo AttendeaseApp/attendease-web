@@ -9,6 +9,7 @@ import { updateUser } from "@/services/edit-user-details"
 import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
 import { Section } from "@/interface/students/SectionInterface"
 import { getSections } from "@/services/user-management-services"
+import EditUserStatusDialog from "./EditUserStatusDialog"
 
 interface EditUserDetailsDialogProps {
     open: boolean
@@ -16,6 +17,12 @@ interface EditUserDetailsDialogProps {
     user: EditUserDetailsPayload | null
     onUpdated: (updatedUser: EditUserDetailsPayload) => void
 }
+
+interface EditUserStatusDialogProps {
+     open: boolean
+     onOpenChange: (open: boolean) => void
+}
+
 
 export default function EditUserDetailsDialog({
     open,
@@ -36,6 +43,16 @@ export default function EditUserDetailsDialog({
     const [sections, setSections] = useState<Section[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
+
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [updateStatus, setUpdateStatus] = useState<"success" | "error">("success")
+     const [updateMessage, setUpdateMessage] = useState("")
+
+     const showStatus = (status: "success" | "error", message: string) => {
+          setUpdateStatus(status)
+          setUpdateMessage(message)
+          setStatusDialogOpen(true)
+     }
 
     useEffect(() => {
         if (!user) return
@@ -75,13 +92,13 @@ export default function EditUserDetailsDialog({
             const { userId, ...body } = form
             const updated = await updateUser(userId, body)
             onUpdated(updated)
-            alert("Successfully updated")
+            showStatus("success", "successfully updated.")
             onOpenChange(false)
         } catch (err) {
             const message =
                 err instanceof Error && err.message ? err.message : "Failed to update user"
             setError(message)
-            alert(message)
+            showStatus("error", message)
         } finally {
             setLoading(false)
         }
@@ -90,6 +107,7 @@ export default function EditUserDetailsDialog({
     if (!user) return null
 
     return (
+        <>
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
                 <DialogHeader>
@@ -154,5 +172,13 @@ export default function EditUserDetailsDialog({
                 </div>
             </DialogContent>
         </Dialog>
+
+         <EditUserStatusDialog
+                            open={statusDialogOpen}
+                            status={updateStatus}
+                            message={updateMessage}
+                            onClose={() => setStatusDialogOpen(false)}
+                       />
+                  </>
     )
 }
