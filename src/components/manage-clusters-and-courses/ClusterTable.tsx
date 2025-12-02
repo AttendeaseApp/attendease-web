@@ -1,4 +1,5 @@
 "use client"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
      Table,
@@ -17,6 +18,17 @@ import {
 import { MoreHorizontal, Trash, Pencil } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { ClusterSession } from "@/interface/cluster-and-course-interface"
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogCancel,
+     AlertDialogContent,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+
 export function ClusterTable({
      clusters,
      loading,
@@ -26,85 +38,102 @@ export function ClusterTable({
      clusters: ClusterSession[]
      loading: boolean
      onEdit: (cluster: ClusterSession) => void
-     onDeleteAction: (cluster: ClusterSession) => void
+     onDeleteAction: (cluster: ClusterSession) => Promise<void>
 }) {
+     const [deleteTarget, setDeleteTarget] = useState<ClusterSession | null>(null)
+     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
      const handleEdit = (cluster: ClusterSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           onEdit(cluster)
      }
-     const handleDelete = (cluster: ClusterSession, e: React.MouseEvent) => {
+     const openDeleteDialog = (cluster: ClusterSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
-          if (
-               confirm(
-                    `Are you sure you want to delete the cluster "${cluster.clusterName}"? This action cannot be undone and will also delete associated courses.`
-               )
-          ) {
-               onDeleteAction(cluster)
+          setDeleteTarget(cluster)
+          setDeleteDialogOpen(true)
+     }
+     const confirmDelete = async () => {
+          if (deleteTarget) {
+               onDeleteAction(deleteTarget)
           }
      }
      return (
-          <Table className="w-full">
-               <TableHeader>
-                    <TableRow>
-                         <TableHead>CLUSTER</TableHead>
-                         <TableHead className="text-right"></TableHead>
-                    </TableRow>
-               </TableHeader>
-               <TableBody>
-                    {loading ? (
+          <>
+               <Table className="w-full">
+                    <TableHeader>
                          <TableRow>
-                              <TableCell colSpan={2} className="text-center py-8">
-                                   Loading clusters...
-                              </TableCell>
+                              <TableHead>CLUSTER</TableHead>
+                              <TableHead className="text-right"></TableHead>
                          </TableRow>
-                    ) : clusters.length === 0 ? (
-                         <TableRow>
-                              <TableCell colSpan={2} className="text-center py-8">
-                                   No clusters found
-                              </TableCell>
-                         </TableRow>
-                    ) : (
-                         clusters.map((cluster) => (
-                              <TableRow key={cluster.clusterId}>
-                                   <TableCell>{cluster.clusterName || " –"}</TableCell>
-                                   <TableCell className="text-right">
-                                        <DropdownMenu>
-                                             <DropdownMenuTrigger asChild>
-                                                  <Button variant="ghost" size="sm">
-                                                       <MoreHorizontal className="h-4 w-4" />
-                                                       <span className="sr-only">Open menu</span>
-                                                  </Button>
-                                             </DropdownMenuTrigger>
-                                             <DropdownMenuContent align="end">
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleEdit(cluster, e)}
-                                                  >
-                                                       <Pencil className="mr-2 h-4 w-4" />
-                                                       Edit
-                                                  </DropdownMenuItem>
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleDelete(cluster, e)}
-                                                  >
-                                                       <Trash className="mr-2 h-4 w-4" />
-                                                       Delete
-                                                  </DropdownMenuItem>
-                                                  <DropdownMenuSeparator />
-                                             </DropdownMenuContent>
-                                        </DropdownMenu>
-                                        {/* <Button
-                                             variant="ghost"
-                                             size="sm"
-                                             onClick={(e) => handleDelete(cluster, e)}
-                                        >
-                                             Delete
-                                        </Button> */}
+                    </TableHeader>
+                    <TableBody>
+                         {loading ? (
+                              <TableRow>
+                                   <TableCell colSpan={2} className="text-center py-8">
+                                        Loading clusters...
                                    </TableCell>
                               </TableRow>
-                         ))
-                    )}
-               </TableBody>
-          </Table>
+                         ) : clusters.length === 0 ? (
+                              <TableRow>
+                                   <TableCell colSpan={2} className="text-center py-8">
+                                        No clusters found
+                                   </TableCell>
+                              </TableRow>
+                         ) : (
+                              clusters.map((cluster) => (
+                                   <TableRow key={cluster.clusterId}>
+                                        <TableCell>{cluster.clusterName || " –"}</TableCell>
+                                        <TableCell className="text-right">
+                                             <DropdownMenu>
+                                                  <DropdownMenuTrigger asChild>
+                                                       <Button variant="ghost" size="sm">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">
+                                                                 Open menu
+                                                            </span>
+                                                       </Button>
+                                                  </DropdownMenuTrigger>
+                                                  <DropdownMenuContent align="end">
+                                                       <DropdownMenuItem
+                                                            onClick={(e) => handleEdit(cluster, e)}
+                                                       >
+                                                            <Pencil className="mr-2 h-4 w-4" />
+                                                            Edit
+                                                       </DropdownMenuItem>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) =>
+                                                                 openDeleteDialog(cluster, e)
+                                                            }
+                                                       >
+                                                            <Trash className="mr-2 h-4 w-4" />
+                                                            Delete
+                                                       </DropdownMenuItem>
+                                                       <DropdownMenuSeparator />
+                                                  </DropdownMenuContent>
+                                             </DropdownMenu>
+                                        </TableCell>
+                                   </TableRow>
+                              ))
+                         )}
+                    </TableBody>
+               </Table>
+               <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                    <AlertDialogContent className="sm:max-w-md">
+                         <AlertDialogHeader>
+                              <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                   Are you sure you want to delete the cluster{" "}
+                                   <strong>{deleteTarget?.clusterName}</strong>? This action cannot
+                                   be undone and will also delete associated courses.
+                              </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                         </AlertDialogFooter>
+                    </AlertDialogContent>
+               </AlertDialog>
+          </>
      )
 }
