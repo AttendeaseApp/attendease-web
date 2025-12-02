@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ChevronDown, Search } from "lucide-react"
 import { UserStudentResponse } from "@/interface/UserStudent"
-import { getAllUsers } from "@/services/user-management-services"
+import { getAllUsers, deleteStudentAccountBySection } from "@/services/user-management-services"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
@@ -24,6 +24,7 @@ import {
      DropdownMenuItem,
      DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -36,9 +37,17 @@ export default function RetrieveAllUsers() {
      const [openImportStudents, setOpenImportStudents] = useState(false)
      const [openAddOSA, setOpenAddOSA] = useState(false)
      const [openAddStudent, setOpenAddStudent] = useState(false)
-
+     const [openDeleteModal, setOpenDeleteModal] = useState(false)
      const [openUpdateDialog, setOpenUpdateDialog] = useState(false)
      const [currentUser, setCurrentUser] = useState<EditUserDetailsPayload | null>(null)
+     const [sections, setSections] = useState<string[]>([])
+
+     const [confirmDeleteSection, setConfirmDeleteSection] = useState<string | null>(null)
+     const [deleting, setDeleting] = useState(false)
+     const [deleteMessage, setDeleteMessage] = useState<string | null>(null)
+     const [deleteResult, setDeleteResult] = useState<{ success: boolean; message: string } | null>(
+          null
+     )
 
      const loadUsers = async () => {
           try {
@@ -87,6 +96,13 @@ export default function RetrieveAllUsers() {
 
           setFilteredUsers(filtered)
      }, [searchTerm, selectedType, users])
+
+     useEffect(() => {
+          const uniqueSections = Array.from(
+               new Set(users.map((u) => u.section).filter((s): s is string => !!s))
+          )
+          setSections(uniqueSections)
+     }, [users])
 
      const handleUpdateClick = (user: EditUserDetailsPayload) => {
           setCurrentUser(user)
@@ -182,7 +198,148 @@ export default function RetrieveAllUsers() {
                     )}
                </div>
 
-               <MoreSettingsDialog open={openMoreSettings} onOpenChange={setOpenMoreSettings} />
+               <MoreSettingsDialog
+                    open={openMoreSettings}
+                    onOpenChange={setOpenMoreSettings}
+                    setOpenDeleteModal={setOpenDeleteModal}
+               />
+
+               <Dialog open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
+                    <DialogContent className="max-w-md w-full">
+                         <DialogHeader>
+                              <DialogTitle>Delete Account by Section</DialogTitle>
+                         </DialogHeader>
+
+                         <div className="flex flex-col gap-2 max-h-64 overflow-y-auto mt-4">
+                              {sections.length === 0 && <p>No sections available.</p>}
+                              {sections.map((sec) => (
+                                   <Button
+                                        key={sec}
+                                        variant="outline"
+                                        className="w-full"
+                                        onClick={() => {
+                                             setDeleteMessage(null)
+                                             setConfirmDeleteSection(sec)
+                                        }}
+                                   >
+                                        {sec}
+                                   </Button>
+                              ))}
+                         </div>
+
+                         <Button
+                              variant="ghost"
+                              className="mt-4 w-full"
+                              onClick={() => setOpenDeleteModal(false)}
+                         >
+                              Cancel
+                         </Button>
+                    </DialogContent>
+               </Dialog>
+
+               <Dialog
+                    open={!!confirmDeleteSection}
+                    onOpenChange={() => setConfirmDeleteSection(null)}
+               >
+                    <DialogContent className="max-w-md w-full">
+                         <DialogHeader>
+                              <DialogTitle>Confirm Deletion</DialogTitle>
+                         </DialogHeader>
+
+                         <p className="mt-2 text-sm text-gray-600">
+                              Are you sure you want to delete all users in section "
+                              {confirmDeleteSection}"? This action cannot be undone.
+                         </p>
+
+                         <div className="flex justify-end gap-2 mt-4">
+                              <Button
+                                   variant="outline"
+                                   onClick={() => setConfirmDeleteSection(null)}
+                                   disabled={deleting}
+                              >
+                                   Cancel
+                              </Button>
+                              <Button
+                                   className="bg-red-500 text-white"
+                                   onClick={async () => {
+                                        if (!confirmDeleteSection) return
+                                        try {
+                                             setDeleting(true)
+                                             await deleteStudentAccountBySection(
+                                                  confirmDeleteSection
+                                             )
+                                             loadUsers()
+
+                                             setDeleteResult({
+                                                  success: true,
+                                                  message: `All users in section "${confirmDeleteSection}" have been successfully deleted.`,
+                                             })
+
+                                             setConfirmDeleteSection(null)
+                                             setOpenDeleteModal(false)
+                                             setOpenMoreSettings(false)
+                                        } catch (err) {
+                                             setDeleteResult({
+                                                  success: false,
+                                                  message: `Failed to delete users in section "${confirmDeleteSection}": ${
+                                                       err instanceof Error
+                                                            ? err.message
+                                                            : "Unknown error"
+                                                  }`,
+                                             })
+
+                                             setConfirmDeleteSection(null)
+                                             setOpenDeleteModal(false)
+                                             setOpenMoreSettings(false)
+                                        } finally {
+                                             setDeleting(false)
+                                        }
+                                   }}
+                                   disabled={deleting}
+                              >
+                                   {deleting ? "Deleting..." : "Delete"}
+                              </Button>
+                         </div>
+                    </DialogContent>
+               </Dialog>
+
+               <Dialog
+                    open={!!deleteResult}
+                    onOpenChange={() => {
+                         setDeleteResult(null)
+                         setConfirmDeleteSection(null)
+                    }}
+               >
+                    <DialogContent className="max-w-sm w-full">
+                         <DialogHeader>
+                              <DialogTitle>
+                                   {deleteResult?.success ? "Success" : "Failed"}
+                              </DialogTitle>
+                         </DialogHeader>
+
+                         <p
+                              className={`mt-2 text-sm font-semibold ${
+                                   deleteResult?.success ? "text-green-600" : "text-red-600"
+                              }`}
+                         >
+                              {deleteResult?.message}
+                         </p>
+
+                         <div className="flex justify-end mt-4">
+                              <Button
+                                   onClick={() => {
+                                        setDeleteResult(null)
+                                        setConfirmDeleteSection(null)
+                                        setOpenDeleteModal(false)
+                                        setOpenMoreSettings(false)
+                                   }}
+                              >
+                                   OK
+                              </Button>
+                         </div>
+                    </DialogContent>
+               </Dialog>
+
                <ImportStudentsDialog
                     open={openImportStudents}
                     onOpenChange={setOpenImportStudents}
