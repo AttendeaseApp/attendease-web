@@ -25,6 +25,7 @@ export default function ManageEventsPage() {
      const [isEditOpen, setIsEditOpen] = useState(false)
      const [selectedEvent, setSelectedEvent] = useState<EventSession | null>(null)
      const [isCreateOpen, setIsCreateOpen] = useState(false)
+     const [statusFilter, setStatusFilter] = useState("all")
 
      const loadEvents = async () => {
           try {
@@ -47,7 +48,7 @@ export default function ManageEventsPage() {
      const filteredEvents = events.filter((event) => {
           const term = searchTerm.toLowerCase()
 
-          return (
+          const matchesSearch =
                event.eventName.toLowerCase().includes(term) ||
                event.eventLocation?.locationName?.toLowerCase().includes(term) ||
                new Date(event.timeInRegistrationStartDateTime)
@@ -57,7 +58,12 @@ export default function ManageEventsPage() {
                new Date(event.startDateTime).toLocaleString().toLowerCase().includes(term) ||
                new Date(event.endDateTime).toLocaleString().toLowerCase().includes(term) ||
                event.eventStatus.toLowerCase().includes(term)
-          )
+
+          const matchesStatus =
+               statusFilter === "all" ||
+               event.eventStatus.toLowerCase() === statusFilter.toLowerCase()
+
+          return matchesSearch && matchesStatus
      })
 
      const handleEdit = (event: EventSession) => {
@@ -122,6 +128,19 @@ export default function ManageEventsPage() {
                                    onChange={(e) => setSearchTerm(e.target.value)}
                               />
                          </div>
+                         <select
+                              className="h-8 px-2 text-xs border rounded-md bg-white 
+               focus:outline-none focus:ring-0 appearance-none pr-1"
+                              value={statusFilter}
+                              onChange={(e) => setStatusFilter(e.target.value)}
+                         >
+                              <option value="all">All Status</option>
+                              <option value="upcoming">Upcoming</option>
+                              <option value="ongoing">Ongoing</option>
+                              <option value="finalized">Finalized</option>
+                              <option value="cancelled">Cancelled</option>
+                         </select>
+
                          <Button variant="outline" size="sm" onClick={loadEvents}>
                               Refresh
                          </Button>
