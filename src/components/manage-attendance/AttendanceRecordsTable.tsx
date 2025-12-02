@@ -85,7 +85,7 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
                                                   )
                                              }
                                         >
-                                             View all records
+                                             View records
                                         </Button>
                                    </TableCell>
                               </TableRow>

@@ -63,7 +63,7 @@ export function AllAttendanceRecordsTable({
                                    TIME OUT
                               </TableHead>
                               <TableHead className="text-right font-semibold text-gray-900 w-[100px]">
-                                   ACTIONS
+                                   DELETE
                               </TableHead>
                          </TableRow>
                     </TableHeader>
@@ -118,8 +118,8 @@ export function AllAttendanceRecordsTable({
                                         <TableCell className="max-w-[150px] truncate">
                                              {record.reason || "-"}
                                         </TableCell>
-                                        <TableCell>{formatDate(record.timeIn)}</TableCell>
-                                        <TableCell>{formatDate(record.timeIn)}</TableCell>
+                                        <TableCell>{formatDate(record.timeIn) || "N/A"}</TableCell>
+                                        <TableCell>{formatDate(record.timeIn) || "N/A"}</TableCell>
                                         <TableCell className="text-right">
                                              <Button
                                                   variant="ghost"
