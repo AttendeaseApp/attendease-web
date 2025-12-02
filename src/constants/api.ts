@@ -81,4 +81,7 @@ export const ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS = {
           studentId: string,
           eventId: string
      ) => `${API_BASE}/api/attendance/records/${studentId}/event/${eventId}`,
+     GET_ALL_ATTENDANCE_RECORDS: `${API_BASE}/api/attendance/records`,
+     DELETE_ATTENDANCE_RECORD_BY_ID: (id: string) => `${API_BASE}/api/attendance/records/${id}`,
+     DELETE_ALL_ATTENDANCE_RECORDS: `${API_BASE}/api/attendance/records`,
 }

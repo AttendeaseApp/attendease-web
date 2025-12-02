@@ -9,9 +9,9 @@ export interface AttendanceRecords {
      student: Students
      event: EventSession
      location?: EventLocation
-     timeIn?: string
-     timeOut?: string
-     reason?: string
+     timeIn: string
+     timeOut: string
+     reason: string
      attendanceStatus: AttendanceStatusValue
      attendancePingLogs: AttendanceTrackingResponse[]
      updatedByUserId?: string
