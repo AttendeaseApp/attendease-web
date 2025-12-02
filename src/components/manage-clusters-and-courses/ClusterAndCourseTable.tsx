@@ -40,116 +40,117 @@ interface CourseTableProps {
      onDelete: (course: CourseSession) => void
 }
 export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
-
-const [deleteTarget, setDeleteTarget] = useState<CourseSession | null>(null)
-const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-
+     const [deleteTarget, setDeleteTarget] = useState<CourseSession | null>(null)
+     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
      const handleEdit = (course: CourseSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           onEdit(course)
      }
-    const openDeleteDialog = (course: CourseSession, e: React.MouseEvent) => {
-     e.preventDefault()
-     e.stopPropagation()
-     setDeleteTarget(course)
-     setDeleteDialogOpen(true)
-}
-
-const confirmDelete = () => {
-     if (deleteTarget) {
-          onDelete(deleteTarget) 
-          toast.success(`Course "${deleteTarget.courseName}" deleted successfully.`)
+     const openDeleteDialog = (course: CourseSession, e: React.MouseEvent) => {
+          e.preventDefault()
+          e.stopPropagation()
+          setDeleteTarget(course)
+          setDeleteDialogOpen(true)
      }
-     setDeleteTarget(null)
-     setDeleteDialogOpen(false)
-}
+
+     const confirmDelete = () => {
+          if (deleteTarget) {
+               onDelete(deleteTarget)
+               toast.success(`Course "${deleteTarget.courseName}" deleted successfully.`)
+          }
+          setDeleteTarget(null)
+          setDeleteDialogOpen(false)
+     }
 
      return (
           <>
-          <Table className="w-full">
-               <TableHeader>
-                    <TableRow>
-                         <TableHead>COURSE</TableHead>
-                         <TableHead>REFERENCED CLUSTER</TableHead>
-                         <TableHead className="text-right"></TableHead>
-                    </TableRow>
-               </TableHeader>
-               <TableBody>
-                    {loading ? (
+               <Table className="w-full">
+                    <TableHeader>
                          <TableRow>
-                              <TableCell colSpan={3} className="text-center py-8">
-                                   Loading courses and clusters...
-                              </TableCell>
+                              <TableHead>COURSE</TableHead>
+                              <TableHead>REFERENCED CLUSTER</TableHead>
+                              <TableHead className="text-right"></TableHead>
                          </TableRow>
-                    ) : courses.length === 0 ? (
-                         <TableRow>
-                              <TableCell colSpan={3} className="text-center py-8">
-                                   No courses and clusters found
-                              </TableCell>
-                         </TableRow>
-                    ) : (
-                         courses.map((course) => (
-                              <TableRow key={`${course.id || "no-course"}`}>
-                                   <TableCell>{course.courseName || " –"}</TableCell>
-                                   <TableCell>{course.cluster?.clusterName || " –"}</TableCell>
-                                   <TableCell className="text-right">
-                                        <DropdownMenu>
-                                             <DropdownMenuTrigger asChild>
-                                                  <Button variant="ghost" size="sm">
-                                                       <MoreHorizontal className="h-4 w-4" />
-                                                       <span className="sr-only">Open menu</span>
-                                                  </Button>
-                                             </DropdownMenuTrigger>
-                                             <DropdownMenuContent align="end">
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleEdit(course, e)}
-                                                  >
-                                                       <Pencil className="mr-2 h-4 w-4" />
-                                                       Edit
-                                                  </DropdownMenuItem>
+                    </TableHeader>
+                    <TableBody>
+                         {loading ? (
+                              <TableRow>
+                                   <TableCell colSpan={3} className="text-center py-8">
+                                        Loading courses and clusters...
+                                   </TableCell>
+                              </TableRow>
+                         ) : courses.length === 0 ? (
+                              <TableRow>
+                                   <TableCell colSpan={3} className="text-center py-8">
+                                        No courses and clusters found
+                                   </TableCell>
+                              </TableRow>
+                         ) : (
+                              courses.map((course) => (
+                                   <TableRow key={`${course.id || "no-course"}`}>
+                                        <TableCell>{course.courseName || " –"}</TableCell>
+                                        <TableCell>{course.cluster?.clusterName || " –"}</TableCell>
+                                        <TableCell className="text-right">
+                                             <DropdownMenu>
+                                                  <DropdownMenuTrigger asChild>
+                                                       <Button variant="ghost" size="sm">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">
+                                                                 Open menu
+                                                            </span>
+                                                       </Button>
+                                                  </DropdownMenuTrigger>
+                                                  <DropdownMenuContent align="end">
+                                                       <DropdownMenuItem
+                                                            onClick={(e) => handleEdit(course, e)}
+                                                       >
+                                                            <Pencil className="mr-2 h-4 w-4" />
+                                                            Edit
+                                                       </DropdownMenuItem>
 
-                                               <DropdownMenuItem onClick={(e) => openDeleteDialog(course, e)}>
-                                             <Trash className="mr-2 h-4 w-4" />
-                                                  Delete
-                                             </DropdownMenuItem>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) =>
+                                                                 openDeleteDialog(course, e)
+                                                            }
+                                                       >
+                                                            <Trash className="mr-2 h-4 w-4" />
+                                                            Delete
+                                                       </DropdownMenuItem>
 
-
-                                                  <DropdownMenuSeparator />
-                                             </DropdownMenuContent>
-                                        </DropdownMenu>
-                                        {/* <Button
+                                                       <DropdownMenuSeparator />
+                                                  </DropdownMenuContent>
+                                             </DropdownMenu>
+                                             {/* <Button
                                              variant="ghost"
                                              size="sm"
                                              onClick={(e) => handleDelete(course, e)}
                                         >
                                              Delete
                                         </Button> */}
-                                   </TableCell>
-                              </TableRow>
-                         ))
-                    )}
-               </TableBody>
-          </Table>
-       
-<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-     <AlertDialogContent className="sm:max-w-md">
-          <AlertDialogHeader>
-               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-               <AlertDialogDescription>
-                    Are you sure you want to delete the course "
-                    {deleteTarget?.courseName}"? This action cannot be undone.
-               </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-               <AlertDialogCancel>Cancel</AlertDialogCancel>
-               <AlertDialogAction  onClick={confirmDelete}>
-                    Delete
-               </AlertDialogAction>
-          </AlertDialogFooter>
-     </AlertDialogContent>
-</AlertDialog>
-</>
+                                        </TableCell>
+                                   </TableRow>
+                              ))
+                         )}
+                    </TableBody>
+               </Table>
+
+               <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                    <AlertDialogContent className="sm:max-w-md">
+                         <AlertDialogHeader>
+                              <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                   Are you sure you want to delete the course "
+                                   {deleteTarget?.courseName}"? This action cannot be undone.
+                              </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                         </AlertDialogFooter>
+                    </AlertDialogContent>
+               </AlertDialog>
+          </>
      )
 }
