@@ -88,7 +88,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
-     const [createNewLocation, setCreateNewLocation] = useState(false);
+     const [createNewLocation, setCreateNewLocation] = useState(false)
      const [editingLocation, setEditingLocation] = useState<EventLocation | null>(null)
      const [isEditMode, setIsEditMode] = useState(false)
 
@@ -188,8 +188,8 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      }
 
      const handleCreateVenue = (newLocation: EventLocation) => {
-          setLocations((prev) => [...prev, newLocation]);
-          handleInputChange("eventLocationId", newLocation.locationId);
+          setLocations((prev) => [...prev, newLocation])
+          handleInputChange("eventLocationId", newLocation.locationId)
      }
 
      const handleAllStudentsToggle = (checked: boolean) => {
@@ -838,18 +838,18 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         </SelectTrigger>
                                         <SelectContent>
                                              <SelectGroup>
-                                                  <SelectLabel className="mb-3"/>
+                                                  <SelectLabel className="mb-3" />
                                                   {locations.map((loc) => (
-                                                  <SelectItem
-                                                       key={loc.locationId}
-                                                       value={loc.locationId}
-                                                  >
-                                                       {loc.locationName}
-                                                  </SelectItem>
+                                                       <SelectItem
+                                                            key={loc.locationId}
+                                                            value={loc.locationId}
+                                                       >
+                                                            {loc.locationName}
+                                                       </SelectItem>
                                                   ))}
                                              </SelectGroup>
                                              <SelectGroup>
-                                                  <SelectLabel className="mb-3"/>
+                                                  <SelectLabel className="mb-3" />
                                                   <div
                                                        className="px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
                                                        onClick={() => setCreateNewLocation(true)}
