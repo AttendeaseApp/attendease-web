@@ -247,9 +247,10 @@ export default function RetrieveAllUsers() {
                          </DialogHeader>
 
                          <p className="mt-2 text-sm text-gray-600">
-                              Are you sure you want to delete all users in section "
-                              {confirmDeleteSection}"? This action cannot be undone.
-                         </p>
+  Are you sure you want to delete all users in section{" "}
+  <span className="font-semibold">{confirmDeleteSection}</span>? This action cannot be undone.
+</p>
+
 
                          <div className="flex justify-end gap-2 mt-4">
                               <Button
