@@ -97,15 +97,23 @@ export function SectionTable({ sections, loading, onEdit, onDelete }: SectionPro
                                                   <DropdownMenuTrigger asChild>
                                                        <Button variant="ghost" size="sm">
                                                             <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Open menu</span>
+                                                            <span className="sr-only">
+                                                                 Open menu
+                                                            </span>
                                                        </Button>
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
-                                                       <DropdownMenuItem onClick={(e) => handleEdit(section, e)}>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) => handleEdit(section, e)}
+                                                       >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
-                                                       <DropdownMenuItem onClick={(e) => openDeleteDialog(section, e)}>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) =>
+                                                                 openDeleteDialog(section, e)
+                                                            }
+                                                       >
                                                             <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
@@ -125,7 +133,8 @@ export function SectionTable({ sections, loading, onEdit, onDelete }: SectionPro
                               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                               <AlertDialogDescription>
                                    Are you sure you want to delete the section{" "}
-                                   <strong>{deleteTarget?.name}</strong>? This action cannot be undone.
+                                   <strong>{deleteTarget?.name}</strong>? This action cannot be
+                                   undone.
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>

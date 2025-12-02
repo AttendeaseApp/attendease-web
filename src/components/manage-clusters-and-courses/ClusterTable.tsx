@@ -97,16 +97,24 @@ export function ClusterTable({
                                                   <DropdownMenuTrigger asChild>
                                                        <Button variant="ghost" size="sm">
                                                             <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Open menu</span>
+                                                            <span className="sr-only">
+                                                                 Open menu
+                                                            </span>
                                                        </Button>
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
-                                                       <DropdownMenuItem onClick={(e) => handleEdit(cluster, e)}>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) => handleEdit(cluster, e)}
+                                                       >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
 
-                                                       <DropdownMenuItem onClick={(e) => openDeleteDialog(cluster, e)}>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) =>
+                                                                 openDeleteDialog(cluster, e)
+                                                            }
+                                                       >
                                                             <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
@@ -127,7 +135,8 @@ export function ClusterTable({
                               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                               <AlertDialogDescription>
                                    Are you sure you want to delete the cluster{" "}
-                                   <strong>{deleteTarget?.clusterName}</strong>? This action cannot be undone and will also delete associated courses.
+                                   <strong>{deleteTarget?.clusterName}</strong>? This action cannot
+                                   be undone and will also delete associated courses.
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>

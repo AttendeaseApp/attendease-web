@@ -98,16 +98,24 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                                                   <DropdownMenuTrigger asChild>
                                                        <Button variant="ghost" size="sm">
                                                             <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Open menu</span>
+                                                            <span className="sr-only">
+                                                                 Open menu
+                                                            </span>
                                                        </Button>
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
-                                                       <DropdownMenuItem onClick={(e) => handleEdit(course, e)}>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) => handleEdit(course, e)}
+                                                       >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
 
-                                                       <DropdownMenuItem onClick={(e) => openDeleteDialog(course, e)}>
+                                                       <DropdownMenuItem
+                                                            onClick={(e) =>
+                                                                 openDeleteDialog(course, e)
+                                                            }
+                                                       >
                                                             <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
@@ -128,7 +136,8 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                               <AlertDialogDescription>
                                    Are you sure you want to delete the course{" "}
-                                   <strong>{deleteTarget?.courseName}</strong>? This action cannot be undone.
+                                   <strong>{deleteTarget?.courseName}</strong>? This action cannot
+                                   be undone.
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
