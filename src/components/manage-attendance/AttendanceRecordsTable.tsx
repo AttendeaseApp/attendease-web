@@ -9,13 +9,6 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
-import {
-     DropdownMenu,
-     DropdownMenuTrigger,
-     DropdownMenuContent,
-     DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { FinalizedAttendanceRecordsResponse } from "@/interface/attendance/records/management/FinalizedAttendanceRecordsResponse"
 
