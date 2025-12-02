@@ -12,13 +12,6 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
-import {
-     DropdownMenu,
-     DropdownMenuTrigger,
-     DropdownMenuContent,
-     DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal } from "lucide-react"
 import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 
 interface EventAttendeesTableProps {
