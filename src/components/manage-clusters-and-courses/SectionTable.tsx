@@ -37,6 +37,7 @@ interface SectionProps {
      onEdit: (section: Section) => void
      onDelete: (section: Section) => void
 }
+
 export function SectionTable({ sections, loading, onEdit, onDelete }: SectionProps) {
      const [deleteTarget, setDeleteTarget] = useState<Section | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -46,6 +47,7 @@ export function SectionTable({ sections, loading, onEdit, onDelete }: SectionPro
           e.stopPropagation()
           onEdit(section)
      }
+
      const openDeleteDialog = (section: Section, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
@@ -95,50 +97,35 @@ export function SectionTable({ sections, loading, onEdit, onDelete }: SectionPro
                                                   <DropdownMenuTrigger asChild>
                                                        <Button variant="ghost" size="sm">
                                                             <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">
-                                                                 Open menu
-                                                            </span>
+                                                            <span className="sr-only">Open menu</span>
                                                        </Button>
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
-                                                       <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(section, e)}
-                                                       >
+                                                       <DropdownMenuItem onClick={(e) => handleEdit(section, e)}>
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
-                                                       <DropdownMenuItem
-                                                            onClick={(e) =>
-                                                                 openDeleteDialog(section, e)
-                                                            }
-                                                       >
+                                                       <DropdownMenuItem onClick={(e) => openDeleteDialog(section, e)}>
                                                             <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
-
                                                        <DropdownMenuSeparator />
                                                   </DropdownMenuContent>
                                              </DropdownMenu>
-                                             {/* <Button
-                                             variant="ghost"
-                                             size="sm"
-                                             onClick={(e) => handleDelete(section, e)}
-                                        >
-                                             Delete
-                                        </Button> */}
                                         </TableCell>
                                    </TableRow>
                               ))
                          )}
                     </TableBody>
                </Table>
+
                <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <AlertDialogContent className="sm:max-w-md">
                          <AlertDialogHeader>
                               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                               <AlertDialogDescription>
-                                   Are you sure you want to delete the section "{deleteTarget?.name}
-                                   "? This action cannot be undone.
+                                   Are you sure you want to delete the section{" "}
+                                   <strong>{deleteTarget?.name}</strong>? This action cannot be undone.
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>

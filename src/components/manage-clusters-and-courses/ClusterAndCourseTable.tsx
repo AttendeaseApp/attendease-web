@@ -29,7 +29,6 @@ import {
      AlertDialogFooter,
      AlertDialogHeader,
      AlertDialogTitle,
-     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 
@@ -39,6 +38,7 @@ interface CourseTableProps {
      onEdit: (course: CourseSession) => void
      onDelete: (course: CourseSession) => void
 }
+
 export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
      const [deleteTarget, setDeleteTarget] = useState<CourseSession | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -48,6 +48,7 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
           e.stopPropagation()
           onEdit(course)
      }
+
      const openDeleteDialog = (course: CourseSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
@@ -97,24 +98,16 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                                                   <DropdownMenuTrigger asChild>
                                                        <Button variant="ghost" size="sm">
                                                             <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">
-                                                                 Open menu
-                                                            </span>
+                                                            <span className="sr-only">Open menu</span>
                                                        </Button>
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
-                                                       <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(course, e)}
-                                                       >
+                                                       <DropdownMenuItem onClick={(e) => handleEdit(course, e)}>
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
 
-                                                       <DropdownMenuItem
-                                                            onClick={(e) =>
-                                                                 openDeleteDialog(course, e)
-                                                            }
-                                                       >
+                                                       <DropdownMenuItem onClick={(e) => openDeleteDialog(course, e)}>
                                                             <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
@@ -122,13 +115,6 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                                                        <DropdownMenuSeparator />
                                                   </DropdownMenuContent>
                                              </DropdownMenu>
-                                             {/* <Button
-                                             variant="ghost"
-                                             size="sm"
-                                             onClick={(e) => handleDelete(course, e)}
-                                        >
-                                             Delete
-                                        </Button> */}
                                         </TableCell>
                                    </TableRow>
                               ))
@@ -141,8 +127,8 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                          <AlertDialogHeader>
                               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                               <AlertDialogDescription>
-                                   Are you sure you want to delete the course "
-                                   {deleteTarget?.courseName}"? This action cannot be undone.
+                                   Are you sure you want to delete the course{" "}
+                                   <strong>{deleteTarget?.courseName}</strong>? This action cannot be undone.
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
