@@ -23,6 +23,8 @@ import {
      SelectItem,
      SelectTrigger,
      SelectValue,
+     SelectGroup,
+     SelectLabel,
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { createEvent } from "@/services/event-sessions"
@@ -36,6 +38,7 @@ import {
 import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
 import { Section } from "@/interface/students/SectionInterface"
 import CreateEventStatusDialog from "@/components/manage-events/CreateEventStatusDialog"
+import CreateLocationDialog from "../manage-locations/CreateLocationDialog"
 
 interface CreateEventDialogProps {
      isOpen: boolean
@@ -85,6 +88,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
+     const [createNewLocation, setCreateNewLocation] = useState(false);
+     const [editingLocation, setEditingLocation] = useState<EventLocation | null>(null)
+     const [isEditMode, setIsEditMode] = useState(false)
 
      const showStatus = (status: "success" | "error", message: string) => {
           setCreateStatus(status)
@@ -179,6 +185,11 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const handleInputChange = (field: keyof typeof formData, value: string | Date) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
+     }
+
+     const handleCreateVenue = (newLocation: EventLocation) => {
+          setLocations((prev) => [...prev, newLocation]);
+          handleInputChange("eventLocationId", newLocation.locationId);
      }
 
      const handleAllStudentsToggle = (checked: boolean) => {
@@ -410,6 +421,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
      const handleClose = () => {
           onClose()
+     }
+
+     const closeDialog = () => {
+          setCreateNewLocation(false)
+          setEditingLocation(null)
+          setIsEditMode(false)
      }
 
      const getDateDisplay = (date: Date): string => {
@@ -820,17 +837,35 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                              />
                                         </SelectTrigger>
                                         <SelectContent>
-                                             {locations.map((loc) => (
+                                             <SelectGroup>
+                                                  <SelectLabel className="mb-3"/>
+                                                  {locations.map((loc) => (
                                                   <SelectItem
                                                        key={loc.locationId}
                                                        value={loc.locationId}
                                                   >
                                                        {loc.locationName}
                                                   </SelectItem>
-                                             ))}
+                                                  ))}
+                                             </SelectGroup>
+                                             <SelectGroup>
+                                                  <SelectLabel className="mb-3"/>
+                                                  <div
+                                                       className="px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
+                                                       onClick={() => setCreateNewLocation(true)}
+                                                  >
+                                                       Create New Venue
+                                                  </div>
+                                             </SelectGroup>
                                         </SelectContent>
                                    </Select>
                               </div>
+                              <CreateLocationDialog
+                                   open={createNewLocation}
+                                   onClose={closeDialog}
+                                   onSuccess={handleCreateVenue}
+                                   existingLocations={locations}
+                              />
 
                               <div className="space-y-4">
                                    <Label>Eligible Attendees</Label>

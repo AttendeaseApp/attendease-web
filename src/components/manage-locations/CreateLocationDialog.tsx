@@ -22,7 +22,7 @@ import {
      AlertDialogContent,
 } from "@/components/ui/alert-dialog"
 import { createLocation } from "@/services/locations-service"
-import { EventLocationRequest } from "@/interface/location-interface"
+import { EventLocation, EventLocationRequest } from "@/interface/location-interface"
 import { toast } from "sonner"
 import L from "leaflet"
 const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false })
@@ -30,7 +30,7 @@ const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false })
 interface CreateLocationModalProps {
      open: boolean
      onClose: () => void
-     onSuccess: () => void
+     onSuccess: (newLocation: EventLocation) => void
      existingLocations: { locationName: string }[]
 }
 
@@ -104,8 +104,8 @@ export default function CreateLocationDialog({
 
           try {
                setLoading(true)
-               await createLocation(payload)
-               onSuccess()
+               const newLocation = await createLocation(payload)
+               onSuccess(newLocation)
                showStatus("success", "Successfully created location")
                onClose()
           } catch (err) {
