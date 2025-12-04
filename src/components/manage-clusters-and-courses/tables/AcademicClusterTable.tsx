@@ -41,6 +41,18 @@ export function AcademicClusterTable({
      onEditAction: (cluster: Cluster) => void
      onDeleteAction: (cluster: Cluster) => Promise<void>
 }) {
+     
+     const sortedClusters =[...clusters].sort((a, b) => {
+
+           const nameA = `${a.clusterName} ${a.clusterName}`.toLowerCase()
+          const nameB = `${b.clusterName} ${b.clusterName}`.toLowerCase()
+
+          if (nameA < nameB) return -1
+          if (nameA > nameB) return 1
+          return 0
+     })
+
+
      const [deleteTarget, setDeleteTarget] = useState<Cluster | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
      const handleEdit = (cluster: Cluster, e: React.MouseEvent) => {
@@ -82,9 +94,9 @@ export function AcademicClusterTable({
                                    </TableCell>
                               </TableRow>
                          ) : (
-                              clusters.map((cluster) => (
-                                   <TableRow key={cluster.clusterId}>
-                                        <TableCell>{cluster.clusterName || " –"}</TableCell>
+                              sortedClusters.map((sortedClusters) => (
+                                   <TableRow key={sortedClusters.clusterId}>
+                                        <TableCell>{sortedClusters.clusterName || " –"}</TableCell>
                                         <TableCell className="text-right">
                                              <DropdownMenu>
                                                   <DropdownMenuTrigger asChild>
@@ -97,14 +109,14 @@ export function AcademicClusterTable({
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(cluster, e)}
+                                                            onClick={(e) => handleEdit(sortedClusters, e)}
                                                        >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
                                                        <DropdownMenuItem
                                                             onClick={(e) =>
-                                                                 openDeleteDialog(cluster, e)
+                                                                 openDeleteDialog(sortedClusters, e)
                                                             }
                                                        >
                                                             <Trash className="mr-2 h-4 w-4" />
