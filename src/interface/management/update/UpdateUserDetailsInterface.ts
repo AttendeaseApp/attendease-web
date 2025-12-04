@@ -1,4 +1,4 @@
-export interface EditUserDetailsPayload {
+export interface UpdateUserDetailsInterface {
      userId: string
      firstName?: string
      lastName?: string
