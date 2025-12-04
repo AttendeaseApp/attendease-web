@@ -25,12 +25,7 @@ import {
      SelectGroup,
      SelectLabel,
 } from "@/components/ui/select"
-import {
-     Command,
-     CommandEmpty,
-     CommandInput,
-     CommandList,
-} from "@/components/ui/command"
+import { Command, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
 import { Checkbox } from "@/components/ui/checkbox"
 import { createEvent } from "@/services/event-sessions"
 import { getAllLocations } from "@/services/locations-service"
@@ -881,7 +876,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
                                                        onClick={() => setCreateNewLocation(true)}
                                                   >
-                                                       <Plus className="w-4 h-4"/> 
+                                                       <Plus className="w-4 h-4" />
                                                        <span>Create New Venue </span>
                                                   </div>
                                              </SelectGroup>
