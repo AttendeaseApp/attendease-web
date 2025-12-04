@@ -38,6 +38,15 @@ interface SectionProps {
 }
 
 export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: SectionProps) {
+     const sortedSections = [...sections].sort((a, b) => {
+          const nameA = `${a.sectionName} ${a.sectionName}`.toLowerCase()
+          const nameB = `${b.sectionName} ${b.sectionName}`.toLowerCase()
+
+          if (nameA < nameB) return -1
+          if (nameA > nameB) return 1
+          return 0
+     })
+
      const [deleteTarget, setDeleteTarget] = useState<Section | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
@@ -86,10 +95,12 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                                    </TableCell>
                               </TableRow>
                          ) : (
-                              sections.map((section) => (
-                                   <TableRow key={`${section.id || "no-course"}`}>
-                                        <TableCell>{section.sectionName || " –"}</TableCell>
-                                        <TableCell>{section.course?.courseName || " –"}</TableCell>
+                              sortedSections.map((sortedSections) => (
+                                   <TableRow key={`${sortedSections.id || "no-course"}`}>
+                                        <TableCell>{sortedSections.sectionName || " –"}</TableCell>
+                                        <TableCell>
+                                             {sortedSections.course?.courseName || " –"}
+                                        </TableCell>
                                         <TableCell className="text-right">
                                              <DropdownMenu>
                                                   <DropdownMenuTrigger asChild>
@@ -102,14 +113,16 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(section, e)}
+                                                            onClick={(e) =>
+                                                                 handleEdit(sortedSections, e)
+                                                            }
                                                        >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
                                                        <DropdownMenuItem
                                                             onClick={(e) =>
-                                                                 openDeleteDialog(section, e)
+                                                                 openDeleteDialog(sortedSections, e)
                                                             }
                                                        >
                                                             <Trash className="mr-2 h-4 w-4" />

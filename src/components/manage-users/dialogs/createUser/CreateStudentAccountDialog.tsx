@@ -5,10 +5,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createStudentAccount, getSections } from "@/services/user-management-services"
-import { StudentAccountPayload } from "@/interface/users/StudentInterface"
-import { Section } from "@/interface/academic/section/SectionInterface"
-import CreateUserStatusDialog from "./CreateUserStatusDialog"
+import {
+     createStudentAccount,
+     getSections,
+} from "@/services/api/user/management/user-management-services"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
      Command,
@@ -18,6 +18,8 @@ import {
      CommandList,
 } from "@/components/ui/command"
 import { Check } from "lucide-react"
+import { StudentRegistrationInterface } from "@/interface/management/registration/StudentRegistrationInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
 import { toast } from "sonner"
 
 interface AddStudentAccountDialogProps {
@@ -26,37 +28,28 @@ interface AddStudentAccountDialogProps {
      onAdd?: () => void
 }
 
-export default function AddStudentAccountDialog({
+export default function CreateStudentAccountDialog({
      open,
      onOpenChange,
      onAdd,
 }: AddStudentAccountDialogProps) {
-     const [form, setForm] = useState<StudentAccountPayload & { confirmPassword: string }>({
+     const [form, setForm] = useState<StudentRegistrationInterface & { confirmPassword: string }>({
           firstName: "",
           lastName: "",
           studentNumber: "",
           section: "",
           contactNumber: "",
           email: "",
-          address: "",
           password: "",
           confirmPassword: "",
      })
 
      const [loading, setLoading] = useState(false)
-     const [error, setError] = useState("")
      const [sections, setSections] = useState<Section[]>([])
-     const [importStatus, setCreateStatus] = useState<"success" | "error">("success")
-     const [importMessage, setCreateMessage] = useState("")
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [showPassword, setShowPassword] = useState(false)
+     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
      const [popoverOpen, setPopoverOpen] = useState(false)
      const selectedSection = sections.find((s) => String(s.id) === form.section)
-
-     const showStatus = (status: "success" | "error", message: string) => {
-          setCreateStatus(status)
-          setCreateMessage(message)
-          setStatusDialogOpen(true)
-     }
 
      useEffect(() => {
           if (!open) return
@@ -79,10 +72,8 @@ export default function AddStudentAccountDialog({
      }
 
      const handleSubmit = async () => {
-          setError("")
-
           if (form.password !== form.confirmPassword) {
-               setError("Passwords do not match")
+               toast.error("Passwords do not match")
                return
           }
 
@@ -91,21 +82,21 @@ export default function AddStudentAccountDialog({
                !form.lastName ||
                !form.studentNumber ||
                !form.section ||
-               //!form.yearLevel ||
                !form.contactNumber ||
                !form.email ||
-               !form.address ||
                !form.password
           ) {
-               setError("Please fill in all fields")
+               toast.warning("Please fill in all fields")
                return
           }
 
           setLoading(true)
           try {
-               const { confirmPassword, ...payload } = form
+               const { confirmPassword: _, ...payload } = form
+
                await createStudentAccount(payload)
                toast.success("Student account created successfully!")
+
                setForm({
                     firstName: "",
                     lastName: "",
@@ -113,7 +104,6 @@ export default function AddStudentAccountDialog({
                     section: "",
                     contactNumber: "",
                     email: "",
-                    address: "",
                     password: "",
                     confirmPassword: "",
                })
@@ -122,7 +112,6 @@ export default function AddStudentAccountDialog({
           } catch (err: unknown) {
                const message =
                     err instanceof Error ? err.message : "Failed to create student account"
-               setError(message)
                toast.error(message)
                console.error(message)
           } finally {
@@ -131,55 +120,54 @@ export default function AddStudentAccountDialog({
      }
 
      return (
-          <>
-               <Dialog open={open} onOpenChange={onOpenChange}>
-                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
-                         <DialogHeader>
-                              <DialogTitle className="text-2xl">
-                                   Create a new Student account
-                              </DialogTitle>
-                              <p className="text-sm text-gray-500">
-                                   Create a student user account here.
-                              </p>
-                         </DialogHeader>
+          <Dialog open={open} onOpenChange={onOpenChange}>
+               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
+                    <DialogHeader>
+                         <DialogTitle className="text-2xl">
+                              Create a new Student account
+                         </DialogTitle>
+                         <p className="text-sm text-gray-500">
+                              Create a student user account here.
+                         </p>
+                    </DialogHeader>
 
-                         <div className="space-y-6 mt-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                   <div>
-                                        <Label>First Name</Label>
-                                        <Input
-                                             name="firstName"
-                                             placeholder="Enter First Name"
-                                             value={form.firstName}
-                                             onChange={handleChange}
-                                        />
-                                   </div>
-
-                                   <div>
-                                        <Label>Last Name</Label>
-                                        <Input
-                                             name="lastName"
-                                             placeholder="Enter Last Name"
-                                             value={form.lastName}
-                                             onChange={handleChange}
-                                        />
-                                   </div>
-                              </div>
-
+                    <div className="space-y-6 mt-4">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
-                                   <Label>Student Number</Label>
+                                   <Label>First Name</Label>
                                    <Input
-                                        name="studentNumber"
-                                        placeholder="Enter Student Number"
-                                        value={form.studentNumber}
+                                        name="firstName"
+                                        placeholder="Enter First Name"
+                                        value={form.firstName}
                                         onChange={handleChange}
                                    />
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                   <div>
-                                        <Label>Section</Label>
-                                        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                              <div>
+                                   <Label>Last Name</Label>
+                                   <Input
+                                        name="lastName"
+                                        placeholder="Enter Last Name"
+                                        value={form.lastName}
+                                        onChange={handleChange}
+                                   />
+                              </div>
+                         </div>
+
+                         <div>
+                              <Label>Student Number</Label>
+                              <Input
+                                   name="studentNumber"
+                                   placeholder="Enter Student Number"
+                                   value={form.studentNumber}
+                                   onChange={handleChange}
+                              />
+                         </div>
+
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                   <Label>Section</Label>
+                                   <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                                              <PopoverTrigger asChild>
                                                   <Button
                                                        variant="outline"
@@ -228,101 +216,118 @@ export default function AddStudentAccountDialog({
                                                   </Command>
                                              </PopoverContent>
                                         </Popover>
-                                   </div>
+                                   {/* <select
+                                        name="section"
+                                        value={form.section}
+                                        onChange={(e) =>
+                                             setForm((prev) => ({
+                                                  ...prev,
+                                                  section: e.target.value,
+                                             }))
+                                        }
+                                        className="w-full border rounded px-2 py-1"
+                                   >
+                                        <option value="">Select Section</option>
+                                        {sections.map((sections) => (
+                                             <option key={sections.id} value={sections.sectionName}>
+                                                  {sections.sectionName}
+                                             </option>
+                                        ))}
+                                   </select> */}
                               </div>
+                         </div>
 
+                         <div>
+                              <Label>Contact Number</Label>
+                              <Input
+                                   name="contactNumber"
+                                   placeholder="Enter Contact Number"
+                                   value={form.contactNumber}
+                                   onChange={handleChange}
+                              />
+                         </div>
+
+                         <div>
+                              <Label>Email</Label>
+                              <Input
+                                   name="email"
+                                   type="email"
+                                   placeholder="Enter Email"
+                                   value={form.email}
+                                   onChange={handleChange}
+                              />
+                         </div>
+
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
-                                   <Label>Contact Number</Label>
-                                   <Input
-                                        name="contactNumber"
-                                        placeholder="Enter Contact Number"
-                                        value={form.contactNumber}
-                                        onChange={handleChange}
-                                   />
-                              </div>
-
-                              <div>
-                                   <Label>Email</Label>
-                                   <Input
-                                        name="email"
-                                        type="email"
-                                        placeholder="Enter Email"
-                                        value={form.email}
-                                        onChange={handleChange}
-                                   />
-                              </div>
-
-                              <div>
-                                   <Label>Address</Label>
-                                   <Input
-                                        name="address"
-                                        placeholder="Enter Address"
-                                        value={form.address}
-                                        onChange={handleChange}
-                                   />
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                   <div>
-                                        <Label>Password</Label>
+                                   <Label>Password</Label>
+                                   <div className="relative">
                                         <Input
                                              name="password"
-                                             type="password"
+                                             type={showPassword ? "text" : "password"}
                                              placeholder="Password"
                                              value={form.password}
                                              onChange={handleChange}
                                         />
+                                        <Button
+                                             size="sm"
+                                             variant="ghost"
+                                             className="absolute right-2 top-1/2 -translate-y-1/2"
+                                             onClick={() => setShowPassword((prev) => !prev)}
+                                        >
+                                             {showPassword ? "Hide" : "Show"}
+                                        </Button>
                                    </div>
+                              </div>
 
-                                   <div>
-                                        <Label>Confirm Password</Label>
+                              <div>
+                                   <Label>Confirm Password</Label>
+                                   <div className="relative">
                                         <Input
                                              name="confirmPassword"
-                                             type="password"
+                                             type={showConfirmPassword ? "text" : "password"}
                                              placeholder="Confirm Password"
                                              value={form.confirmPassword}
                                              onChange={handleChange}
                                         />
+                                        <Button
+                                             size="sm"
+                                             variant="ghost"
+                                             className="absolute right-2 top-1/2 -translate-y-1/2"
+                                             onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                        >
+                                             {showConfirmPassword ? "Hide" : "Show"}
+                                        </Button>
                                    </div>
                               </div>
-
-                              {error && <p className="text-red-500">{error}</p>}
-
-                              <div className="flex justify-end gap-2">
-                                   <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                             setForm({
-                                                  firstName: "",
-                                                  lastName: "",
-                                                  studentNumber: "",
-                                                  section: "",
-                                                  contactNumber: "",
-                                                  email: "",
-                                                  address: "",
-                                                  password: "",
-                                                  confirmPassword: "",
-                                             })
-                                             onOpenChange(false)
-                                        }}
-                                   >
-                                        Cancel
-                                   </Button>
-
-                                   <Button onClick={handleSubmit} disabled={loading}>
-                                        {loading ? "Registering..." : "Register"}
-                                   </Button>
-                              </div>
                          </div>
-                    </DialogContent>
-               </Dialog>
 
-               <CreateUserStatusDialog
-                    open={statusDialogOpen}
-                    status={importStatus}
-                    message={importMessage}
-                    onClose={() => setStatusDialogOpen(false)}
-               />
-          </>
+                         <div className="flex justify-end gap-2">
+                              <Button
+                                   variant="outline"
+                                   onClick={() => {
+                                        setForm({
+                                             firstName: "",
+                                             lastName: "",
+                                             studentNumber: "",
+                                             section: "",
+                                             contactNumber: "",
+                                             email: "",
+                                             password: "",
+                                             confirmPassword: "",
+                                        })
+                                        onOpenChange(false)
+                                   }}
+                              >
+                                   Cancel
+                              </Button>
+
+                              <Button onClick={handleSubmit} disabled={loading}>
+                                   {loading ? "Registering..." : "Register"}
+                              </Button>
+                         </div>
+                    </div>
+               </DialogContent>
+          </Dialog>
      )
 }

@@ -4,12 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Section } from "@/interface/academic/section/SectionInterface"
-import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
-import { updateUser } from "@/services/edit-user-details"
-import { getSections } from "@/services/user-management-services"
-import { useEffect, useState } from "react"
-import EditUserStatusDialog from "./EditUserStatusDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
      Command,
@@ -19,13 +13,18 @@ import {
      CommandList,
 } from "@/components/ui/command"
 import { Check } from "lucide-react"
+import { Section } from "@/interface/academic/section/SectionInterface"
+import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
+import { updateUser } from "@/services/edit-user-details"
+import { getSections } from "@/services/api/user/management/user-management-services"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 interface EditUserDetailsDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
-     user: EditUserDetailsPayload | null
-     onUpdated: (updatedUser: EditUserDetailsPayload) => void
+     user: UpdateUserDetailsInterface | null
+     onUpdated: (updatedUser: UpdateUserDetailsInterface) => void
 }
 
 export default function EditUserDetailsDialog({
@@ -34,7 +33,7 @@ export default function EditUserDetailsDialog({
      user,
      onUpdated,
 }: EditUserDetailsDialogProps) {
-     const [form, setForm] = useState<EditUserDetailsPayload>({
+     const [form, setForm] = useState<UpdateUserDetailsInterface>({
           userId: "",
           firstName: "",
           lastName: "",
@@ -49,10 +48,6 @@ export default function EditUserDetailsDialog({
      const [error, setError] = useState("")
      const [popoverOpen, setPopoverOpen] = useState(false)
      const [hasChanges, setHasChanges] = useState(false)
-
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [updateStatus, setUpdateStatus] = useState<"success" | "error">("success")
-     const [updateMessage, setUpdateMessage] = useState("")
 
      useEffect(() => {
           if (!open) return
@@ -99,22 +94,20 @@ export default function EditUserDetailsDialog({
 
      const handleSubmit = async () => {
           setLoading(true)
-          setError("")
 
           try {
                const { userId, sectionId, ...rest } = form
-               const body: Omit<EditUserDetailsPayload, "userId"> = {
+               const body: Omit<UpdateUserDetailsInterface, "userId"> = {
                     ...rest,
                     sectionId: sectionId === "" ? undefined : sectionId,
                }
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               toast.success("Successfully updated.")
+               toast.success("Sucessfully updated user.")
                onOpenChange(false)
           } catch (err) {
                const message =
                     err instanceof Error && err.message ? err.message : "Failed to update user"
-               setError(message)
                toast.error(message)
           } finally {
                setLoading(false)
@@ -234,8 +227,6 @@ export default function EditUserDetailsDialog({
                                    <Input name="email" value={form.email} onChange={handleChange} />
                               </div>
 
-                              {error && <p className="text-red-500">{error}</p>}
-
                               <div className="flex justify-end gap-2">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
                                         Cancel
@@ -247,13 +238,6 @@ export default function EditUserDetailsDialog({
                          </div>
                     </DialogContent>
                </Dialog>
-
-               <EditUserStatusDialog
-                    open={statusDialogOpen}
-                    status={updateStatus}
-                    message={updateMessage}
-                    onClose={() => setStatusDialogOpen(false)}
-               />
           </>
      )
 }
