@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { EventSession, EventStatus } from "@/interface/event/event-interface"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -11,6 +12,16 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogCancel,
+     AlertDialogContent,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import {
      DropdownMenu,
      DropdownMenuTrigger,
@@ -41,19 +52,22 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
           onEdit(event)
      }
 
-     const handleDelete = (event: EventSession, e: React.MouseEvent) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (
-               confirm(
-                    `Are you sure you want to delete the event "${event.eventName}"? This action cannot be undone.`
-               )
-          ) {
-               onDelete(event)
+     const [deleteTarget, setDeleteTarget] = useState<EventSession | null>(null)
+     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+     const openDeleteDialog = (event: EventSession, e: React.MouseEvent) => {
+               e.preventDefault()
+               e.stopPropagation()
+               setDeleteTarget(event)
+               setDeleteDialogOpen(true)
+          }
+     const confirmDelete = async () => {
+          if (deleteTarget) {
+               onDelete(deleteTarget)
           }
      }
 
      return (
+          <>
           <Table>
                <TableHeader className="bg-gray-100">
                     <TableRow>
@@ -151,7 +165,9 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                                                        </DropdownMenuItem>
                                                   )}
                                                   <DropdownMenuItem
-                                                       onClick={(e) => handleDelete(event, e)}
+                                                       onClick={(e) => 
+                                                            openDeleteDialog(event, e)
+                                                       }
                                                   >
                                                        <Trash className="mr-2 h-4 w-4" />
                                                        Delete
@@ -165,5 +181,22 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                     )}
                </TableBody>
           </Table>
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                    <AlertDialogContent className="sm:max-w-md">
+                         <AlertDialogHeader>
+                              <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                   Are you sure you want to delete the event{" "}
+                                   <strong>{deleteTarget?.eventName}</strong>? This action cannot
+                                   be undone and will also delete associated courses.
+                              </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                         </AlertDialogFooter>
+                    </AlertDialogContent>
+               </AlertDialog>
+     </>
      )
 }

@@ -11,6 +11,13 @@ import { deleteEvent } from "@/services/event-sessions"
 import { EventSession } from "@/interface/event/event-interface"
 import { EditEventDialog } from "@/components/manage-events/EditEventDialog"
 import { CreateEventDialog } from "@/components/manage-events/CreateEventDialog"
+import {
+     Select,
+     SelectContent,
+     SelectItem,
+     SelectTrigger,
+     SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner"
 
 /**
@@ -128,18 +135,21 @@ export default function ManageEventsPage() {
                                    onChange={(e) => setSearchTerm(e.target.value)}
                               />
                          </div>
-                         <select
-                              className="h-8 px-2 text-xs border rounded-md bg-white 
-               focus:outline-none focus:ring-0 appearance-none pr-1"
+                         <Select
                               value={statusFilter}
-                              onChange={(e) => setStatusFilter(e.target.value)}
+                              onValueChange={(value) => setStatusFilter(value)}
                          >
-                              <option value="all">All Status</option>
-                              <option value="upcoming">Upcoming</option>
-                              <option value="ongoing">Ongoing</option>
-                              <option value="finalized">Finalized</option>
-                              <option value="cancelled">Cancelled</option>
-                         </select>
+                              <SelectTrigger>
+                                   <SelectValue placeholder="Status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                   <SelectItem value="all">All Status</SelectItem>
+                                   <SelectItem value="upcoming">Upcoming</SelectItem>
+                                   <SelectItem value="ongoing">Ongoing</SelectItem>
+                                   <SelectItem value="finalized">Finalized</SelectItem>
+                                   <SelectItem value="cancelled">Cancelled</SelectItem>
+                              </SelectContent>
+                         </Select>
 
                          <Button variant="outline" size="sm" onClick={loadEvents}>
                               Refresh
