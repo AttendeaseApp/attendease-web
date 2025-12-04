@@ -1,16 +1,25 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import {
+     Command,
+     CommandEmpty,
+     CommandInput,
+     CommandItem,
+     CommandList,
+} from "@/components/ui/command"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Section } from "@/interface/academic/section/SectionInterface"
+import { StudentRegistrationInterface } from "@/interface/management/registration/StudentRegistrationInterface"
 import {
      createStudentAccount,
      getSections,
 } from "@/services/api/user/management/user-management-services"
-import { StudentRegistrationInterface } from "@/interface/management/registration/StudentRegistrationInterface"
-import { Section } from "@/interface/academic/section/SectionInterface"
+import { Check } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 interface AddStudentAccountDialogProps {
@@ -39,6 +48,8 @@ export default function CreateStudentAccountDialog({
      const [sections, setSections] = useState<Section[]>([])
      const [showPassword, setShowPassword] = useState(false)
      const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+     const [popoverOpen, setPopoverOpen] = useState(false)
+     const selectedSection = sections.find((s) => String(s.id) === form.section)
 
      useEffect(() => {
           if (!open) return
@@ -156,7 +167,53 @@ export default function CreateStudentAccountDialog({
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
                                    <Label>Section</Label>
-                                   <select
+                                   <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                                        <PopoverTrigger asChild>
+                                             <Button
+                                                  variant="outline"
+                                                  className="w-full justify-between"
+                                             >
+                                                  {selectedSection?.sectionName ?? "Select Section"}
+                                             </Button>
+                                        </PopoverTrigger>
+
+                                        <PopoverContent className="p-0">
+                                             <Command>
+                                                  <CommandInput placeholder="Search sections..." />
+                                                  <CommandList className="w-full max-h-32">
+                                                       <CommandEmpty>
+                                                            No section found.
+                                                       </CommandEmpty>
+
+                                                       {sections.map((s) => {
+                                                            const isSelected =
+                                                                 form.section === String(s.id)
+                                                            return (
+                                                                 <CommandItem
+                                                                      key={s.id}
+                                                                      value={s.sectionName}
+                                                                      onSelect={() => {
+                                                                           setForm((prev) => ({
+                                                                                ...prev,
+                                                                                section: String(
+                                                                                     s.id
+                                                                                ),
+                                                                           }))
+                                                                           setPopoverOpen(false)
+                                                                      }}
+                                                                 >
+                                                                      {s.sectionName}
+                                                                      {isSelected && (
+                                                                           <Check className="ml-auto" />
+                                                                      )}
+                                                                 </CommandItem>
+                                                            )
+                                                       })}
+                                                  </CommandList>
+                                             </Command>
+                                        </PopoverContent>
+                                   </Popover>
+                                   {/* <select
                                         name="section"
                                         value={form.section}
                                         onChange={(e) =>
@@ -173,7 +230,7 @@ export default function CreateStudentAccountDialog({
                                                   {sections.sectionName}
                                              </option>
                                         ))}
-                                   </select>
+                                   </select> */}
                               </div>
                          </div>
 

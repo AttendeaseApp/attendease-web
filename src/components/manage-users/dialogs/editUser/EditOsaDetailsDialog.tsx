@@ -4,131 +4,140 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createOSAAccount } from "@/services/api/user/management/user-management-services"
-import { useState } from "react"
+import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
+import { updateUser } from "@/services/edit-user-details"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-interface AddOSAAccountDialogProps {
+interface EditUserDetailsDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
-     onAdd?: () => void
+     user: UpdateUserDetailsInterface | null
+     onUpdated: (updatedUser: UpdateUserDetailsInterface) => void
 }
 
-interface FormState {
-     firstName: string
-     lastName: string
-     email: string
-     password: string
-     confirmPassword: string
-     contactNumber?: string
-}
-
-export default function CreateOsaAccountDialog({
+export default function EditUserDetailsDialog({
      open,
      onOpenChange,
-     onAdd,
-}: AddOSAAccountDialogProps) {
-     const [form, setForm] = useState<FormState>({
+     user,
+     onUpdated,
+}: EditUserDetailsDialogProps) {
+     const [form, setForm] = useState<
+          UpdateUserDetailsInterface & { password?: string; confirmPassword?: string }
+     >({
+          userId: "",
           firstName: "",
           lastName: "",
+          contactNumber: "",
           email: "",
+          studentNumber: "",
+          sectionId: "",
           password: "",
           confirmPassword: "",
-          contactNumber: "",
      })
-
      const [loading, setLoading] = useState(false)
+     const [hasChanges, setHasChanges] = useState(false)
      const [showPassword, setShowPassword] = useState(false)
      const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+     useEffect(() => {
+          if (!user) return
+          setForm((prev) => ({
+               ...prev,
+               userId: user.userId,
+               firstName: user.firstName ?? "",
+               lastName: user.lastName ?? "",
+               contactNumber: user.contactNumber ?? "",
+               email: user.email ?? "",
+               studentNumber: user.studentNumber ?? "",
+               sectionId: user.sectionId ?? "",
+               password: "",
+               confirmPassword: "",
+          }))
+          setHasChanges(false)
+     }, [user])
 
      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const { name, value } = e.target
           setForm((prev) => ({ ...prev, [name]: value }))
+          setHasChanges(true)
      }
 
      const handleSubmit = async () => {
-          if (form.password !== form.confirmPassword) {
+          if (form.password && form.password !== form.confirmPassword) {
                toast.error("Passwords do not match")
                return
           }
-
           setLoading(true)
           try {
-               const { confirmPassword: _, ...payload } = form
-
-               await createOSAAccount(payload)
-               toast.success("OSA account created successfully")
-
-               setForm({
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    password: "",
-                    confirmPassword: "",
-                    contactNumber: "",
-               })
-
+               const { userId, password, confirmPassword, ...rest } = form
+               const body: Omit<UpdateUserDetailsInterface, "userId"> & { password?: string } = {
+                    ...rest,
+                    studentNumber: undefined,
+                    sectionId: undefined,
+                    password: password || undefined,
+               }
+               const updated = await updateUser(userId, body)
+               onUpdated(updated)
+               toast.success("Successfully updated user.")
                onOpenChange(false)
-               onAdd?.()
-          } catch (err: unknown) {
-               const message = err instanceof Error ? err.message : "Failed to create OSA account"
+          } catch (err) {
+               const message =
+                    err instanceof Error && err.message ? err.message : "Failed to update user"
                toast.error(message)
-               console.error(message)
           } finally {
                setLoading(false)
           }
      }
 
+     if (!user) return null
+
      return (
           <Dialog open={open} onOpenChange={onOpenChange}>
-               <DialogContent className="max-w-4xl p-8">
+               <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
                     <DialogHeader>
-                         <DialogTitle className="text-2xl">Create a new OSA account</DialogTitle>
-                         <p className="text-sm text-gray-500">Create new user account here.</p>
+                         <DialogTitle>Update User</DialogTitle>
+                         <p className="text-sm text-gray-500">Edit user details below.</p>
                     </DialogHeader>
-
-                    <div className="space-y-6">
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4 mt-4">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
                                    <Label>First Name</Label>
                                    <Input
                                         name="firstName"
-                                        placeholder="Enter First Name"
                                         value={form.firstName}
                                         onChange={handleChange}
                                    />
                               </div>
-
                               <div>
                                    <Label>Last Name</Label>
                                    <Input
                                         name="lastName"
-                                        placeholder="Enter Last Name"
                                         value={form.lastName}
                                         onChange={handleChange}
                                    />
                               </div>
                          </div>
-
                          <div>
-                              <Label>Email Address</Label>
+                              <Label>Contact Number</Label>
                               <Input
-                                   name="email"
-                                   type="email"
-                                   placeholder="Enter OSA Email"
-                                   value={form.email}
+                                   name="contactNumber"
+                                   value={form.contactNumber}
                                    onChange={handleChange}
                               />
                          </div>
-
+                         <div>
+                              <Label>Email</Label>
+                              <Input name="email" value={form.email} onChange={handleChange} />
+                         </div>
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
-                                   <Label>Password</Label>
+                                   <Label>Password (leave blank to keep current)</Label>
                                    <div className="relative">
                                         <Input
                                              name="password"
                                              type={showPassword ? "text" : "password"}
-                                             placeholder="Password"
+                                             placeholder="New Password"
                                              value={form.password}
                                              onChange={handleChange}
                                         />
@@ -142,14 +151,13 @@ export default function CreateOsaAccountDialog({
                                         </Button>
                                    </div>
                               </div>
-
                               <div>
                                    <Label>Confirm Password</Label>
                                    <div className="relative">
                                         <Input
                                              name="confirmPassword"
                                              type={showConfirmPassword ? "text" : "password"}
-                                             placeholder="Confirm Password"
+                                             placeholder="Confirm New Password"
                                              value={form.confirmPassword}
                                              onChange={handleChange}
                                         />
@@ -164,39 +172,15 @@ export default function CreateOsaAccountDialog({
                                    </div>
                               </div>
                          </div>
-
-                         <div>
-                              <Label>Contact No.</Label>
-                              <Input
-                                   name="contactNumber"
-                                   type="text"
-                                   inputMode="numeric"
-                                   placeholder="Contact No."
-                                   value={form.contactNumber}
-                                   onChange={handleChange}
-                              />
-                         </div>
-
                          <div className="flex justify-end gap-2">
-                              <Button
-                                   variant="outline"
-                                   onClick={() => {
-                                        setForm({
-                                             firstName: "",
-                                             lastName: "",
-                                             email: "",
-                                             password: "",
-                                             confirmPassword: "",
-                                             contactNumber: "",
-                                        })
-                                        onOpenChange(false)
-                                   }}
-                              >
+                              <Button variant="outline" onClick={() => onOpenChange(false)}>
                                    Cancel
                               </Button>
-
-                              <Button onClick={handleSubmit} disabled={loading}>
-                                   {loading ? "Registering..." : "Register"}
+                              <Button
+                                   onClick={handleSubmit}
+                                   disabled={loading || (!hasChanges && !form.password)}
+                              >
+                                   {loading ? "Updating..." : "Update"}
                               </Button>
                          </div>
                     </div>
