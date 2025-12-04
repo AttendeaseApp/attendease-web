@@ -1,32 +1,26 @@
 "use client"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Plus, Search, X } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { ClusterSession, CourseSession, Section } from "@/interface/cluster-and-course-interface"
-import {
-     deleteCourse,
-     deleteCluster,
-     getAllCourses,
-     getAllSections,
-     deleteSection,
-} from "@/services/cluster-and-course-sessions"
+
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
-import { ClusterAndCourseTable } from "@/components/manage-clusters-and-courses/ClusterAndCourseTable"
-import { ClusterTable } from "@/components/manage-clusters-and-courses/ClusterTable"
-import { CreateClusterDialog } from "@/components/manage-clusters-and-courses/CreateClusterDialog"
-import { CreateCourseDialog } from "@/components/manage-clusters-and-courses/CreateCourseDialog"
-import { getAllClusters } from "@/services/cluster-and-course-sessions"
-import { CreateSectionDialog } from "@/components/manage-clusters-and-courses/CreateSectionDialog"
-import ClusterCourseStatusDialog from "@/components/manage-clusters-and-courses/CreateClustercCoursesStatusDialog"
+import { CreateClusterDialog } from "@/components/manage-clusters-and-courses/dialogs/create/CreateClusterDialog"
+import { CreateCourseDialog } from "@/components/manage-clusters-and-courses/dialogs/create/CreateCourseDialog"
+import { CreateSectionDialog } from "@/components/manage-clusters-and-courses/dialogs/create/CreateSectionDialog"
+import { UpdateClusterDialog } from "@/components/manage-clusters-and-courses/dialogs/update/UpdateClusterDialog"
+import { UpdateCourseDialog } from "@/components/manage-clusters-and-courses/dialogs/update/UpdateCourseDialog"
+import { UpdateSectionDialog } from "@/components/manage-clusters-and-courses/dialogs/update/UpdateSectionDialog"
+import { AcademicClusterTable } from "@/components/manage-clusters-and-courses/tables/AcademicClusterTable"
+import { AcademicCourseTable } from "@/components/manage-clusters-and-courses/tables/AcademicCourseTable"
+import { AcademicSectionTable } from "@/components/manage-clusters-and-courses/tables/AcademicSectionTable"
+import { Button } from "@/components/ui/button"
 import {
      Dialog,
      DialogContent,
      DialogDescription,
+     DialogFooter,
      DialogHeader,
      DialogTitle,
-     DialogFooter,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
      Select,
      SelectContent,
@@ -34,12 +28,21 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { SectionTable } from "@/components/manage-clusters-and-courses/SectionTable"
-import { UpdateClusterDialog } from "@/components/manage-clusters-and-courses/UpdateClusterDialog"
-import { UpdateCourseDialog } from "@/components/manage-clusters-and-courses/UpdateCourseDialog"
-import { UpdateSectionDialog } from "@/components/manage-clusters-and-courses/UpdateSectionDialog"
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
+import { Course } from "@/interface/academic/course/CourseInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
+import {
+     deleteCluster,
+     deleteCourse,
+     deleteSection,
+     getAllClusters,
+     getAllCourses,
+     getAllSections,
+} from "@/services/cluster-and-course-sessions"
+import { Plus, Search, X } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
+
 export default function ManageClustersPage() {
      const [formData, setFormData] = useState({
           clusterId: "",
@@ -49,35 +52,28 @@ export default function ManageClustersPage() {
           courseId: "",
           courseName: "",
      })
-     const [courses, setCourses] = useState<CourseSession[]>([])
+     const [courses, setCourses] = useState<Course[]>([])
      const [loadingClusters, setLoadingClusters] = useState(true)
      const [loadingCourses, setLoadingCourses] = useState(true)
      const [error, setError] = useState<string | null>(null)
      const [clusterSearchTerm, setClusterSearchTerm] = useState("")
      const [courseSearchTerm, setCourseSearchTerm] = useState("")
      const [sectionSearchTerm, setSectionSearchTerm] = useState("")
-     const [selectedCluster, setSelectedCluster] = useState<ClusterSession | null>(null)
+     const [selectedCluster, setSelectedCluster] = useState<Cluster | null>(null)
      const [isCreateClusterOpen, setIsCreateClusterOpen] = useState(false)
      const [isChooseClusterOpen, setIsChooseClusterOpen] = useState(false)
      const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false)
-     const [clusters, setClusters] = useState<ClusterSession[]>([])
+     const [clusters, setClusters] = useState<Cluster[]>([])
      const [sections, setSections] = useState<Section[]>([])
      const [loadingSections, setLoadingSections] = useState(true)
      const [isChooseCourseOpen, setIsChooseCourseOpen] = useState(false)
-     const [selectedCourse, setSelectedCourse] = useState<CourseSession | null>(null)
+     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
      const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false)
      const [selectedSections, setSelectedSections] = useState<Section | null>(null)
      const [isEditClusterOpen, setIsEditClusterOpen] = useState(false)
      const [isEditCourseOpen, setIsEditCourseOpen] = useState(false)
      const [isEditSectionOpen, setIsEditSectionOpen] = useState(false)
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
-     const [createMessage, setCreateMessage] = useState("")
-     const showStatus = (status: "success" | "error", message: string) => {
-          setCreateStatus(status)
-          setCreateMessage(message)
-          setStatusDialogOpen(true)
-     }
+
      const loadClusters = async () => {
           try {
                setLoadingClusters(true)
@@ -92,6 +88,7 @@ export default function ManageClustersPage() {
                setLoadingClusters(false)
           }
      }
+
      const loadCourses = async () => {
           try {
                setLoadingCourses(true)
@@ -108,6 +105,7 @@ export default function ManageClustersPage() {
                setLoadingCourses(false)
           }
      }
+
      const loadSections = async () => {
           try {
                setLoadingSections(true)
@@ -124,11 +122,13 @@ export default function ManageClustersPage() {
                setLoadingSections(false)
           }
      }
+
      useEffect(() => {
           loadClusters()
           loadCourses()
           loadSections()
      }, [])
+
      const filteredClusters = clusters.filter((cluster) => {
           const lowerSearch = clusterSearchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
@@ -137,6 +137,7 @@ export default function ManageClustersPage() {
                fields.some((f) => (f?.toLowerCase() || "").includes(sw))
           )
      })
+
      const filteredCourses = courses.filter((course) => {
           const lowerSearch = courseSearchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
@@ -146,86 +147,103 @@ export default function ManageClustersPage() {
                fields.some((f) => (f?.toLowerCase() || "").includes(sw))
           )
      })
+
      const filteredSections = sections.filter((section) => {
           const lowerSearch = sectionSearchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
           const courseName = section.course?.courseName ?? ""
-          const fields = [section.name, courseName]
+          const fields = [section.sectionName, courseName]
           return searchWords.every((sw) =>
                fields.some((f) => (f?.toLowerCase() || "").includes(sw))
           )
      })
-     const handleEditCluster = (cluster: ClusterSession) => {
+
+     const handleEditCluster = (cluster: Cluster) => {
           setSelectedCluster(cluster)
           setIsEditClusterOpen(true)
      }
+
      const handleEditClusterClose = () => {
           setIsEditClusterOpen(false)
           setSelectedCluster(null)
      }
+
      const handleEditClusterUpdate = () => {
           setIsEditClusterOpen(false)
           setSelectedCluster(null)
           loadClusters()
-          showStatus("success", "Successfully updated Cluster.")
      }
-     const handleEditCourse = (course: CourseSession) => {
+
+     const handleEditCourse = (course: Course) => {
           setSelectedCourse(course)
           setIsEditCourseOpen(true)
      }
+
      const handleEditCourseClose = () => {
           setIsEditCourseOpen(false)
           setSelectedCourse(null)
      }
+
      const handleEditCourseUpdate = () => {
           setIsEditCourseOpen(false)
           setSelectedCourse(null)
           loadCourses()
-          showStatus("success", "Successfully updated Course.")
      }
+
      const handleEditSection = (section: Section) => {
           setSelectedSections(section)
           setIsEditSectionOpen(true)
      }
+
      const handleEditSectionClose = () => {
           setIsEditSectionOpen(false)
           setSelectedSections(null)
      }
+
      const handleEditSectionUpdate = () => {
           setIsEditSectionOpen(false)
           setSelectedSections(null)
           loadSections()
-          showStatus("success", "Successfully updated Section.")
+          toast.success("Successfully updated Sections.")
      }
+
      const handleCreateClusterOpen = () => setIsCreateClusterOpen(true)
      const handleCreateClusterClose = () => setIsCreateClusterOpen(false)
+
      const handleCreateClusterSuccess = () => {
           setIsCreateClusterOpen(false)
           loadClusters()
           loadCourses()
-          showStatus("success", "Successfully created Cluster.")
+          toast.success("Successfully created Cluster.")
      }
+
      const handleCreateCourseOpen = () => setIsChooseClusterOpen(true)
+
      const handleCreateCourseSuccess = () => {
           setIsChooseClusterOpen(false)
           loadCourses()
-          showStatus("success", "Successfully created Course.")
+          toast.success("Successfully created Course.")
      }
+
      const handleCreateSectionOpen = () => setIsChooseCourseOpen(true)
+
      const handleCreateSectionSuccess = () => {
           setIsChooseCourseOpen(false)
           loadSections()
-          showStatus("success", "Successfully created Section.")
+          toast.success("Successfully created Section.")
      }
+
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
+
      const handleSectionInputChange = (field: keyof typeof formSectionData, value: string) => {
           setFormSectionData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
-     const handleDeleteCluster = async (cluster: ClusterSession) => {
+
+     const handleDeleteCluster = async (cluster: Cluster) => {
           try {
                await deleteCluster(cluster.clusterId)
                setClusters((prev) => prev.filter((c) => c.clusterId !== cluster.clusterId))
@@ -240,11 +258,12 @@ export default function ManageClustersPage() {
                toast.error(errorMessage)
           }
      }
+
      const handleDeleteSection = async (section: Section) => {
           try {
                await deleteSection(section.id)
                setSections((prev) => prev.filter((s) => s.id !== section.id))
-               toast.success(`Section "${section.name}" deleted successfully.`)
+               toast.success(`Section "${section.sectionName}" deleted successfully.`)
           } catch (error) {
                console.error("Delete failed:", error)
                const errorMessage =
@@ -254,7 +273,8 @@ export default function ManageClustersPage() {
                toast.error(errorMessage)
           }
      }
-     const handleDeleteCourse = async (course: CourseSession) => {
+
+     const handleDeleteCourse = async (course: Course) => {
           try {
                await deleteCourse(course.id)
                setCourses((prev) => prev.filter((c) => c.id !== course.id))
@@ -268,6 +288,7 @@ export default function ManageClustersPage() {
                toast.error(errorMessage)
           }
      }
+
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
@@ -313,10 +334,10 @@ export default function ManageClustersPage() {
                                         Refresh
                                    </Button>
                               </div>
-                              <ClusterTable
+                              <AcademicClusterTable
                                    clusters={filteredClusters}
                                    loading={loadingClusters}
-                                   onEdit={handleEditCluster}
+                                   onEditAction={handleEditCluster}
                                    onDeleteAction={handleDeleteCluster}
                               />
                          </div>
@@ -337,7 +358,7 @@ export default function ManageClustersPage() {
                                         Refresh
                                    </Button>
                               </div>
-                              <ClusterAndCourseTable
+                              <AcademicCourseTable
                                    courses={filteredCourses}
                                    loading={loadingCourses}
                                    onEdit={handleEditCourse}
@@ -363,12 +384,8 @@ export default function ManageClustersPage() {
                                         Refresh
                                    </Button>
                               </div>
-                              {error && (
-                                   <div className="mt-4 p-4 text-sm text-red-500 bg-red-50 rounded-md border border-red-200">
-                                        {error}
-                                   </div>
-                              )}
-                              <SectionTable
+
+                              <AcademicSectionTable
                                    sections={filteredSections}
                                    loading={loadingSections}
                                    onEdit={handleEditSection}
@@ -381,8 +398,6 @@ export default function ManageClustersPage() {
                          isOpen={isCreateClusterOpen}
                          onClose={handleCreateClusterClose}
                          onCreate={handleCreateClusterSuccess}
-                         onError={(message) => showStatus("error", message)}
-                         clusters={clusters}
                     />
                     <Dialog open={isChooseClusterOpen} onOpenChange={setIsChooseClusterOpen}>
                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -455,7 +470,6 @@ export default function ManageClustersPage() {
                               isOpen={isCreateCourseOpen}
                               onClose={() => setIsCreateCourseOpen(false)}
                               onCreate={handleCreateCourseSuccess}
-                              onError={(message) => showStatus("error", message)}
                          />
                     )}
                     <Dialog open={isChooseCourseOpen} onOpenChange={setIsChooseCourseOpen}>
@@ -496,11 +510,7 @@ export default function ManageClustersPage() {
                                         </SelectContent>
                                    </Select>
                               </div>
-                              {error && (
-                                   <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
-                                        {error}
-                                   </div>
-                              )}
+
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"
@@ -531,7 +541,6 @@ export default function ManageClustersPage() {
                               isOpen={isCreateSectionOpen}
                               onClose={() => setIsCreateSectionOpen(false)}
                               onCreate={handleCreateSectionSuccess}
-                              onError={(message) => showStatus("error", message)}
                          />
                     )}
                     {selectedCluster && (
@@ -539,7 +548,6 @@ export default function ManageClustersPage() {
                               isOpen={isEditClusterOpen}
                               onClose={handleEditClusterClose}
                               onUpdate={handleEditClusterUpdate}
-                              onError={(message) => showStatus("error", message)}
                               clusters={selectedCluster}
                          />
                     )}
@@ -549,7 +557,6 @@ export default function ManageClustersPage() {
                               isOpen={isEditCourseOpen}
                               onClose={handleEditCourseClose}
                               onUpdate={handleEditCourseUpdate}
-                              onError={(message) => showStatus("error", message)}
                               courses={selectedCourse}
                          />
                     )}
@@ -559,16 +566,9 @@ export default function ManageClustersPage() {
                               isOpen={isEditSectionOpen}
                               onClose={handleEditSectionClose}
                               onUpdate={handleEditSectionUpdate}
-                              onError={(message) => showStatus("error", message)}
                               section={selectedSections}
                          />
                     )}
-                    <ClusterCourseStatusDialog
-                         open={statusDialogOpen}
-                         status={createStatus}
-                         message={createMessage}
-                         onClose={() => setStatusDialogOpen(false)}
-                    />
                </div>
           </ProtectedLayout>
      )

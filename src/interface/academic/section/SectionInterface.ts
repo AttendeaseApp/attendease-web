@@ -1,10 +1,9 @@
+import { Course } from "../course/CourseInterface"
+
 export interface Section {
      id: string
-     name: string
-     course?: {
-          id: string
-          courseName: string
-     } | null
+     sectionName: string
+     course?: Course
      createdAt?: string | null
      updatedAt?: string | null
 }

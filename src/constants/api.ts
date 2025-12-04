@@ -1,4 +1,4 @@
-export const API_BASE = "https://attendease-backend-latest.onrender.com"
+export const API_BASE = "http://localhost:8082"
 /**
  * constant login endpoint
  */

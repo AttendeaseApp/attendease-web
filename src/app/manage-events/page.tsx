@@ -92,7 +92,7 @@ export default function ManageEventsPage() {
                toast.success("Event deleted successfully!")
           } catch (error) {
                console.error("Delete failed:", error)
-               toast.error("Failed to delete event. Please try again.")
+               toast.error("Failed to delete event." + error)
           }
      }
 

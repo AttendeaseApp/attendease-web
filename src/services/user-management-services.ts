@@ -3,7 +3,7 @@ import { API_BASE, OSA_PROFILE_ENDPOINT, USER_MANAGEMENT_API_ENDPOINTS } from ".
 import { UserStudentResponse } from "@/interface/UserStudent"
 import { OsaAccountPayload } from "@/interface/users/OSAInterface"
 import { StudentAccountPayload } from "@/interface/users/StudentInterface"
-import { Section } from "@/interface/students/SectionInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
 
 /**
  * Retrieve all users
