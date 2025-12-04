@@ -21,12 +21,7 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandList,
-} from "@/components/ui/command"
+import { Command, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
 import { Textarea } from "@/components/ui/textarea"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { Course } from "@/interface/academic/course/CourseInterface"
@@ -120,7 +115,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
      const [loadingHierarchy, setLoadingHierarchy] = useState(true)
      const [loadingLocations, setLoadingLocations] = useState(true)
      const [open, setOpen] = useState(false)
-     const [searchQuery, setSearchQuery] = useState("");
+     const [searchQuery, setSearchQuery] = useState("")
      const [eventStatus, setEventStatus] = useState<EventStatus | null>(null)
 
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
@@ -488,45 +483,44 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           },
           [getCourseOfSection, getSectionsUnderCourse, getClusterOfCourse, getCoursesUnderCluster]
      )
-     
-     const handleCancelEvent = async() => {
-          try{
+
+     const handleCancelEvent = async () => {
+          try {
                setIsSubmitting(true)
                await cancelEvent(event.eventId)
                toast.success("Event cancelled")
                setEventStatus(EventStatus.CANCELLED)
                onUpdate()
-          } catch(error){
+          } catch (error) {
                toast.error("Failed to cancel event" + error)
                console.error(error)
-          }finally{
+          } finally {
                setIsSubmitting(false)
           }
      }
 
-     const normalize = (str: string) =>
-     str.toLowerCase().replace(/\s+/g, " ").trim();
+     const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, " ").trim()
 
      const filterItems = <T,>(
-     items: T[],
-     opts: { key: keyof T } | { predicate: (item: T) => boolean }
+          items: T[],
+          opts: { key: keyof T } | { predicate: (item: T) => boolean }
      ) => {
-     const search = normalize(searchQuery);
+          const search = normalize(searchQuery)
 
-     if ("key" in opts) {
-     const { key } = opts;
+          if ("key" in opts) {
+               const { key } = opts
 
-     return items.filter((item) => {
-          const value = normalize((item[key] ?? "").toString());
+               return items.filter((item) => {
+                    const value = normalize((item[key] ?? "").toString())
 
-          if (!search) return true; // allow empty or space input
+                    if (!search) return true // allow empty or space input
 
-          return value.includes(search);
-     });
+                    return value.includes(search)
+               })
+          }
+
+          return items.filter(opts.predicate)
      }
-
-     return items.filter(opts.predicate);
-     };
 
      // const filteredClusters = filterItems(clusters, { key: "clusterName" });
 
@@ -1049,123 +1043,229 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                    <Label>Eligible Attendees</Label>
                                    <Popover open={open} onOpenChange={setOpen}>
                                         <PopoverTrigger asChild>
-                                             <Button variant="outline" className="w-[200px] justify-between">
+                                             <Button
+                                                  variant="outline"
+                                                  className="w-[200px] justify-between"
+                                             >
                                                   {eligibility.allStudents
-                                                    ? "All Students"
-                                                    : "Select Attendees"}
+                                                       ? "All Students"
+                                                       : "Select Attendees"}
                                              </Button>
                                         </PopoverTrigger>
 
                                         <PopoverContent className="p-0 w-[300px]">
                                              <Command>
-                                                  <CommandInput 
-                                                    placeholder="Search..."
-                                                    value={searchQuery}
-                                                    onValueChange={(value) => setSearchQuery(value)} 
+                                                  <CommandInput
+                                                       placeholder="Search..."
+                                                       value={searchQuery}
+                                                       onValueChange={(value) =>
+                                                            setSearchQuery(value)
+                                                       }
                                                   />
 
                                                   <CommandList className="max-h-64 overflow-y-auto space-y-4 p-2">
-
-                                                  <div className="flex items-center space-x-2">
-                                                      <Checkbox
-                                                      id="allStudents"
-                                                      checked={eligibility.allStudents}
-                                                      onCheckedChange={handleAllStudentsToggle} 
-                                                      />
-                                                       <Label htmlFor="allStudents" className="text-sm font-medium">
-                                                            All Students
-                                                       </Label>
-                                                  </div>
-                                                  {!eligibility.allStudents && (
-                                                       <>
-                                                       <div className="space-y-2">
-                                                            {loadingHierarchy ? (
+                                                       <div className="flex items-center space-x-2">
+                                                            <Checkbox
+                                                                 id="allStudents"
+                                                                 checked={eligibility.allStudents}
+                                                                 onCheckedChange={
+                                                                      handleAllStudentsToggle
+                                                                 }
+                                                            />
+                                                            <Label
+                                                                 htmlFor="allStudents"
+                                                                 className="text-sm font-medium"
+                                                            >
+                                                                 All Students
+                                                            </Label>
+                                                       </div>
+                                                       {!eligibility.allStudents && (
+                                                            <>
+                                                                 <div className="space-y-2">
+                                                                      {loadingHierarchy ? (
                                                                            <p className="text-sm text-muted-foreground">
                                                                                 Loading clusters...
                                                                            </p>
-                                                            ) : (
-                                                                 <>
-                                                                 <Label className="text-sm font-medium">Clusters</Label>
-                                                                 {filterItems(clusters, {key: "clusterName"}).map((cluster) => (
-                                                                 <div key={cluster.clusterId} className="flex items-center space-x-2">
-                                                                      <Checkbox
-                                                                      id={`cluster-${cluster.clusterId}`}
-                                                                      checked={eligibility.selectedClusters.includes(cluster.clusterId)}
-                                                                      onCheckedChange={(checked) =>
-                                                                           handleClusterSelect(cluster.clusterId, !!checked)
-                                                                      }
-                                                                      />
-                                                                      <Label htmlFor={`cluster-${cluster.clusterId}`} className="text-sm">
-                                                                           {cluster.clusterName}
-                                                                      </Label>
-                                                                      </div>
-                                                                 ))}
-                                                                 {filterItems(clusters, {key: "clusterName"}).length === 0 && (
-                                                                      <CommandEmpty>No clusters found.</CommandEmpty>
-                                                                 )}
-                                                                 </>
-                                                            )}
-                                                       </div>
+                                                                      ) : (
+                                                                           <>
+                                                                                <Label className="text-sm font-medium">
+                                                                                     Clusters
+                                                                                </Label>
+                                                                                {filterItems(
+                                                                                     clusters,
+                                                                                     {
+                                                                                          key: "clusterName",
+                                                                                     }
+                                                                                ).map((cluster) => (
+                                                                                     <div
+                                                                                          key={
+                                                                                               cluster.clusterId
+                                                                                          }
+                                                                                          className="flex items-center space-x-2"
+                                                                                     >
+                                                                                          <Checkbox
+                                                                                               id={`cluster-${cluster.clusterId}`}
+                                                                                               checked={eligibility.selectedClusters.includes(
+                                                                                                    cluster.clusterId
+                                                                                               )}
+                                                                                               onCheckedChange={(
+                                                                                                    checked
+                                                                                               ) =>
+                                                                                                    handleClusterSelect(
+                                                                                                         cluster.clusterId,
+                                                                                                         !!checked
+                                                                                                    )
+                                                                                               }
+                                                                                          />
+                                                                                          <Label
+                                                                                               htmlFor={`cluster-${cluster.clusterId}`}
+                                                                                               className="text-sm"
+                                                                                          >
+                                                                                               {
+                                                                                                    cluster.clusterName
+                                                                                               }
+                                                                                          </Label>
+                                                                                     </div>
+                                                                                ))}
+                                                                                {filterItems(
+                                                                                     clusters,
+                                                                                     {
+                                                                                          key: "clusterName",
+                                                                                     }
+                                                                                ).length === 0 && (
+                                                                                     <CommandEmpty>
+                                                                                          No
+                                                                                          clusters
+                                                                                          found.
+                                                                                     </CommandEmpty>
+                                                                                )}
+                                                                           </>
+                                                                      )}
+                                                                 </div>
 
-                                                       <div className="space-y-2">
-                                                            {loadingHierarchy ? (
+                                                                 <div className="space-y-2">
+                                                                      {loadingHierarchy ? (
                                                                            <p className="text-sm text-muted-foreground">
                                                                                 Loading Courses...
                                                                            </p>
-                                                            ) : (
-                                                                 <>
-                                                                 <Label className="text-sm font-medium">Courses</Label>
-                                                                 {filterItems(courses, {key: "courseName"}).map((course) => (
-                                                                      <div key={course.id} className="flex items-center space-x-2">
-                                                                           <Checkbox
-                                                                           id={`course-${course.id}`}
-                                                                           checked={eligibility.selectedCourses.includes(course.id)}
-                                                                           onCheckedChange={(checked) =>
-                                                                                handleCourseSelect(course.id, !!checked)
-                                                                           }
-                                                                           />
-                                                                           <Label htmlFor={`course-${course.id}`} className="text-sm">
-                                                                                {course.courseName}
-                                                                           </Label>
-                                                                      </div>
-                                                                 ))}
-                                                                 {filterItems(courses, {key: "courseName"}).length === 0 && (
-                                                                      <CommandEmpty>No courses found.</CommandEmpty>
-                                                                 )}
-                                                                 </>
-                                                            )}
-                                                       </div>
+                                                                      ) : (
+                                                                           <>
+                                                                                <Label className="text-sm font-medium">
+                                                                                     Courses
+                                                                                </Label>
+                                                                                {filterItems(
+                                                                                     courses,
+                                                                                     {
+                                                                                          key: "courseName",
+                                                                                     }
+                                                                                ).map((course) => (
+                                                                                     <div
+                                                                                          key={
+                                                                                               course.id
+                                                                                          }
+                                                                                          className="flex items-center space-x-2"
+                                                                                     >
+                                                                                          <Checkbox
+                                                                                               id={`course-${course.id}`}
+                                                                                               checked={eligibility.selectedCourses.includes(
+                                                                                                    course.id
+                                                                                               )}
+                                                                                               onCheckedChange={(
+                                                                                                    checked
+                                                                                               ) =>
+                                                                                                    handleCourseSelect(
+                                                                                                         course.id,
+                                                                                                         !!checked
+                                                                                                    )
+                                                                                               }
+                                                                                          />
+                                                                                          <Label
+                                                                                               htmlFor={`course-${course.id}`}
+                                                                                               className="text-sm"
+                                                                                          >
+                                                                                               {
+                                                                                                    course.courseName
+                                                                                               }
+                                                                                          </Label>
+                                                                                     </div>
+                                                                                ))}
+                                                                                {filterItems(
+                                                                                     courses,
+                                                                                     {
+                                                                                          key: "courseName",
+                                                                                     }
+                                                                                ).length === 0 && (
+                                                                                     <CommandEmpty>
+                                                                                          No courses
+                                                                                          found.
+                                                                                     </CommandEmpty>
+                                                                                )}
+                                                                           </>
+                                                                      )}
+                                                                 </div>
 
-                                                       <div className="space-y-2">
-                                                            {loadingHierarchy ? (
+                                                                 <div className="space-y-2">
+                                                                      {loadingHierarchy ? (
                                                                            <p className="text-sm text-muted-foreground">
                                                                                 Loading Courses...
                                                                            </p>
-                                                            ) : (
-                                                                 <>
-                                                                 <Label className="text-sm font-medium">Sections</Label>
-                                                                 {filterItems(sections, {key: "sectionName"}).map((section) => (
-                                                                      <div key={section.id} className="flex items-center space-x-2">
-                                                                           <Checkbox
-                                                                           id={`section-${section.id}`}
-                                                                           checked={eligibility.selectedSections.includes(section.id)}
-                                                                           onCheckedChange={(checked) =>
-                                                                                handleSectionSelect(section.id, !!checked)
-                                                                           }
-                                                                           />
-                                                                           <Label htmlFor={`section-${section.id}`} className="text-sm">
-                                                                                {section.sectionName}
-                                                                           </Label>
-                                                                      </div>
-                                                                 ))}
-                                                                 {filterItems(sections, {key: "sectionName"}).length === 0 && (
-                                                                      <CommandEmpty>No section found.</CommandEmpty>
-                                                                 )}
-                                                                 </>
-                                                            )}
-                                                       </div>
-                                                       </>
-                                                  )}
+                                                                      ) : (
+                                                                           <>
+                                                                                <Label className="text-sm font-medium">
+                                                                                     Sections
+                                                                                </Label>
+                                                                                {filterItems(
+                                                                                     sections,
+                                                                                     {
+                                                                                          key: "sectionName",
+                                                                                     }
+                                                                                ).map((section) => (
+                                                                                     <div
+                                                                                          key={
+                                                                                               section.id
+                                                                                          }
+                                                                                          className="flex items-center space-x-2"
+                                                                                     >
+                                                                                          <Checkbox
+                                                                                               id={`section-${section.id}`}
+                                                                                               checked={eligibility.selectedSections.includes(
+                                                                                                    section.id
+                                                                                               )}
+                                                                                               onCheckedChange={(
+                                                                                                    checked
+                                                                                               ) =>
+                                                                                                    handleSectionSelect(
+                                                                                                         section.id,
+                                                                                                         !!checked
+                                                                                                    )
+                                                                                               }
+                                                                                          />
+                                                                                          <Label
+                                                                                               htmlFor={`section-${section.id}`}
+                                                                                               className="text-sm"
+                                                                                          >
+                                                                                               {
+                                                                                                    section.sectionName
+                                                                                               }
+                                                                                          </Label>
+                                                                                     </div>
+                                                                                ))}
+                                                                                {filterItems(
+                                                                                     sections,
+                                                                                     {
+                                                                                          key: "sectionName",
+                                                                                     }
+                                                                                ).length === 0 && (
+                                                                                     <CommandEmpty>
+                                                                                          No section
+                                                                                          found.
+                                                                                     </CommandEmpty>
+                                                                                )}
+                                                                           </>
+                                                                      )}
+                                                                 </div>
+                                                            </>
+                                                       )}
                                                   </CommandList>
                                              </Command>
                                         </PopoverContent>
@@ -1188,11 +1288,14 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                    >
                                         <X className="mr-2 h-4 w-4" />
                                         Cancel
-                                   </Button> 
+                                   </Button>
                                    <Button
                                         type="button"
                                         variant="outline"
-                                        disabled={isSubmitting || event.eventStatus === EventStatus.CANCELLED}
+                                        disabled={
+                                             isSubmitting ||
+                                             event.eventStatus === EventStatus.CANCELLED
+                                        }
                                         className="hover: bg-red-100 border-red-400"
                                         onClick={handleCancelEvent}
                                    >

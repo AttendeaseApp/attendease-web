@@ -174,28 +174,28 @@ export const deleteEvent = async (id: string): Promise<void> => {
 }
 
 export const cancelEvent = async (id: string): Promise<void> => {
-    try {
-        const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.CANCEL_EVENT(id), {
+     try {
+          const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.CANCEL_EVENT(id), {
                method: "PUT",
-        });
+          })
 
-        if (!res.ok) {
-            let errorMsg = `Failed to cancel event: ${res.status}`;
-            try {
-                const errorBody = await res.json();
-                errorMsg =
-                    errorBody.message ||
-                    `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
-                    (Array.isArray(errorBody.errors)
-                        ? errorBody.errors[0]?.defaultMessage
-                        : JSON.stringify(errorBody));
-            } catch (parseErr) {
-                errorMsg = res.statusText || errorMsg + parseErr;
-            }
-            throw new Error(errorMsg);
-        }
-    } catch (error) {
-        console.error("Error cancelling event:", error);
-        throw error;
-    }
-};
+          if (!res.ok) {
+               let errorMsg = `Failed to cancel event: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         `${errorBody.error || "Unknown Error"}: ${errorBody.message || ""}` ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + parseErr
+               }
+               throw new Error(errorMsg)
+          }
+     } catch (error) {
+          console.error("Error cancelling event:", error)
+          throw error
+     }
+}
