@@ -1,16 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { updateUser } from "@/services/edit-user-details"
+import { Section } from "@/interface/academic/section/SectionInterface"
 import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
-import { Section } from "@/interface/students/SectionInterface"
+import { updateUser } from "@/services/edit-user-details"
 import { getSections } from "@/services/user-management-services"
+import { useEffect, useState } from "react"
 import EditUserStatusDialog from "./EditUserStatusDialog"
-
 import {
      Select,
      SelectContent,
@@ -174,7 +173,7 @@ export default function EditUserDetailsDialog({
                                         <SelectContent>
                                              {sections.map((s) => (
                                                   <SelectItem key={s.id} value={String(s.id)}>
-                                                       {s.name}
+                                                       {s.sectionName}
                                                   </SelectItem>
                                              ))}
                                         </SelectContent>

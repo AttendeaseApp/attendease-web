@@ -1,23 +1,5 @@
 "use client"
-import React, { useState } from "react"
-import { Button } from "@/components/ui/button"
-import {
-     Table,
-     TableBody,
-     TableCell,
-     TableHead,
-     TableHeader,
-     TableRow,
-} from "@/components/ui/table"
-import {
-     DropdownMenu,
-     DropdownMenuTrigger,
-     DropdownMenuContent,
-     DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash, Pencil } from "lucide-react"
-import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
-import { CourseSession } from "@/interface/cluster-and-course-interface"
+
 import {
      AlertDialog,
      AlertDialogAction,
@@ -28,73 +10,86 @@ import {
      AlertDialogHeader,
      AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-// import { toast } from "sonner"
-//
-interface CourseTableProps {
-     courses: CourseSession[]
+import { Button } from "@/components/ui/button"
+import {
+     DropdownMenu,
+     DropdownMenuContent,
+     DropdownMenuItem,
+     DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+     Table,
+     TableBody,
+     TableCell,
+     TableHead,
+     TableHeader,
+     TableRow,
+} from "@/components/ui/table"
+import { Section } from "@/interface/academic/section/SectionInterface"
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
+import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { useState } from "react"
+
+interface SectionProps {
+     sections: Section[]
      loading: boolean
-     onEdit: (course: CourseSession) => void
-     onDelete: (course: CourseSession) => Promise<void>
+     onEdit: (section: Section) => void
+     onDelete: (section: Section) => void
 }
 
-export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
-     const [deleteTarget, setDeleteTarget] = useState<CourseSession | null>(null)
+export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: SectionProps) {
+     const [deleteTarget, setDeleteTarget] = useState<Section | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-     const handleEdit = (course: CourseSession, e: React.MouseEvent) => {
+
+     const handleEdit = (section: Section, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
-          onEdit(course)
+          onEdit(section)
      }
-     const openDeleteDialog = (course: CourseSession, e: React.MouseEvent) => {
+
+     const openDeleteDialog = (section: Section, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
-          setDeleteTarget(course)
+          setDeleteTarget(section)
           setDeleteDialogOpen(true)
      }
-     const confirmDelete = async () => {
+
+     const confirmDelete = () => {
           if (deleteTarget) {
-               try {
-                    await onDelete(deleteTarget)
-                    // toast.success(`Course "${deleteTarget.courseName}" deleted successfully.`)
-               } catch (err) {
-                    console.error("Delete failed:", err)
-                    // const errorMessage =
-                    //      err instanceof Error ? err.message : "Unknown error occurred"
-                    // toast.warning(`Failed to delete location: ${errorMessage}`)
-               } finally {
-                    setDeleteTarget(null)
-                    setDeleteDialogOpen(false)
-               }
+               onDelete(deleteTarget)
           }
+          setDeleteTarget(null)
+          setDeleteDialogOpen(false)
      }
+
      return (
           <>
                <Table className="w-full">
                     <TableHeader>
                          <TableRow>
-                              <TableHead>COURSE</TableHead>
-                              <TableHead>REFERENCED CLUSTER</TableHead>
+                              <TableHead>SECTION</TableHead>
+                              <TableHead>REFERENCED COURSE</TableHead>
                               <TableHead className="text-right"></TableHead>
                          </TableRow>
                     </TableHeader>
                     <TableBody>
                          {loading ? (
                               <TableRow>
-                                   <TableCell colSpan={3} className="text-center py-8">
-                                        Loading courses and clusters...
+                                   <TableCell colSpan={2} className="text-center py-8">
+                                        Loading sections and courses...
                                    </TableCell>
                               </TableRow>
-                         ) : courses.length === 0 ? (
+                         ) : sections.length === 0 ? (
                               <TableRow>
-                                   <TableCell colSpan={3} className="text-center py-8">
-                                        No courses and clusters found
+                                   <TableCell colSpan={2} className="text-center py-8">
+                                        No sections and courses found
                                    </TableCell>
                               </TableRow>
                          ) : (
-                              courses.map((course) => (
-                                   <TableRow key={`${course.id || "no-course"}`}>
-                                        <TableCell>{course.courseName || " –"}</TableCell>
-                                        <TableCell>{course.cluster?.clusterName || " –"}</TableCell>
+                              sections.map((section) => (
+                                   <TableRow key={`${section.id || "no-course"}`}>
+                                        <TableCell>{section.sectionName || " –"}</TableCell>
+                                        <TableCell>{section.course?.courseName || " –"}</TableCell>
                                         <TableCell className="text-right">
                                              <DropdownMenu>
                                                   <DropdownMenuTrigger asChild>
@@ -107,21 +102,19 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(course, e)}
+                                                            onClick={(e) => handleEdit(section, e)}
                                                        >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                        </DropdownMenuItem>
-
                                                        <DropdownMenuItem
                                                             onClick={(e) =>
-                                                                 openDeleteDialog(course, e)
+                                                                 openDeleteDialog(section, e)
                                                             }
                                                        >
                                                             <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
-
                                                        <DropdownMenuSeparator />
                                                   </DropdownMenuContent>
                                              </DropdownMenu>
@@ -137,8 +130,8 @@ export function ClusterAndCourseTable({ courses, loading, onEdit, onDelete }: Co
                          <AlertDialogHeader>
                               <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                               <AlertDialogDescription>
-                                   Are you sure you want to delete the course{" "}
-                                   <strong>{deleteTarget?.courseName}</strong>? This action cannot
+                                   Are you sure you want to delete the section{" "}
+                                   <strong>{deleteTarget?.sectionName}</strong>? This action cannot
                                    be undone.
                               </AlertDialogDescription>
                          </AlertDialogHeader>

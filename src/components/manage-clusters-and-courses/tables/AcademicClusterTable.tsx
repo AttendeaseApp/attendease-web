@@ -1,23 +1,5 @@
 "use client"
-import React, { useState } from "react"
-import { Button } from "@/components/ui/button"
-import {
-     Table,
-     TableBody,
-     TableCell,
-     TableHead,
-     TableHeader,
-     TableRow,
-} from "@/components/ui/table"
-import {
-     DropdownMenu,
-     DropdownMenuTrigger,
-     DropdownMenuContent,
-     DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash, Pencil } from "lucide-react"
-import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
-import { ClusterSession } from "@/interface/cluster-and-course-interface"
+
 import {
      AlertDialog,
      AlertDialogAction,
@@ -28,26 +10,45 @@ import {
      AlertDialogHeader,
      AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import {
+     DropdownMenu,
+     DropdownMenuContent,
+     DropdownMenuItem,
+     DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+     Table,
+     TableBody,
+     TableCell,
+     TableHead,
+     TableHeader,
+     TableRow,
+} from "@/components/ui/table"
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
+import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import React, { useState } from "react"
 
-export function ClusterTable({
+export function AcademicClusterTable({
      clusters,
      loading,
-     onEdit,
+     onEditAction,
      onDeleteAction,
 }: {
-     clusters: ClusterSession[]
+     clusters: Cluster[]
      loading: boolean
-     onEdit: (cluster: ClusterSession) => void
-     onDeleteAction: (cluster: ClusterSession) => Promise<void>
+     onEditAction: (cluster: Cluster) => void
+     onDeleteAction: (cluster: Cluster) => Promise<void>
 }) {
-     const [deleteTarget, setDeleteTarget] = useState<ClusterSession | null>(null)
+     const [deleteTarget, setDeleteTarget] = useState<Cluster | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-     const handleEdit = (cluster: ClusterSession, e: React.MouseEvent) => {
+     const handleEdit = (cluster: Cluster, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
-          onEdit(cluster)
+          onEditAction(cluster)
      }
-     const openDeleteDialog = (cluster: ClusterSession, e: React.MouseEvent) => {
+     const openDeleteDialog = (cluster: Cluster, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           setDeleteTarget(cluster)
