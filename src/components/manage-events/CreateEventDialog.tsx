@@ -401,6 +401,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      }
 
      const handleClose = () => {
+          setError("")
           onClose()
      }
 
