@@ -73,7 +73,7 @@ export default function RetrieveAllUsers() {
           const searchWords = lowerSearch.split(" ").filter((w) => w)
 
           const filtered = users.filter((user) => {
-               if (selectedType !== "all" && user.userType !== selectedType) {
+               if (selectedType !== "all" && user.userType?.toLowerCase() !== selectedType) {
                     return false
                }
 
