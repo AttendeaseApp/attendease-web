@@ -38,6 +38,7 @@ import { format } from "date-fns"
 import { ChevronDownIcon, ChevronRight, Filter, Save, X } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import EditEventStatusDialog from "./EditEventStatusDialog"
+import { toast } from "sonner"
 
 interface EditEventDialogProps {
      event: EventSession
@@ -536,11 +537,11 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                }
 
                await updateEvent(event.eventId, updatedData)
-               showStatus("success", "Successfully updated the event.")
+               toast.success("Successfully updated the event.")
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
-               showStatus("error", "Failed to update the event. Please verify time and location")
+               toast.error("Failed to update the event. Please verify time and location" + error)
           } finally {
                setIsSubmitting(false)
           }

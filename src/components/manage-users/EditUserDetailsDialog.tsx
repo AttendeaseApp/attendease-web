@@ -10,13 +10,16 @@ import { updateUser } from "@/services/edit-user-details"
 import { getSections } from "@/services/user-management-services"
 import { useEffect, useState } from "react"
 import EditUserStatusDialog from "./EditUserStatusDialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
-     Select,
-     SelectContent,
-     SelectItem,
-     SelectTrigger,
-     SelectValue,
-} from "@/components/ui/select"
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { Check } from "lucide-react"
+import { toast } from "sonner"
 
 interface EditUserDetailsDialogProps {
      open: boolean
@@ -44,6 +47,8 @@ export default function EditUserDetailsDialog({
      const [sections, setSections] = useState<Section[]>([])
      const [loading, setLoading] = useState(false)
      const [error, setError] = useState("")
+     const [popoverOpen, setPopoverOpen] = useState(false)
+     const [hasChanges, setHasChanges] = useState(false)
 
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [updateStatus, setUpdateStatus] = useState<"success" | "error">("success")
@@ -78,7 +83,9 @@ export default function EditUserDetailsDialog({
                contactNumber: user.contactNumber ?? "",
                email: user.email ?? "",
                studentNumber: user.studentNumber ?? "",
+               sectionId: user.sectionId ?? "",
           }))
+          setHasChanges(false)
      }, [user])
 
      useEffect(() => {
@@ -93,6 +100,7 @@ export default function EditUserDetailsDialog({
      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const { name, value } = e.target
           setForm((prev) => ({ ...prev, [name]: value }))
+          setHasChanges(true)
      }
 
      const handleSubmit = async () => {
@@ -107,13 +115,13 @@ export default function EditUserDetailsDialog({
                }
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               showStatus("success", "Successfully updated.")
+               toast.success("Successfully updated.")
                onOpenChange(false)
           } catch (err) {
                const message =
                     err instanceof Error && err.message ? err.message : "Failed to update user"
                setError(message)
-               showStatus("error", message)
+               toast.error(message)
           } finally {
                setLoading(false)
           }
@@ -161,23 +169,46 @@ export default function EditUserDetailsDialog({
 
                               <div>
                                    <Label>Section</Label>
-                                   <Select
-                                        value={form.sectionId}
-                                        onValueChange={(value) =>
-                                             setForm((prev) => ({ ...prev, sectionId: value }))
-                                        }
-                                   >
-                                        <SelectTrigger className="w-full">
-                                             <SelectValue placeholder="Select Section" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                             {sections.map((s) => (
-                                                  <SelectItem key={s.id} value={String(s.id)}>
-                                                       {s.sectionName}
-                                                  </SelectItem>
-                                             ))}
-                                        </SelectContent>
-                                   </Select>
+                                   <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                                        <PopoverTrigger asChild>
+                                             <Button variant="outline" className="w-full justify-between">
+                                                  {
+                                                  form.sectionId
+                                                  ? sections.find((s) => String(s.id) === String(form.sectionId))?.sectionName
+                                                  : "Select Section"}
+                                             </Button>
+                                        </PopoverTrigger>
+                                        
+                                        <PopoverContent className="p-0">
+                                        <Command>
+                                             <CommandInput 
+                                                  placeholder="Search sections..."
+                                             />
+                                             <CommandList className="w-full max-h-32">
+                                                  <CommandEmpty>No section found.</CommandEmpty>
+                                                  
+                                                  {sections.map((s) => {
+                                                       const isSelected = String(form.sectionId) === String(s.id)
+
+                                                  return (
+                                                       <CommandItem
+                                                            key={s.id}
+                                                            value={s.sectionName}
+                                                            onSelect={() => {
+                                                                 setForm((prev) => ({ ...prev, sectionId: String(s.id) }))
+                                                                 setHasChanges(true)
+                                                                 setPopoverOpen(false)
+                                                            }}
+                                                       >
+                                                            {s.sectionName}
+                                                            {isSelected && <Check className="ml-auto"/>}
+                                                       </CommandItem>
+                                                  )
+                                                  })}
+                                             </CommandList>     
+                                        </Command>
+                                        </PopoverContent>
+                                   </Popover>
                               </div>
 
                               <div>
@@ -200,7 +231,7 @@ export default function EditUserDetailsDialog({
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
                                         Cancel
                                    </Button>
-                                   <Button onClick={handleSubmit} disabled={loading}>
+                                   <Button onClick={handleSubmit} disabled={loading || !hasChanges}>
                                         {loading ? "Updating..." : "Update"}
                                    </Button>
                               </div>

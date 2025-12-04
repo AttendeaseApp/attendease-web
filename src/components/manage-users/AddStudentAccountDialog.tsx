@@ -9,6 +9,16 @@ import { createStudentAccount, getSections } from "@/services/user-management-se
 import { StudentAccountPayload } from "@/interface/users/StudentInterface"
 import { Section } from "@/interface/academic/section/SectionInterface"
 import CreateUserStatusDialog from "./CreateUserStatusDialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { Check } from "lucide-react"
+import { toast } from "sonner"
 
 interface AddStudentAccountDialogProps {
      open: boolean
@@ -39,6 +49,10 @@ export default function AddStudentAccountDialog({
      const [importStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [importMessage, setCreateMessage] = useState("")
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [popoverOpen, setPopoverOpen] = useState(false)
+     const selectedSection = sections.find(
+     (s) => String(s.id) === form.section
+     );
 
      const showStatus = (status: "success" | "error", message: string) => {
           setCreateStatus(status)
@@ -93,7 +107,7 @@ export default function AddStudentAccountDialog({
           try {
                const { confirmPassword, ...payload } = form
                await createStudentAccount(payload)
-               showStatus("success", "Student account created successfully!")
+               toast.success("Student account created successfully!")
                setForm({
                     firstName: "",
                     lastName: "",
@@ -111,7 +125,7 @@ export default function AddStudentAccountDialog({
                const message =
                     err instanceof Error ? err.message : "Failed to create student account"
                setError(message)
-               showStatus("error", message)
+               toast.error(message)
                console.error(message)
           } finally {
                setLoading(false)
@@ -167,50 +181,42 @@ export default function AddStudentAccountDialog({
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                    <div>
                                         <Label>Section</Label>
-                                        <select
-                                             name="section"
-                                             value={form.section}
-                                             onChange={(e) =>
-                                                  setForm((prev) => ({
-                                                       ...prev,
-                                                       section: e.target.value,
-                                                  }))
-                                             }
-                                             className="w-full border rounded px-2 py-1"
-                                        >
-                                             <option value="">Select Section</option>
-                                             {sections.map((sections) => (
-                                                  <option
-                                                       key={sections.id}
-                                                       value={sections.sectionName}
-                                                  >
-                                                       {sections.sectionName}
-                                                  </option>
-                                             ))}
-                                        </select>
+                                        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                                        <PopoverTrigger asChild>
+                                             <Button variant="outline" className="w-full justify-between">
+                                                  {selectedSection?.sectionName ?? "Select Section"}
+                                             </Button>
+                                        </PopoverTrigger>
+                                        
+                                        <PopoverContent className="p-0">
+                                        <Command>
+                                             <CommandInput 
+                                                  placeholder="Search sections..."
+                                             />
+                                             <CommandList className="w-full max-h-32">
+                                                  <CommandEmpty>No section found.</CommandEmpty>
+                                                  
+                                                  {sections.map((s) => {
+                                                       const isSelected = form.section === String(s.id)
+                                                  return (
+                                                       <CommandItem
+                                                            key={s.id}
+                                                            value={s.sectionName}
+                                                            onSelect={() => {
+                                                                 setForm((prev) => ({ ...prev, section: String(s.id) }))
+                                                                 setPopoverOpen(false)
+                                                            }}
+                                                       >
+                                                            {s.sectionName}
+                                                            {isSelected && <Check className="ml-auto"/>}
+                                                       </CommandItem>
+                                                  )
+                                                  })}
+                                             </CommandList>     
+                                        </Command>
+                                        </PopoverContent>
+                                        </Popover>
                                    </div>
-
-                                   {/*     <div>
-                                   <Label>Year Level</Label>
-                                   <select
-                                        name="yearLevel"
-                                        value={form.yearLevel}
-                                        onChange={(e) =>
-                                             setForm((prev) => ({
-                                                  ...prev,
-                                                  yearLevel: e.target.value,
-                                             }))
-                                        }
-                                        className="w-full border rounded px-2 py-1"
-                                   >
-                                        <option value="">Select Year Level</option>
-                                        {yearLevels.map((yl) => (
-                                             <option key={yl} value={yl}>
-                                                  {yl}
-                                             </option>
-                                        ))}
-                                   </select>
-                              </div> */}
                               </div>
 
                               <div>
@@ -270,7 +276,7 @@ export default function AddStudentAccountDialog({
 
                               {error && <p className="text-red-500">{error}</p>}
 
-                              <div className="flex justify-end">
+                              <div className="flex justify-end gap-2">
                                    <Button
                                         variant="outline"
                                         onClick={() => {
@@ -279,7 +285,6 @@ export default function AddStudentAccountDialog({
                                                   lastName: "",
                                                   studentNumber: "",
                                                   section: "",
-                                                  //yearLevel: "",
                                                   contactNumber: "",
                                                   email: "",
                                                   address: "",
