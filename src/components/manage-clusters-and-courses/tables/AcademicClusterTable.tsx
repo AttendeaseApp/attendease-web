@@ -41,17 +41,14 @@ export function AcademicClusterTable({
      onEditAction: (cluster: Cluster) => void
      onDeleteAction: (cluster: Cluster) => Promise<void>
 }) {
-     
-     const sortedClusters =[...clusters].sort((a, b) => {
-
-           const nameA = `${a.clusterName} ${a.clusterName}`.toLowerCase()
+     const sortedClusters = [...clusters].sort((a, b) => {
+          const nameA = `${a.clusterName} ${a.clusterName}`.toLowerCase()
           const nameB = `${b.clusterName} ${b.clusterName}`.toLowerCase()
 
           if (nameA < nameB) return -1
           if (nameA > nameB) return 1
           return 0
      })
-
 
      const [deleteTarget, setDeleteTarget] = useState<Cluster | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -109,7 +106,9 @@ export function AcademicClusterTable({
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(sortedClusters, e)}
+                                                            onClick={(e) =>
+                                                                 handleEdit(sortedClusters, e)
+                                                            }
                                                        >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit

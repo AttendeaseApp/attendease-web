@@ -38,10 +38,8 @@ interface SectionProps {
 }
 
 export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: SectionProps) {
-
-         const sortedSections =[...sections].sort((a, b) => {
-
-           const nameA = `${a.sectionName} ${a.sectionName}`.toLowerCase()
+     const sortedSections = [...sections].sort((a, b) => {
+          const nameA = `${a.sectionName} ${a.sectionName}`.toLowerCase()
           const nameB = `${b.sectionName} ${b.sectionName}`.toLowerCase()
 
           if (nameA < nameB) return -1
@@ -100,7 +98,9 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                               sortedSections.map((sortedSections) => (
                                    <TableRow key={`${sortedSections.id || "no-course"}`}>
                                         <TableCell>{sortedSections.sectionName || " –"}</TableCell>
-                                        <TableCell>{sortedSections.course?.courseName || " –"}</TableCell>
+                                        <TableCell>
+                                             {sortedSections.course?.courseName || " –"}
+                                        </TableCell>
                                         <TableCell className="text-right">
                                              <DropdownMenu>
                                                   <DropdownMenuTrigger asChild>
@@ -113,7 +113,9 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(sortedSections, e)}
+                                                            onClick={(e) =>
+                                                                 handleEdit(sortedSections, e)
+                                                            }
                                                        >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
