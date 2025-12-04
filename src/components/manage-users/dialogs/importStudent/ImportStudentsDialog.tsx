@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import UploadDropPart from "@/components/manage-users/dialogs/importStudent/UploadDropPart"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import UploadDropPart from "@/components/manage-users/UploadDropPart"
-import { uploadStudentCSV } from "@/services/student-import-services"
-import ImportStatusDialog from "@/components/manage-users/ImportStatusDialog"
+import { uploadStudentCSV } from "@/services/api/user/management/import/student-import-services"
+import { useState } from "react"
+import { toast } from "sonner"
 
 interface ImportStudentsDialogProps {
      open: boolean
@@ -15,15 +15,6 @@ interface ImportStudentsDialogProps {
 export default function ImportStudentsDialog({ open, onOpenChange }: ImportStudentsDialogProps) {
      const [selectedFile, setSelectedFile] = useState<File | null>(null)
      const [loading, setLoading] = useState(false)
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [importStatus, setImportStatus] = useState<"success" | "error">("success")
-     const [importMessage, setImportMessage] = useState("")
-
-     const showStatus = (status: "success" | "error", message: string) => {
-          setImportStatus(status)
-          setImportMessage(message)
-          setStatusDialogOpen(true)
-     }
 
      const handleUpload = async () => {
           if (!selectedFile) return
@@ -31,15 +22,31 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
           try {
                setLoading(true)
                const result = await uploadStudentCSV(selectedFile)
-               setSelectedFile(result)
 
-               showStatus("success", "CSV uploaded successfully.")
+               const jsonResult = typeof result === "string" ? JSON.parse(result) : result
+
+               let message = jsonResult.message || "Upload completed."
+               if (
+                    jsonResult.details &&
+                    Array.isArray(jsonResult.details) &&
+                    jsonResult.details.length > 0
+               ) {
+                    message += "\n\nErrors per row:\n"
+                    jsonResult.details.forEach((item: { row: number; errors: string[] }) => {
+                         message += `Row ${item.row}: ${item.errors.join(", ")}\n`
+                    })
+               }
+
+               toast.info(message)
+
+               setSelectedFile(null)
                onOpenChange(false)
           } catch (err) {
-               showStatus(
-                    "error",
-                    "Failed to upload CSV. File contains a duplicate student. " + err
-               )
+               const message =
+                    err instanceof Error && err.message
+                         ? err.message
+                         : "Error occurred on uploading file"
+               toast.error(`Error: ${message}`)
           } finally {
                setLoading(false)
           }
@@ -51,7 +58,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                     <DialogContent className="sm:max-w-lg p-8">
                          <DialogHeader>
                               <DialogTitle>Import Student Accounts</DialogTitle>
-                              <p>Upload important students details via CSV or Excel</p>
+                              <p>Upload important students details via CSV</p>
                          </DialogHeader>
 
                          <form className="space-y-6">
@@ -64,7 +71,6 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                                    </p>
                               )}
 
-                              {/* cancl and upload button */}
                               <div className="flex items-center justify-end pt-2 gap-1">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
                                         Cancel
@@ -81,13 +87,6 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                          </form>
                     </DialogContent>
                </Dialog>
-
-               <ImportStatusDialog
-                    open={statusDialogOpen}
-                    status={importStatus}
-                    message={importMessage}
-                    onClose={() => setStatusDialogOpen(false)}
-               />
           </>
      )
 }

@@ -1,12 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { ChevronDown, Search } from "lucide-react"
-import { UserStudentResponse } from "@/interface/UserStudent"
-import { getAllUsers, deleteStudentAccountBySection } from "@/services/user-management-services"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import UsersTable from "@/components/manage-users/UsersTable"
 import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
@@ -16,13 +9,32 @@ import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
 import EditUserDetailsDialog from "@/components/manage-users/EditUserDetailsDialog"
 import AddOSAAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
 import AddStudentAccountDialog from "@/components/manage-users/AddStudentAccountDialog"
+import CreateOsaAccountDialog from "@/components/manage-users/dialogs/createUser/CreateOsaAccountDialog"
+import CreateStudentAccountDialog from "@/components/manage-users/dialogs/createUser/CreateStudentAccountDialog"
+import EditUserDetailsDialog from "@/components/manage-users/dialogs/editUser/EditOsaDetailsDialog"
+import EditStudentDetailsDialog from "@/components/manage-users/dialogs/editUser/EditStudentDetailsDialog"
+import ImportStudentsDialog from "@/components/manage-users/dialogs/importStudent/ImportStudentsDialog"
+import MoreSettingsDialog from "@/components/manage-users/dialogs/settings/MoreSettingsDialog"
+import ManagingUsersTable from "@/components/manage-users/table/ManagingUsersTable"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
      DropdownMenu,
      DropdownMenuContent,
      DropdownMenuItem,
      DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
+import { UserStudentResponse } from "@/interface/UserStudent"
+import {
+     deleteStudentAccountBySection,
+     getAllUsers,
+} from "@/services/api/user/management/user-management-services"
+import { ChevronDown, Search } from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export default function RetrieveAllUsers() {
      const [users, setUsers] = useState<UserStudentResponse[]>([])
@@ -47,17 +59,38 @@ export default function RetrieveAllUsers() {
      const [deleting, setDeleting] = useState(false)
      const [deleteResult, setDeleteResult] = useState<{ success: boolean; message: string } | null>(
           null
+     const [currentPage, setCurrentPage] = useState(1)
+     const [dialogState, setDialogState] = useState({
+          moreSettings: false,
+          importStudents: false,
+          addOSA: false,
+          addStudent: false,
+          deleteModal: false,
+          confirmDelete: null as string | null,
+          deleteResult: null as { success: boolean; message: string } | null,
+          updateUser: false,
+          updateStudent: false,
+     })
+     const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
+     const [sections, setSections] = useState<string[]>([])
+     const [deleting, setDeleting] = useState(false)
+
+     const itemsPerPage = 10
+     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+     const paginatedUsers = filteredUsers.slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
      )
 
      const loadUsers = async () => {
           try {
                setLoading(true)
-               setError(null)
                const data = await getAllUsers()
                setUsers(data)
           } catch (err) {
-               setError(err instanceof Error ? err.message : "Failed to load users")
-               console.error("Error loading users:", err)
+               const message = err instanceof Error ? err.message : "Failed to load users"
+               console.error(message)
+               toast.error(message)
           } finally {
                setLoading(false)
           }
@@ -90,6 +123,12 @@ export default function RetrieveAllUsers() {
                if (selectedSection && userSection !== selectedSection) return false
                if (selectedCourse && userCourse !== selectedCourse) return false
 
+     useEffect(() => {
+          const lowerSearch = searchTerm.trim().toLowerCase()
+          const searchWords = lowerSearch.split(" ").filter(Boolean)
+          const filtered = users.filter((user) => {
+               if (selectedType !== "all" && user.userType !== selectedType.toUpperCase())
+                    return false
                const fields = [
                     user.firstName,
                     user.lastName,
@@ -101,22 +140,76 @@ export default function RetrieveAllUsers() {
                     user.contactNumber,
                     user.accountStatus,
                ]
-
                return searchWords.every((sw) =>
                     fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
                )
           })
-
           setFilteredUsers(filtered)
      }, [searchTerm, selectedType, selectedSection, selectedCourse, users])
+          setCurrentPage(1)
+     }, [searchTerm, selectedType, users])
 
-     const handleUpdateClick = (user: EditUserDetailsPayload) => {
+     useEffect(() => {
+          const uniqueSections = Array.from(
+               new Set(users.map((u) => u.section).filter((s): s is string => !!s))
+          )
+          setSections(uniqueSections)
+     }, [users])
+
+     const openDialog = (dialog: keyof typeof dialogState) =>
+          setDialogState((prev) => ({ ...prev, [dialog]: true }))
+
+     const closeDialog = (dialog: keyof typeof dialogState) =>
+          setDialogState((prev) => ({ ...prev, [dialog]: false }))
+
+     const openUserUpdate = (user: UpdateUserDetailsInterface) => {
           setCurrentUser(user)
-          setOpenUpdateDialog(true)
+          setDialogState((prev) => ({ ...prev, updateUser: true, updateStudent: false }))
      }
-     const handleUserUpdated = (updatedUser: EditUserDetailsPayload) => {
+
+     const openStudentUpdate = (user: UpdateUserDetailsInterface) => {
+          setCurrentUser(user)
+          setDialogState((prev) => ({ ...prev, updateStudent: true, updateUser: false }))
+     }
+
+     const handleUserUpdated = () => {
           loadUsers()
-          setOpenUpdateDialog(false)
+          setDialogState((prev) => ({ ...prev, updateUser: false, updateStudent: false }))
+          setCurrentUser(null)
+     }
+
+     const handleDeleteSection = async () => {
+          if (!dialogState.confirmDelete) return
+          try {
+               setDeleting(true)
+               await deleteStudentAccountBySection(dialogState.confirmDelete)
+               loadUsers()
+               setDialogState((prev) => ({
+                    ...prev,
+                    deleteResult: {
+                         success: true,
+                         message: `All users in section "${prev.confirmDelete}" deleted successfully.`,
+                    },
+                    confirmDelete: null,
+                    deleteModal: false,
+                    moreSettings: false,
+               }))
+          } catch (err) {
+               setDialogState((prev) => ({
+                    ...prev,
+                    deleteResult: {
+                         success: false,
+                         message: `Failed to delete users in section "${prev.confirmDelete}": ${
+                              err instanceof Error ? err.message : "Unknown error"
+                         }`,
+                    },
+                    confirmDelete: null,
+                    deleteModal: false,
+                    moreSettings: false,
+               }))
+          } finally {
+               setDeleting(false)
+          }
      }
 
      return (
@@ -132,28 +225,19 @@ export default function RetrieveAllUsers() {
                                    <DropdownMenuTrigger asChild>
                                         <Button>Manually Add Account ▾</Button>
                                    </DropdownMenuTrigger>
-
                                    <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => setOpenAddOSA(true)}>
+                                        <DropdownMenuItem onClick={() => openDialog("addOSA")}>
                                              OSA Account
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => setOpenAddStudent(true)}>
+                                        <DropdownMenuItem onClick={() => openDialog("addStudent")}>
                                              Student Account
                                         </DropdownMenuItem>
                                    </DropdownMenuContent>
                               </DropdownMenu>
-
-                              <Button
-                                   className="sm:w-auto"
-                                   onClick={() => setOpenImportStudents(true)}
-                              >
+                              <Button onClick={() => openDialog("importStudents")}>
                                    Import Student Accounts
                               </Button>
-                              <Button
-                                   variant="outline"
-                                   className="sm:w-auto"
-                                   onClick={() => setOpenMoreSettings(true)}
-                              >
+                              <Button variant="outline" onClick={() => openDialog("moreSettings")}>
                                    More Settings <ChevronDown className="ml-2 h-4 w-4" />
                               </Button>
                          </div>
@@ -226,30 +310,33 @@ export default function RetrieveAllUsers() {
                               </DropdownMenuContent>
                          </DropdownMenu>
                     </div>
-
-                    <UsersTable
-                         users={filteredUsers}
+                    <ManagingUsersTable
+                         users={paginatedUsers}
                          loading={loading}
-                         onUpdate={handleUpdateClick}
+                         onUpdateUser={openUserUpdate}
+                         onUpdateStudent={openStudentUpdate}
+                         currentPage={currentPage}
+                         totalPages={totalPages}
+                         onPageChange={setCurrentPage}
                     />
-
-                    {error && (
-                         <div className="w-full max-w-6xl mx-auto mt-4 text-red-500">{error}</div>
-                    )}
                </div>
 
                <MoreSettingsDialog
-                    open={openMoreSettings}
-                    onOpenChange={setOpenMoreSettings}
-                    setOpenDeleteModal={setOpenDeleteModal}
+                    open={dialogState.moreSettings}
+                    onOpenChange={(val) =>
+                         setDialogState((prev) => ({ ...prev, moreSettings: val }))
+                    }
+                    setOpenDeleteModal={() => openDialog("deleteModal")}
                />
 
-               <Dialog open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
+               <Dialog
+                    open={dialogState.deleteModal}
+                    onOpenChange={() => closeDialog("deleteModal")}
+               >
                     <DialogContent className="max-w-md w-full">
                          <DialogHeader>
                               <DialogTitle>Delete Account by Section</DialogTitle>
                          </DialogHeader>
-
                          <div className="flex flex-col gap-2 max-h-64 overflow-y-auto mt-4">
                               {sections.length === 0 && <p>No sections available.</p>}
                               {sections.map((sec) => (
@@ -260,16 +347,21 @@ export default function RetrieveAllUsers() {
                                         onClick={() => {
                                              setConfirmDeleteSection(sec)
                                         }}
+                                        onClick={() =>
+                                             setDialogState((prev) => ({
+                                                  ...prev,
+                                                  confirmDelete: sec,
+                                             }))
+                                        }
                                    >
                                         {sec}
                                    </Button>
                               ))}
                          </div>
-
                          <Button
                               variant="ghost"
                               className="mt-4 w-full"
-                              onClick={() => setOpenDeleteModal(false)}
+                              onClick={() => closeDialog("deleteModal")}
                          >
                               Cancel
                          </Button>
@@ -277,24 +369,26 @@ export default function RetrieveAllUsers() {
                </Dialog>
 
                <Dialog
-                    open={!!confirmDeleteSection}
-                    onOpenChange={() => setConfirmDeleteSection(null)}
+                    open={!!dialogState.confirmDelete}
+                    onOpenChange={() =>
+                         setDialogState((prev) => ({ ...prev, confirmDelete: null }))
+                    }
                >
                     <DialogContent className="max-w-md w-full">
                          <DialogHeader>
                               <DialogTitle>Confirm Deletion</DialogTitle>
                          </DialogHeader>
-
                          <p className="mt-2 text-sm text-gray-600">
                               Are you sure you want to delete all users in section{" "}
-                              <span className="font-semibold">{confirmDeleteSection}</span>? This
-                              action cannot be undone.
+                              <span className="font-semibold">{dialogState.confirmDelete}</span>?
+                              This action cannot be undone.
                          </p>
-
                          <div className="flex justify-end gap-2 mt-4">
                               <Button
                                    variant="outline"
-                                   onClick={() => setConfirmDeleteSection(null)}
+                                   onClick={() =>
+                                        setDialogState((prev) => ({ ...prev, confirmDelete: null }))
+                                   }
                                    disabled={deleting}
                               >
                                    Cancel
@@ -331,6 +425,7 @@ export default function RetrieveAllUsers() {
                                              setDeleting(false)
                                         }
                                    }}
+                                   onClick={handleDeleteSection}
                                    disabled={deleting}
                               >
                                    {deleting ? "Deleting..." : "Delete"}
@@ -340,16 +435,19 @@ export default function RetrieveAllUsers() {
                </Dialog>
 
                <Dialog
-                    open={!!deleteResult}
-                    onOpenChange={() => {
-                         setDeleteResult(null)
-                         setConfirmDeleteSection(null)
-                    }}
+                    open={!!dialogState.deleteResult}
+                    onOpenChange={() =>
+                         setDialogState((prev) => ({
+                              ...prev,
+                              deleteResult: null,
+                              confirmDelete: null,
+                         }))
+                    }
                >
                     <DialogContent className="max-w-sm w-full">
                          <DialogHeader>
                               <DialogTitle>
-                                   {deleteResult?.success ? "Success" : "Failed"}
+                                   {dialogState.deleteResult?.success ? "Success" : "Failed"}
                               </DialogTitle>
                          </DialogHeader>
 
@@ -361,38 +459,49 @@ export default function RetrieveAllUsers() {
 
                          <div className="flex justify-end mt-4">
                               <Button
-                                   onClick={() => {
-                                        setDeleteResult(null)
-                                        setConfirmDeleteSection(null)
-                                        setOpenDeleteModal(false)
-                                        setOpenMoreSettings(false)
-                                   }}
+                                   onClick={() =>
+                                        setDialogState((prev) => ({
+                                             ...prev,
+                                             deleteResult: null,
+                                             confirmDelete: null,
+                                             deleteModal: false,
+                                             moreSettings: false,
+                                        }))
+                                   }
                               >
                                    OK
                               </Button>
                          </div>
                     </DialogContent>
                </Dialog>
-
                <ImportStudentsDialog
-                    open={openImportStudents}
-                    onOpenChange={setOpenImportStudents}
+                    open={dialogState.importStudents}
+                    onOpenChange={(val) =>
+                         setDialogState((prev) => ({ ...prev, importStudents: val }))
+                    }
                />
-
                <EditUserDetailsDialog
-                    open={openUpdateDialog}
-                    onOpenChange={setOpenUpdateDialog}
+                    open={dialogState.updateUser}
+                    onOpenChange={(val) => setDialogState((prev) => ({ ...prev, updateUser: val }))}
                     user={currentUser}
                     onUpdated={handleUserUpdated}
                />
-               <AddOSAAccountDialog
-                    open={openAddOSA}
-                    onOpenChange={setOpenAddOSA}
+               <EditStudentDetailsDialog
+                    open={dialogState.updateStudent}
+                    onOpenChange={(val) =>
+                         setDialogState((prev) => ({ ...prev, updateStudent: val }))
+                    }
+                    user={currentUser}
+                    onUpdated={handleUserUpdated}
+               />
+               <CreateOsaAccountDialog
+                    open={dialogState.addOSA}
+                    onOpenChange={(val) => setDialogState((prev) => ({ ...prev, addOSA: val }))}
                     onAdd={loadUsers}
                />
-               <AddStudentAccountDialog
-                    open={openAddStudent}
-                    onOpenChange={setOpenAddStudent}
+               <CreateStudentAccountDialog
+                    open={dialogState.addStudent}
+                    onOpenChange={(val) => setDialogState((prev) => ({ ...prev, addStudent: val }))}
                     onAdd={loadUsers}
                />
           </ProtectedLayout>
