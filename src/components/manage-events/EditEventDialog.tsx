@@ -1,10 +1,19 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+     Dialog,
+     DialogContent,
+     DialogDescription,
+     DialogFooter,
+     DialogHeader,
+     DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
      Select,
      SelectContent,
@@ -12,30 +21,22 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import {
-     Dialog,
-     DialogContent,
-     DialogDescription,
-     DialogHeader,
-     DialogTitle,
-     DialogFooter,
-} from "@/components/ui/dialog"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { ChevronDownIcon, Save, X, Filter, ChevronRight } from "lucide-react"
-import { getAllLocations } from "@/services/locations-service"
+import { Textarea } from "@/components/ui/textarea"
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
+import { Course } from "@/interface/academic/course/CourseInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
+import { EligibilityCriteria, EventSession, EventStatus } from "@/interface/event/event-interface"
 import { EventLocation } from "@/interface/location-interface"
-import { Checkbox } from "@/components/ui/checkbox"
-import { EventSession, EventStatus, EligibilityCriteria } from "@/interface/event/event-interface"
-import { updateEvent } from "@/services/event-sessions"
 import {
      getAllClusters,
      getAllCourses,
      getAllSections,
 } from "@/services/cluster-and-course-sessions"
-import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
-import { Section } from "@/interface/students/SectionInterface"
+import { updateEvent } from "@/services/event-sessions"
+import { getAllLocations } from "@/services/locations-service"
+import { format } from "date-fns"
+import { ChevronDownIcon, ChevronRight, Filter, Save, X } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
 import EditEventStatusDialog from "./EditEventStatusDialog"
 
 interface EditEventDialogProps {
@@ -105,8 +106,8 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
 
           loadLocations()
      }, [])
-     const [clusters, setClusters] = useState<ClusterSession[]>([])
-     const [courses, setCourses] = useState<CourseSession[]>([])
+     const [clusters, setClusters] = useState<Cluster[]>([])
+     const [courses, setCourses] = useState<Course[]>([])
      const [sections, setSections] = useState<Section[]>([])
      const [locations, setLocations] = useState<EventLocation[]>([])
      const [loadingHierarchy, setLoadingHierarchy] = useState(true)
@@ -209,24 +210,24 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
 
      useEffect(() => {
           if (isOpen && event && clusters.length > 0 && courses.length > 0 && sections.length > 0) {
-               const formatToLocal = (dateStr?: string): string => {
-                    if (!dateStr) return ""
-                    try {
-                         const parsedDate = new Date(dateStr.replace(" ", "T"))
-                         if (isNaN(parsedDate.getTime())) {
-                              return ""
-                         }
-                         const year = parsedDate.getFullYear()
-                         const month = String(parsedDate.getMonth() + 1).padStart(2, "0")
-                         const day = String(parsedDate.getDate()).padStart(2, "0")
-                         const hours = String(parsedDate.getHours()).padStart(2, "0")
-                         const minutes = String(parsedDate.getMinutes()).padStart(2, "0")
-                         return `${year}-${month}-${day}T${hours}:${minutes}`
-                    } catch (err) {
-                         console.error("Date parsing error:", err)
-                         return ""
-                    }
-               }
+               // const formatToLocal = (dateStr?: string): string => {
+               //      if (!dateStr) return ""
+               //      try {
+               //           const parsedDate = new Date(dateStr.replace(" ", "T"))
+               //           if (isNaN(parsedDate.getTime())) {
+               //                return ""
+               //           }
+               //           const year = parsedDate.getFullYear()
+               //           const month = String(parsedDate.getMonth() + 1).padStart(2, "0")
+               //           const day = String(parsedDate.getDate()).padStart(2, "0")
+               //           const hours = String(parsedDate.getHours()).padStart(2, "0")
+               //           const minutes = String(parsedDate.getMinutes()).padStart(2, "0")
+               //           return `${year}-${month}-${day}T${hours}:${minutes}`
+               //      } catch (err) {
+               //           console.error("Date parsing error:", err)
+               //           return ""
+               //      }
+               // }
 
                setFormData({
                     ...formData,
@@ -497,9 +498,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           if (!validateForm()) return
           setIsSubmitting(true)
           try {
-               const parseDateTime = (dateTimeStr: string): Date => {
-                    return new Date(dateTimeStr)
-               }
+               // const parseDateTime = (dateTimeStr: string): Date => {
+               //      return new Date(dateTimeStr)
+               // }
 
                let eligibleStudents: EligibilityCriteria | undefined
                if (eligibility.isDirty || !eligibility.allStudents) {
@@ -1176,7 +1177,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                                                           className="text-sm"
                                                                                      >
                                                                                           {
-                                                                                               section.name
+                                                                                               section.sectionName
                                                                                           }
                                                                                      </Label>
                                                                                 </div>

@@ -34,10 +34,10 @@ import {
      getAllCourses,
      getAllSections,
 } from "@/services/cluster-and-course-sessions"
-import { ClusterSession, CourseSession } from "@/interface/cluster-and-course-interface"
-import { Section } from "@/interface/students/SectionInterface"
-import CreateEventStatusDialog from "@/components/manage-events/CreateEventStatusDialog"
 import CreateLocationDialog from "../manage-locations/CreateLocationDialog"
+import { Course } from "@/interface/academic/course/CourseInterface"
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
 import { toast } from "sonner"
 
 interface CreateEventDialogProps {
@@ -80,8 +80,8 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [error, setError] = useState<string>("")
      const [isSubmitting, setIsSubmitting] = useState(false)
      const [locations, setLocations] = useState<EventLocation[]>([])
-     const [clusters, setClusters] = useState<ClusterSession[]>([])
-     const [courses, setCourses] = useState<CourseSession[]>([])
+     const [clusters, setClusters] = useState<Cluster[]>([])
+     const [courses, setCourses] = useState<Course[]>([])
      const [sections, setSections] = useState<Section[]>([])
      const [loadingLocations, setLoadingLocations] = useState(true)
      const [loadingHierarchy, setLoadingHierarchy] = useState(true)
@@ -415,6 +415,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      }
 
      const handleClose = () => {
+          setError("")
           onClose()
      }
 
@@ -1031,7 +1032,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                                                           className="text-sm"
                                                                                      >
                                                                                           {
-                                                                                               section.name
+                                                                                               section.sectionName
                                                                                           }
                                                                                      </Label>
                                                                                 </div>
