@@ -268,7 +268,15 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                setHasChanges(false)
                setErrors({})
           }
-     }, [isOpen, event, clusters.length, courses.length, sections.length, cleanEligibility, formData])
+     }, [
+          isOpen,
+          event,
+          clusters.length,
+          courses.length,
+          sections.length,
+          cleanEligibility,
+          formData,
+     ])
 
      const validateForm = () => {
           const newErrors: Record<string, string> = {}
