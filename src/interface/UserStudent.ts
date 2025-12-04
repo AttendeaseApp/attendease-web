@@ -12,5 +12,6 @@ export interface UserStudentResponse {
      studentId: number
      studentNumber: string
      section?: string
+     sectionId: string
      course?: string
 }

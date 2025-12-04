@@ -37,6 +37,15 @@ interface CourseTableProps {
 }
 
 export function AcademicCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
+     const sortedCourses = [...courses].sort((a, b) => {
+          const nameA = `${a.courseName} ${a.courseName}`.toLowerCase()
+          const nameB = `${b.courseName} ${b.courseName}`.toLowerCase()
+
+          if (nameA < nameB) return -1
+          if (nameA > nameB) return 1
+          return 0
+     })
+
      const [deleteTarget, setDeleteTarget] = useState<Course | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
      const handleEdit = (course: Course, e: React.MouseEvent) => {
@@ -86,10 +95,12 @@ export function AcademicCourseTable({ courses, loading, onEdit, onDelete }: Cour
                                    </TableCell>
                               </TableRow>
                          ) : (
-                              courses.map((course) => (
-                                   <TableRow key={`${course.id || "no-course"}`}>
-                                        <TableCell>{course.courseName || " –"}</TableCell>
-                                        <TableCell>{course.cluster?.clusterName || " –"}</TableCell>
+                              sortedCourses.map((sortedCourses) => (
+                                   <TableRow key={`${sortedCourses.id || "no-course"}`}>
+                                        <TableCell>{sortedCourses.courseName || " –"}</TableCell>
+                                        <TableCell>
+                                             {sortedCourses.cluster?.clusterName || " –"}
+                                        </TableCell>
                                         <TableCell className="text-right">
                                              <DropdownMenu>
                                                   <DropdownMenuTrigger asChild>
@@ -102,7 +113,9 @@ export function AcademicCourseTable({ courses, loading, onEdit, onDelete }: Cour
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        <DropdownMenuItem
-                                                            onClick={(e) => handleEdit(course, e)}
+                                                            onClick={(e) =>
+                                                                 handleEdit(sortedCourses, e)
+                                                            }
                                                        >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
@@ -110,7 +123,7 @@ export function AcademicCourseTable({ courses, loading, onEdit, onDelete }: Cour
 
                                                        <DropdownMenuItem
                                                             onClick={(e) =>
-                                                                 openDeleteDialog(course, e)
+                                                                 openDeleteDialog(sortedCourses, e)
                                                             }
                                                        >
                                                             <Trash className="mr-2 h-4 w-4" />

@@ -129,12 +129,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
      const [editStatus, setEditStatus] = useState<"success" | "error">("success")
      const [editMessage, setEditMessage] = useState("")
 
-     const showStatus = (status: "success" | "error", message: string) => {
-          setEditStatus(status)
-          setEditMessage(message)
-          setStatusDialogOpen(true)
-     }
-
      const getCoursesUnderCluster = useCallback(
           (clId: string) => {
                return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
@@ -285,7 +279,15 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                setHasChanges(false)
                setErrors({})
           }
-     }, [isOpen, event, clusters.length, courses.length, sections.length, cleanEligibility])
+     }, [
+          isOpen,
+          event,
+          clusters.length,
+          courses.length,
+          sections.length,
+          cleanEligibility,
+          formData,
+     ])
 
      const validateForm = () => {
           const newErrors: Record<string, string> = {}
@@ -593,11 +595,11 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                }
 
                await updateEvent(event.eventId, updatedData)
-               showStatus("success", "Successfully updated the event.")
+               toast.success("Successfully updated the event.")
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
-               showStatus("error", "Failed to update the event. Please verify time and location")
+               toast.error("Failed to update the event. Please verify time and location" + error)
           } finally {
                setIsSubmitting(false)
           }
