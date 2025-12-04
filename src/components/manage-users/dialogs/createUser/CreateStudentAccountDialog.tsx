@@ -5,7 +5,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createStudentAccount, getSections } from "@/services/api/user/management/user-management-services"
+import {
+     createStudentAccount,
+     getSections,
+} from "@/services/api/user/management/user-management-services"
 import { StudentRegistrationInterface } from "@/interface/management/registration/StudentRegistrationInterface"
 import { Section } from "@/interface/academic/section/SectionInterface"
 import { toast } from "sonner"

@@ -19,7 +19,10 @@ import { Input } from "@/components/ui/input"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
 import { UserStudentResponse } from "@/interface/UserStudent"
-import { deleteStudentAccountBySection, getAllUsers } from "@/services/api/user/management/user-management-services"
+import {
+     deleteStudentAccountBySection,
+     getAllUsers,
+} from "@/services/api/user/management/user-management-services"
 import { ChevronDown, Search } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
