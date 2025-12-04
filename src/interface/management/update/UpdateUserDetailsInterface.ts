@@ -7,4 +7,5 @@ export interface UpdateUserDetailsInterface {
      email?: string
      studentNumber?: string
      sectionId?: string
+     section?: string
 }

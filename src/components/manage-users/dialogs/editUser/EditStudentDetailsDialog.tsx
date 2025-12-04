@@ -20,19 +20,19 @@ import { getSections } from "@/services/api/user/management/user-management-serv
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-interface EditUserDetailsDialogProps {
+interface EditStudentDetailsDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
      user: UpdateUserDetailsInterface | null
      onUpdated: (updatedUser: UpdateUserDetailsInterface) => void
 }
 
-export default function EditUserDetailsDialog({
+export default function EditStudentDetailsDialog({
      open,
      onOpenChange,
      user,
      onUpdated,
-}: EditUserDetailsDialogProps) {
+}: EditStudentDetailsDialogProps) {
      const [form, setForm] = useState<UpdateUserDetailsInterface>({
           userId: "",
           firstName: "",
@@ -42,10 +42,8 @@ export default function EditUserDetailsDialog({
           studentNumber: "",
           sectionId: "",
      })
-
      const [sections, setSections] = useState<Section[]>([])
      const [loading, setLoading] = useState(false)
-     const [error, setError] = useState("")
      const [popoverOpen, setPopoverOpen] = useState(false)
      const [hasChanges, setHasChanges] = useState(false)
 
@@ -94,7 +92,6 @@ export default function EditUserDetailsDialog({
 
      const handleSubmit = async () => {
           setLoading(true)
-
           try {
                const { userId, sectionId, ...rest } = form
                const body: Omit<UpdateUserDetailsInterface, "userId"> = {
@@ -103,11 +100,11 @@ export default function EditUserDetailsDialog({
                }
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               toast.success("Sucessfully updated user.")
+               toast.success("Successfully updated student.")
                onOpenChange(false)
           } catch (err) {
                const message =
-                    err instanceof Error && err.message ? err.message : "Failed to update user"
+                    err instanceof Error && err.message ? err.message : "Failed to update student"
                toast.error(message)
           } finally {
                setLoading(false)
@@ -121,10 +118,9 @@ export default function EditUserDetailsDialog({
                <Dialog open={open} onOpenChange={onOpenChange}>
                     <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-8">
                          <DialogHeader>
-                              <DialogTitle>Update User</DialogTitle>
-                              <p className="text-sm text-gray-500">Edit user details below.</p>
+                              <DialogTitle>Update Student</DialogTitle>
+                              <p className="text-sm text-gray-500">Edit student details below.</p>
                          </DialogHeader>
-
                          <div className="space-y-4 mt-4">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                    <div>
@@ -144,7 +140,6 @@ export default function EditUserDetailsDialog({
                                         />
                                    </div>
                               </div>
-
                               <div>
                                    <Label>Student Number</Label>
                                    <Input
@@ -153,7 +148,6 @@ export default function EditUserDetailsDialog({
                                         onChange={handleChange}
                                    />
                               </div>
-
                               <div>
                                    <Label>Section</Label>
                                    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -171,7 +165,6 @@ export default function EditUserDetailsDialog({
                                                        : "Select Section"}
                                              </Button>
                                         </PopoverTrigger>
-
                                         <PopoverContent className="p-0">
                                              <Command>
                                                   <CommandInput placeholder="Search sections..." />
@@ -179,12 +172,10 @@ export default function EditUserDetailsDialog({
                                                        <CommandEmpty>
                                                             No section found.
                                                        </CommandEmpty>
-
                                                        {sections.map((s) => {
                                                             const isSelected =
                                                                  String(form.sectionId) ===
                                                                  String(s.id)
-
                                                             return (
                                                                  <CommandItem
                                                                       key={s.id}
@@ -212,7 +203,6 @@ export default function EditUserDetailsDialog({
                                         </PopoverContent>
                                    </Popover>
                               </div>
-
                               <div>
                                    <Label>Contact Number</Label>
                                    <Input
@@ -221,12 +211,10 @@ export default function EditUserDetailsDialog({
                                         onChange={handleChange}
                                    />
                               </div>
-
                               <div>
                                    <Label>Email</Label>
                                    <Input name="email" value={form.email} onChange={handleChange} />
                               </div>
-
                               <div className="flex justify-end gap-2">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
                                         Cancel

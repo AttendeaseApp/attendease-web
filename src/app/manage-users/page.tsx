@@ -3,10 +3,11 @@
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import CreateOsaAccountDialog from "@/components/manage-users/dialogs/createUser/CreateOsaAccountDialog"
 import CreateStudentAccountDialog from "@/components/manage-users/dialogs/createUser/CreateStudentAccountDialog"
-import EditUserDetailsDialog from "@/components/manage-users/dialogs/editUser/EditUserDetailsDialog"
+import EditUserDetailsDialog from "@/components/manage-users/dialogs/editUser/EditOsaDetailsDialog"
+import EditStudentDetailsDialog from "@/components/manage-users/dialogs/editUser/EditStudentDetailsDialog"
 import ImportStudentsDialog from "@/components/manage-users/dialogs/importStudent/ImportStudentsDialog"
 import MoreSettingsDialog from "@/components/manage-users/dialogs/settings/MoreSettingsDialog"
-import ManagingUsersTable from "@/components/manage-users/table/ManagingUsersUsersTable"
+import ManagingUsersTable from "@/components/manage-users/table/ManagingUsersTable"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
@@ -33,6 +34,7 @@ export default function RetrieveAllUsers() {
      const [loading, setLoading] = useState(true)
      const [searchTerm, setSearchTerm] = useState("")
      const [selectedType, setSelectedType] = useState("all")
+     const [currentPage, setCurrentPage] = useState(1)
      const [dialogState, setDialogState] = useState({
           moreSettings: false,
           importStudents: false,
@@ -41,11 +43,19 @@ export default function RetrieveAllUsers() {
           deleteModal: false,
           confirmDelete: null as string | null,
           deleteResult: null as { success: boolean; message: string } | null,
-          updateDialog: false,
+          updateUser: false,
+          updateStudent: false,
      })
      const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
      const [sections, setSections] = useState<string[]>([])
      const [deleting, setDeleting] = useState(false)
+
+     const itemsPerPage = 10
+     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+     const paginatedUsers = filteredUsers.slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+     )
 
      const loadUsers = async () => {
           try {
@@ -68,9 +78,9 @@ export default function RetrieveAllUsers() {
      useEffect(() => {
           const lowerSearch = searchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
-
           const filtered = users.filter((user) => {
-               if (selectedType !== "all" && user.userType !== selectedType) return false
+               if (selectedType !== "all" && user.userType !== selectedType.toUpperCase())
+                    return false
                const fields = [
                     user.firstName,
                     user.lastName,
@@ -86,8 +96,8 @@ export default function RetrieveAllUsers() {
                     fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
                )
           })
-
           setFilteredUsers(filtered)
+          setCurrentPage(1)
      }, [searchTerm, selectedType, users])
 
      useEffect(() => {
@@ -99,15 +109,24 @@ export default function RetrieveAllUsers() {
 
      const openDialog = (dialog: keyof typeof dialogState) =>
           setDialogState((prev) => ({ ...prev, [dialog]: true }))
+
      const closeDialog = (dialog: keyof typeof dialogState) =>
           setDialogState((prev) => ({ ...prev, [dialog]: false }))
-     const openUpdate = (user: UpdateUserDetailsInterface) => {
+
+     const openUserUpdate = (user: UpdateUserDetailsInterface) => {
           setCurrentUser(user)
-          openDialog("updateDialog")
+          setDialogState((prev) => ({ ...prev, updateUser: true, updateStudent: false }))
      }
+
+     const openStudentUpdate = (user: UpdateUserDetailsInterface) => {
+          setCurrentUser(user)
+          setDialogState((prev) => ({ ...prev, updateStudent: true, updateUser: false }))
+     }
+
      const handleUserUpdated = () => {
           loadUsers()
-          closeDialog("updateDialog")
+          setDialogState((prev) => ({ ...prev, updateUser: false, updateStudent: false }))
+          setCurrentUser(null)
      }
 
      const handleDeleteSection = async () => {
@@ -208,11 +227,14 @@ export default function RetrieveAllUsers() {
                               COURSE <ChevronDown className="ml-2 h-4 w-4" />
                          </Button>
                     </div>
-
                     <ManagingUsersTable
-                         users={filteredUsers}
+                         users={paginatedUsers}
                          loading={loading}
-                         onUpdate={openUpdate}
+                         onUpdateUser={openUserUpdate}
+                         onUpdateStudent={openStudentUpdate}
+                         currentPage={currentPage}
+                         totalPages={totalPages}
+                         onPageChange={setCurrentPage}
                     />
                </div>
 
@@ -329,7 +351,6 @@ export default function RetrieveAllUsers() {
                          </div>
                     </DialogContent>
                </Dialog>
-
                <ImportStudentsDialog
                     open={dialogState.importStudents}
                     onOpenChange={(val) =>
@@ -337,9 +358,15 @@ export default function RetrieveAllUsers() {
                     }
                />
                <EditUserDetailsDialog
-                    open={dialogState.updateDialog}
+                    open={dialogState.updateUser}
+                    onOpenChange={(val) => setDialogState((prev) => ({ ...prev, updateUser: val }))}
+                    user={currentUser}
+                    onUpdated={handleUserUpdated}
+               />
+               <EditStudentDetailsDialog
+                    open={dialogState.updateStudent}
                     onOpenChange={(val) =>
-                         setDialogState((prev) => ({ ...prev, updateDialog: val }))
+                         setDialogState((prev) => ({ ...prev, updateStudent: val }))
                     }
                     user={currentUser}
                     onUpdated={handleUserUpdated}
