@@ -10,15 +10,15 @@ import {
      TableRow,
 } from "@/components/ui/table"
 import { UserStudentResponse } from "@/interface/UserStudent"
-import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
+import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
 
 interface UsersTableProps {
      users: UserStudentResponse[]
      loading: boolean
-     onUpdate: (user: EditUserDetailsPayload) => void
+     onUpdate: (user: UpdateUserDetailsInterface) => void
 }
 
-export default function UsersTable({ users, loading, onUpdate }: UsersTableProps) {
+export default function ManagingUsersTable({ users, loading, onUpdate }: UsersTableProps) {
      return (
           <Table>
                <TableHeader className="bg-gray-100">

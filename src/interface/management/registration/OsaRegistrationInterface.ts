@@ -1,4 +1,4 @@
-export interface OsaAccountPayload {
+export interface OsaRegistrationInterface {
      firstName: string
      lastName: string
      email: string
