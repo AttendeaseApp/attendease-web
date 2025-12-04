@@ -54,12 +54,6 @@ export default function EditUserDetailsDialog({
      const [updateStatus, setUpdateStatus] = useState<"success" | "error">("success")
      const [updateMessage, setUpdateMessage] = useState("")
 
-     const showStatus = (status: "success" | "error", message: string) => {
-          setUpdateStatus(status)
-          setUpdateMessage(message)
-          setStatusDialogOpen(true)
-     }
-
      useEffect(() => {
           if (!open) return
           const fetchSections = async () => {
