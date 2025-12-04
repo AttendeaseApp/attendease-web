@@ -142,12 +142,12 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                                                   </Button>
                                              </DropdownMenuTrigger>
                                              <DropdownMenuContent align="end">
-                                                  <DropdownMenuItem
-                                                       onClick={(e) => handleEdit(event, e)}
-                                                  >
-                                                       <Pencil className="mr-2 h-4 w-4" />
-                                                       Edit
-                                                  </DropdownMenuItem>
+                                                     {event.eventStatus !== EventStatus.FINALIZED && (
+          <DropdownMenuItem onClick={(e) => handleEdit(event, e)}>
+               <Pencil className="mr-2 h-4 w-4" />
+               Edit
+          </DropdownMenuItem>
+     )}
                                                   <DropdownMenuItem
                                                        onClick={(e) => handleDelete(event, e)}
                                                   >
