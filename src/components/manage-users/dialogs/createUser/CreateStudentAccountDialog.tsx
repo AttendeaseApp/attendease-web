@@ -1,15 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-     createStudentAccount,
-     getSections,
-} from "@/services/api/user/management/user-management-services"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
      Command,
      CommandEmpty,
@@ -17,9 +8,18 @@ import {
      CommandItem,
      CommandList,
 } from "@/components/ui/command"
-import { Check } from "lucide-react"
-import { StudentRegistrationInterface } from "@/interface/management/registration/StudentRegistrationInterface"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Section } from "@/interface/academic/section/SectionInterface"
+import { StudentRegistrationInterface } from "@/interface/management/registration/StudentRegistrationInterface"
+import {
+     createStudentAccount,
+     getSections,
+} from "@/services/api/user/management/user-management-services"
+import { Check } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 interface AddStudentAccountDialogProps {

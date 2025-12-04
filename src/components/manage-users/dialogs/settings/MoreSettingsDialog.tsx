@@ -1,18 +1,18 @@
 "use client"
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { deleteAllStudentsAndBiometrics } from "@/services/api/user/management/user-management-services"
 import {
      AlertDialog,
      AlertDialogAction,
      AlertDialogCancel,
      AlertDialogContent,
-     AlertDialogHeader,
      AlertDialogFooter,
+     AlertDialogHeader,
      AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { deleteAllStudentsAndBiometrics } from "@/services/api/user/management/user-management-services"
+import * as React from "react"
 import { toast } from "sonner"
 
 interface MoreSettingsDialogProps {

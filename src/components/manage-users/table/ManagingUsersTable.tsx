@@ -2,14 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import {
-     Table,
-     TableBody,
-     TableCell,
-     TableHead,
-     TableHeader,
-     TableRow,
-} from "@/components/ui/table"
-import {
      Pagination,
      PaginationContent,
      PaginationEllipsis,
@@ -18,9 +10,17 @@ import {
      PaginationNext,
      PaginationPrevious,
 } from "@/components/ui/pagination"
-import { cn } from "@/lib/utils"
+import {
+     Table,
+     TableBody,
+     TableCell,
+     TableHead,
+     TableHeader,
+     TableRow,
+} from "@/components/ui/table"
 import { UserStudentResponse } from "@/interface/UserStudent"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
+import { cn } from "@/lib/utils"
 
 interface UsersTableProps {
      users: UserStudentResponse[]
