@@ -1,97 +1,107 @@
 "use client"
-import { useState, useEffect } from "react"
+
+import { Button } from "@/components/ui/button"
 import {
      Dialog,
      DialogContent,
      DialogDescription,
+     DialogFooter,
      DialogHeader,
      DialogTitle,
-     DialogFooter,
 } from "@/components/ui/dialog"
-import { Plus, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { updateSection } from "@/services/cluster-and-course-sessions"
-import { CourseSession, Section } from "@/interface/cluster-and-course-interface"
-interface UpdateSectionDialogProps {
-     course: CourseSession
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
+import { Course } from "@/interface/academic/course/CourseInterface"
+import { updateCourse } from "@/services/cluster-and-course-sessions"
+import { Plus, X } from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
+
+interface UpdateCourseDialogProps {
+     cluster: Cluster
      isOpen: boolean
      onClose: () => void
      onUpdate: () => void
      onError?: (message: string) => void
-     section: Section
+     courses: Course
 }
-export function UpdateSectionDialog({
-     course,
+
+export function UpdateCourseDialog({
+     cluster,
      isOpen,
      onClose,
      onUpdate,
-     onError,
-     section,
-}: UpdateSectionDialogProps) {
+     courses,
+}: UpdateCourseDialogProps) {
      const [formData, setFormData] = useState({
-          sectionName: section.name,
+          courseName: courses.courseName,
      })
+
      const [error, setError] = useState<string>("")
+
      const [isSubmitting, setIsSubmitting] = useState(false)
+
      useEffect(() => {
           if (isOpen) {
                setFormData({
-                    sectionName: section.name || "",
+                    courseName: courses.courseName || "",
                })
                setError("")
           }
-     }, [isOpen, section.name])
+     }, [isOpen, courses.courseName])
+
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
+
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
           setIsSubmitting(true)
           try {
-               const updateSectionData = {
-                    name: formData.sectionName,
+               const updateCourseData = {
+                    courseName: formData.courseName,
                }
-               console.log("Sending update payload:", updateSectionData)
-               await updateSection(section.id, updateSectionData)
+               console.log("Sending update payload:", updateCourseData)
+               await updateCourse(courses.id, updateCourseData)
                onUpdate()
                onClose()
           } catch (err) {
                const message =
-                    (err instanceof Error ? err.message : String(err)) + "Failed to update section."
+                    (err instanceof Error ? err.message : String(err)) + " Failed to update course."
                setError(message)
                console.error("Update failed:", err)
-               if (onError) onError(message)
+               toast.error(message)
           } finally {
                setIsSubmitting(false)
           }
      }
+
      const handleClose = () => {
           onClose()
      }
+
      if (!isOpen) return null
+
      return (
           <Dialog open={isOpen} onOpenChange={handleClose}>
                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                         <DialogTitle>Update Section: {section.name}</DialogTitle>
+                         <DialogTitle>Update Course: {courses.courseName}</DialogTitle>
                          <DialogDescription>
-                              Fill in the details to update the section in {course.courseName}.
+                              Fill in the details to update the course in {cluster.clusterName}.
                          </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
                          <div className="space-y-2">
-                              <Label htmlFor="sectionName">Section Name</Label>
+                              <Label htmlFor="courseName">Course Name</Label>
                               <Input
-                                   id="sectionName"
-                                   value={formData.sectionName}
-                                   onChange={(e) =>
-                                        handleInputChange("sectionName", e.target.value)
-                                   }
-                                   placeholder="Enter section name"
+                                   id="courseName"
+                                   value={formData.courseName}
+                                   onChange={(e) => handleInputChange("courseName", e.target.value)}
+                                   placeholder="Enter course name"
                                    required
                               />
                          </div>
@@ -112,10 +122,10 @@ export function UpdateSectionDialog({
                               </Button>
                               <Button
                                    type="submit"
-                                   disabled={isSubmitting || !formData.sectionName.trim()}
+                                   disabled={isSubmitting || !formData.courseName.trim()}
                               >
                                    <Plus className="mr-2 h-4 w-4" />
-                                   {isSubmitting ? "Updating..." : "Update Section"}
+                                   {isSubmitting ? "Updating..." : "Update Course"}
                               </Button>
                          </DialogFooter>
                     </form>

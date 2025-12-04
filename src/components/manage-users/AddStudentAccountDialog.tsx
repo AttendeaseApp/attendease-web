@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createStudentAccount, getSections } from "@/services/user-management-services"
 import { StudentAccountPayload } from "@/interface/users/StudentInterface"
-import { Section } from "@/interface/students/SectionInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
 import CreateUserStatusDialog from "./CreateUserStatusDialog"
 
 interface AddStudentAccountDialogProps {
@@ -179,9 +179,12 @@ export default function AddStudentAccountDialog({
                                              className="w-full border rounded px-2 py-1"
                                         >
                                              <option value="">Select Section</option>
-                                             {sections.map((s) => (
-                                                  <option key={s.id} value={s.name}>
-                                                       {s.name}
+                                             {sections.map((sections) => (
+                                                  <option
+                                                       key={sections.id}
+                                                       value={sections.sectionName}
+                                                  >
+                                                       {sections.sectionName}
                                                   </option>
                                              ))}
                                         </select>

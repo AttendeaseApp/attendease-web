@@ -1,41 +1,47 @@
 "use client"
-import { useEffect, useState } from "react"
+
+import { Button } from "@/components/ui/button"
 import {
      Dialog,
      DialogContent,
      DialogDescription,
+     DialogFooter,
      DialogHeader,
      DialogTitle,
-     DialogFooter,
 } from "@/components/ui/dialog"
-import { Plus, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createCluster } from "@/services/cluster-and-course-sessions"
-interface CreateClusterDialogProps {
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
+import { createCourse } from "@/services/cluster-and-course-sessions"
+import { Plus, X } from "lucide-react"
+import { useEffect, useState } from "react"
+
+interface CreateCourseDialogProps {
+     cluster: Cluster
      isOpen: boolean
      onClose: () => void
      onCreate: () => void
      onError?: (message: string) => void
-     clusters: { clusterName: string }[]
+     courses: { courseName: string }[]
 }
-export function CreateClusterDialog({
+
+export function CreateCourseDialog({
+     cluster,
      isOpen,
      onClose,
      onCreate,
      onError,
-     clusters,
-}: CreateClusterDialogProps) {
+     courses,
+}: CreateCourseDialogProps) {
      const [formData, setFormData] = useState({
-          clusterName: "",
+          courseName: "",
      })
      const [error, setError] = useState<string>("")
      const [isSubmitting, setIsSubmitting] = useState(false)
      useEffect(() => {
           if (isOpen) {
                setFormData({
-                    clusterName: "",
+                    courseName: "",
                })
                setError("")
           }
@@ -44,31 +50,29 @@ export function CreateClusterDialog({
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
-
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
 
-          const duplicate = clusters.some(
-               (c) =>
-                    c.clusterName.toLowerCase().trim() === formData.clusterName.toLowerCase().trim()
+          const duplicate = courses.some(
+               (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
           )
 
           if (duplicate) {
-               setError("Cluster name already exists.")
+               setError("Course name already exists.")
                return
           }
           setIsSubmitting(true)
           try {
-               const newClusterData = {
-                    clusterName: formData.clusterName,
+               const newCourseData = {
+                    courseName: formData.courseName,
                }
-               console.log("Sending create payload:", newClusterData)
-               await createCluster(newClusterData)
+               console.log("Sending create payload:", newCourseData)
+               await createCourse(cluster.clusterId, newCourseData)
                onCreate()
                onClose()
           } catch (err) {
-               const message = err + ", " + "Failed to create cluster."
+               const message = err + ", " + "Failed to create course."
                setError(message)
                console.error("Create failed:", err)
                if (onError) onError(message)
@@ -84,21 +88,19 @@ export function CreateClusterDialog({
           <Dialog open={isOpen} onOpenChange={handleClose}>
                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                         <DialogTitle>Create New Cluster</DialogTitle>
+                         <DialogTitle>Create New Course</DialogTitle>
                          <DialogDescription>
-                              Fill in the details to create a new cluster.
+                              Fill in the details to create a new course in {cluster.clusterName}.
                          </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
                          <div className="space-y-2">
-                              <Label htmlFor="clusterName">Cluster Name</Label>
+                              <Label htmlFor="courseName">Course Name</Label>
                               <Input
-                                   id="clusterName"
-                                   value={formData.clusterName}
-                                   onChange={(e) =>
-                                        handleInputChange("clusterName", e.target.value)
-                                   }
-                                   placeholder="Enter cluster name"
+                                   id="courseName"
+                                   value={formData.courseName}
+                                   onChange={(e) => handleInputChange("courseName", e.target.value)}
+                                   placeholder="Enter course name"
                                    required
                               />
                          </div>
@@ -119,10 +121,10 @@ export function CreateClusterDialog({
                               </Button>
                               <Button
                                    type="submit"
-                                   disabled={isSubmitting || !formData.clusterName.trim()}
+                                   disabled={isSubmitting || !formData.courseName.trim()}
                               >
                                    <Plus className="mr-2 h-4 w-4" />
-                                   {isSubmitting ? "Creating..." : "Create Cluster"}
+                                   {isSubmitting ? "Creating..." : "Create Course"}
                               </Button>
                          </DialogFooter>
                     </form>

@@ -1,7 +1,10 @@
-import { CourseSession, ClusterSession, Section } from "@/interface/cluster-and-course-interface"
+import { Course } from "@/interface/academic/course/CourseInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { authFetch } from "./auth-fetch"
 import { CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
-export const getAllCourses = async (): Promise<CourseSession[]> => {
+
+export const getAllCourses = async (): Promise<Course[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_COURSES)
           if (!res.ok) {
@@ -20,13 +23,14 @@ export const getAllCourses = async (): Promise<CourseSession[]> => {
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as CourseSession[]
+          return data as Course[]
      } catch (error) {
           console.error("Error fetching courses:", error)
           throw error
      }
 }
-export const getAllClusters = async (): Promise<ClusterSession[]> => {
+
+export const getAllClusters = async (): Promise<Cluster[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_CLUSTERS)
           if (!res.ok) {
@@ -45,12 +49,13 @@ export const getAllClusters = async (): Promise<ClusterSession[]> => {
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as ClusterSession[]
+          return data as Cluster[]
      } catch (error) {
           console.error("Error fetching clusters:", error)
           throw error
      }
 }
+
 export const getAllSections = async (): Promise<Section[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_SECTIONS)
@@ -76,6 +81,7 @@ export const getAllSections = async (): Promise<Section[]> => {
           throw error
      }
 }
+
 export const getSectionsByCourse = async (courseId: string): Promise<Section[]> => {
      try {
           const res = await authFetch(
@@ -103,6 +109,7 @@ export const getSectionsByCourse = async (courseId: string): Promise<Section[]> 
           throw error
      }
 }
+
 export const deleteCourse = async (id: string): Promise<void> => {
      try {
           const res = await authFetch(
@@ -131,9 +138,8 @@ export const deleteCourse = async (id: string): Promise<void> => {
           throw error
      }
 }
-export const createCluster = async (
-     newClusterData: Partial<ClusterSession>
-): Promise<ClusterSession> => {
+
+export const createCluster = async (newClusterData: Partial<Cluster>): Promise<Cluster> => {
      try {
           const payload = { ...newClusterData }
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.CREATE_CLUSTER, {
@@ -157,16 +163,14 @@ export const createCluster = async (
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as ClusterSession
+          return data as Cluster
      } catch (error) {
           console.error("Error creating cluster:", error)
           throw error
      }
 }
-export const createCourse = async (
-     id: string,
-     newCourseData: Partial<CourseSession>
-): Promise<CourseSession> => {
+
+export const createCourse = async (id: string, newCourseData: Partial<Course>): Promise<Course> => {
      try {
           const payload = { ...newCourseData }
           const res = await authFetch(
@@ -193,12 +197,13 @@ export const createCourse = async (
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as CourseSession
+          return data as Course
      } catch (error) {
           console.error("Error creating course:", error)
           throw error
      }
 }
+
 export const deleteCluster = async (id: string): Promise<void> => {
      try {
           const res = await authFetch(
@@ -227,6 +232,7 @@ export const deleteCluster = async (id: string): Promise<void> => {
           throw error
      }
 }
+
 export const createSection = async (
      id: string,
      newSectionData: Partial<Section>
@@ -263,6 +269,7 @@ export const createSection = async (
           throw error
      }
 }
+
 export const deleteSection = async (id: string): Promise<void> => {
      try {
           const res = await authFetch(
@@ -291,10 +298,11 @@ export const deleteSection = async (id: string): Promise<void> => {
           throw error
      }
 }
+
 export const updateCluster = async (
      id: string,
-     updateClusterData: Partial<ClusterSession>
-): Promise<ClusterSession> => {
+     updateClusterData: Partial<Cluster>
+): Promise<Cluster> => {
      try {
           const payload = { ...updateClusterData }
           const res = await authFetch(
@@ -321,16 +329,17 @@ export const updateCluster = async (
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as ClusterSession
+          return data as Cluster
      } catch (error) {
           console.error("Error updating cluster:", error)
           throw error
      }
 }
+
 export const updateCourse = async (
      id: string,
-     updateCourseData: Partial<CourseSession>
-): Promise<CourseSession> => {
+     updateCourseData: Partial<Course>
+): Promise<Course> => {
      try {
           const payload = { ...updateCourseData }
           const res = await authFetch(
@@ -357,12 +366,13 @@ export const updateCourse = async (
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as CourseSession
+          return data as Course
      } catch (error) {
           console.error("Error updating course:", error)
           throw error
      }
 }
+
 export const updateSection = async (
      id: string,
      updateSectionData: Partial<Section>

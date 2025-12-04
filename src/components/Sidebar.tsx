@@ -51,7 +51,7 @@ const menu = [
      },
      {
           title: "Clusters, Courses & Sections",
-          url: "/manage-clusters-and-courses",
+          url: "/manage-clusters-courses-sections",
           icon: GraduationCap,
      },
 ]
