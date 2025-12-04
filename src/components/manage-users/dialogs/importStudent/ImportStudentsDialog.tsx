@@ -37,7 +37,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                     })
                }
 
-               toast.error(message)
+               toast.info(message)
 
                setSelectedFile(null)
                onOpenChange(false)
