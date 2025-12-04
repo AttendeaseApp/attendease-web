@@ -28,9 +28,7 @@ import {
 import {
      Command,
      CommandEmpty,
-     CommandGroup,
      CommandInput,
-     CommandItem,
      CommandList,
 } from "@/components/ui/command"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -880,10 +878,11 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                              <SelectGroup>
                                                   <SelectLabel className="mb-3" />
                                                   <div
-                                                       className="px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
+                                                       className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
                                                        onClick={() => setCreateNewLocation(true)}
                                                   >
-                                                       Create New Venue
+                                                       <Plus className="w-4 h-4"/> 
+                                                       <span>Create New Venue </span>
                                                   </div>
                                              </SelectGroup>
                                         </SelectContent>
