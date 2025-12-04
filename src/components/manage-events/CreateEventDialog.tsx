@@ -22,6 +22,8 @@ import {
      SelectItem,
      SelectTrigger,
      SelectValue,
+     SelectGroup,
+     SelectLabel,
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { createEvent } from "@/services/event-sessions"
@@ -32,6 +34,7 @@ import {
      getAllCourses,
      getAllSections,
 } from "@/services/cluster-and-course-sessions"
+import CreateLocationDialog from "../manage-locations/CreateLocationDialog"
 import { Course } from "@/interface/academic/course/CourseInterface"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { Section } from "@/interface/academic/section/SectionInterface"
@@ -82,6 +85,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [sections, setSections] = useState<Section[]>([])
      const [loadingLocations, setLoadingLocations] = useState(true)
      const [loadingHierarchy, setLoadingHierarchy] = useState(true)
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
+     const [createMessage, setCreateMessage] = useState("")
+     const [createNewLocation, setCreateNewLocation] = useState(false)
+     const [editingLocation, setEditingLocation] = useState<EventLocation | null>(null)
+     const [isEditMode, setIsEditMode] = useState(false)
 
      const getCoursesUnderCluster = (clId: string) => {
           return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
@@ -170,6 +179,11 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const handleInputChange = (field: keyof typeof formData, value: string | Date) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
+     }
+
+     const handleCreateVenue = (newLocation: EventLocation) => {
+          setLocations((prev) => [...prev, newLocation])
+          handleInputChange("eventLocationId", newLocation.locationId)
      }
 
      const handleAllStudentsToggle = (checked: boolean) => {
@@ -403,6 +417,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const handleClose = () => {
           setError("")
           onClose()
+     }
+
+     const closeDialog = () => {
+          setCreateNewLocation(false)
+          setEditingLocation(null)
+          setIsEditMode(false)
      }
 
      const getDateDisplay = (date: Date): string => {
@@ -813,17 +833,35 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                              />
                                         </SelectTrigger>
                                         <SelectContent>
-                                             {locations.map((loc) => (
-                                                  <SelectItem
-                                                       key={loc.locationId}
-                                                       value={loc.locationId}
+                                             <SelectGroup>
+                                                  <SelectLabel className="mb-3" />
+                                                  {locations.map((loc) => (
+                                                       <SelectItem
+                                                            key={loc.locationId}
+                                                            value={loc.locationId}
+                                                       >
+                                                            {loc.locationName}
+                                                       </SelectItem>
+                                                  ))}
+                                             </SelectGroup>
+                                             <SelectGroup>
+                                                  <SelectLabel className="mb-3" />
+                                                  <div
+                                                       className="px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
+                                                       onClick={() => setCreateNewLocation(true)}
                                                   >
-                                                       {loc.locationName}
-                                                  </SelectItem>
-                                             ))}
+                                                       Create New Venue
+                                                  </div>
+                                             </SelectGroup>
                                         </SelectContent>
                                    </Select>
                               </div>
+                              <CreateLocationDialog
+                                   open={createNewLocation}
+                                   onClose={closeDialog}
+                                   onSuccess={handleCreateVenue}
+                                   existingLocations={locations}
+                              />
 
                               <div className="space-y-4">
                                    <Label>Eligible Attendees</Label>
