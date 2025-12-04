@@ -344,6 +344,8 @@ export default function ManageClustersPage() {
                               </Button>
                          </div>
                     </div>
+
+                    {/* table wrappers */}
                     <div className="flex flex-row w-full h-full min-w-0 gap-12">
                          {/* clusters */}
                          <div className="w-full">
@@ -369,6 +371,7 @@ export default function ManageClustersPage() {
                                    onDeleteAction={handleDeleteCluster}
                               />
                          </div>
+
                          {/* courses */}
                          <div className="w-full">
                               <h2 className="text-lg font-semibold mb-4">COURSES</h2>
@@ -394,33 +397,33 @@ export default function ManageClustersPage() {
                               />
                          </div>
                     </div>
-                    {/* section */}
-                    <div>
-                         <div className="w-full">
-                              <h2 className="text-lg font-semibold mb-4">SECTIONS</h2>
-                              <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                                   <div className="relative flex-1">
-                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                             placeholder="Search sections..."
-                                             className="pl-8"
-                                             value={sectionSearchTerm}
-                                             onChange={(e) => setSectionSearchTerm(e.target.value)}
-                                        />
-                                   </div>
-                                   <Button variant="outline" size="sm" onClick={loadSections}>
-                                        Refresh
-                                   </Button>
-                              </div>
 
-                              <AcademicSectionTable
-                                   sections={filteredSections}
-                                   loading={loadingSections}
-                                   onEdit={handleEditSection}
-                                   onDelete={handleDeleteSection}
-                              />
+                    {/* section */}
+                    <div className="w-full">
+                         <h2 className="text-lg font-semibold mb-4">SECTIONS</h2>
+                         <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                              <div className="relative flex-1">
+                                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                   <Input
+                                        placeholder="Search sections..."
+                                        className="pl-8"
+                                        value={sectionSearchTerm}
+                                        onChange={(e) => setSectionSearchTerm(e.target.value)}
+                                   />
+                              </div>
+                              <Button variant="outline" size="sm" onClick={loadSections}>
+                                   Refresh
+                              </Button>
                          </div>
+
+                         <AcademicSectionTable
+                              sections={filteredSections}
+                              loading={loadingSections}
+                              onEdit={handleEditSection}
+                              onDelete={handleDeleteSection}
+                         />
                     </div>
+
                     {/* dialogs */}
                     <CreateClusterDialog
                          isOpen={isCreateClusterOpen}
