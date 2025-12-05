@@ -41,26 +41,24 @@ export default function ManagingUsersTable({
      totalPages,
      onPageChange,
 }: UsersTableProps) {
+     const sortedUsers = [...users].sort((a, b) => {
+          const userOrder: Record<string, number> = {
+               OSA: 0,
+               STUDENT: 1,
+          }
+          const userOsa = userOrder[a.userType!]
+          const userStudent = userOrder[b.userType!]
 
-const sortedUsers = [...users].sort((a, b) => {
- const userOrder: Record<string, number> = {
-  OSA: 0,
-  STUDENT: 1
-};
-const userOsa = userOrder[a.userType!];
-const userStudent = userOrder[b.userType!];
+          if (userOsa < userStudent) return -1
+          if (userOsa > userStudent) return 1
 
-if (userOsa < userStudent) return -1; 
-if (userOsa > userStudent) return 1; 
+          const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
+          const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
 
-  const nameA = `${a.firstName} ${a.lastName}`. toLowerCase();
-  const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
-
-  if (nameA < nameB) return -1;   
-  if (nameA > nameB) return 1;
-  return 0;
-
-});
+          if (nameA < nameB) return -1
+          if (nameA > nameB) return 1
+          return 0
+     })
      const handleEdit = (user: UserStudentResponse) => {
           const commonData: UpdateUserDetailsInterface = {
                userId: String(user.userId),
