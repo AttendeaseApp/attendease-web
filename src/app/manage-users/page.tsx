@@ -1,14 +1,6 @@
 "use client"
 
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
-import UsersTable from "@/components/manage-users/UsersTable"
-import MoreSettingsDialog from "@/components/manage-users/MoreSettingsDialog"
-import ImportStudentsDialog from "@/components/manage-users/ImportStudentsDialog"
-
-import { EditUserDetailsPayload } from "@/interface/users/edit-user-details"
-import EditUserDetailsDialog from "@/components/manage-users/EditUserDetailsDialog"
-import AddOSAAccountDialog from "@/components/manage-users/AddOSAAccountDialog"
-import AddStudentAccountDialog from "@/components/manage-users/AddStudentAccountDialog"
 import CreateOsaAccountDialog from "@/components/manage-users/dialogs/createUser/CreateOsaAccountDialog"
 import CreateStudentAccountDialog from "@/components/manage-users/dialogs/createUser/CreateStudentAccountDialog"
 import EditUserDetailsDialog from "@/components/manage-users/dialogs/editUser/EditOsaDetailsDialog"
@@ -44,22 +36,16 @@ export default function RetrieveAllUsers() {
      const [selectedType, setSelectedType] = useState("all")
      const [selectedSection, setSelectedSection] = useState<string | null>(null)
      const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
-     const [sections, setSections] = useState<string[]>([])
      const [courses, setCourses] = useState<string[]>([])
-     const [error, setError] = useState<string | null>(null)
-
-     const [openMoreSettings, setOpenMoreSettings] = useState(false)
-     const [openImportStudents, setOpenImportStudents] = useState(false)
-     const [openAddOSA, setOpenAddOSA] = useState(false)
-     const [openAddStudent, setOpenAddStudent] = useState(false)
-     const [openDeleteModal, setOpenDeleteModal] = useState(false)
-     const [openUpdateDialog, setOpenUpdateDialog] = useState(false)
-     const [currentUser, setCurrentUser] = useState<EditUserDetailsPayload | null>(null)
+     const [sections, setSections] = useState<string[]>([])
+     const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
      const [confirmDeleteSection, setConfirmDeleteSection] = useState<string | null>(null)
      const [deleting, setDeleting] = useState(false)
      const [deleteResult, setDeleteResult] = useState<{ success: boolean; message: string } | null>(
           null
+     )
      const [currentPage, setCurrentPage] = useState(1)
+
      const [dialogState, setDialogState] = useState({
           moreSettings: false,
           importStudents: false,
@@ -71,9 +57,6 @@ export default function RetrieveAllUsers() {
           updateUser: false,
           updateStudent: false,
      })
-     const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
-     const [sections, setSections] = useState<string[]>([])
-     const [deleting, setDeleting] = useState(false)
 
      const itemsPerPage = 10
      const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
@@ -101,14 +84,17 @@ export default function RetrieveAllUsers() {
      }, [])
 
      useEffect(() => {
-          const uniqueSections = Array.from(new Set(users.map((u) => u.section || "N/A")))
-          setSections(uniqueSections)
+          const uniqueSections = Array.from(
+               new Set(users.map((u) => u.section).filter((s): s is string => !!s))
+          )
+          const uniqueCourses = Array.from(
+               new Set(users.map((u) => u.course).filter((c): c is string => !!c))
+          )
 
-          const uniqueCourses = Array.from(new Set(users.map((u) => u.course || "N/A")))
-          setCourses(uniqueCourses)
+          setSections(["All Sections", ...uniqueSections])
+          setCourses(["All Courses", ...uniqueCourses])
      }, [users])
 
-     // SEARCH and FILTERING
      useEffect(() => {
           const lowerSearch = searchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
@@ -117,24 +103,15 @@ export default function RetrieveAllUsers() {
                if (selectedType !== "all" && user.userType?.toLowerCase() !== selectedType)
                     return false
 
-               const userSection = user.section || "N/A"
-               const userCourse = user.course || "N/A"
+               if (selectedSection && user.section !== selectedSection) return false
+               if (selectedCourse && user.course !== selectedCourse) return false
 
-               if (selectedSection && userSection !== selectedSection) return false
-               if (selectedCourse && userCourse !== selectedCourse) return false
-
-     useEffect(() => {
-          const lowerSearch = searchTerm.trim().toLowerCase()
-          const searchWords = lowerSearch.split(" ").filter(Boolean)
-          const filtered = users.filter((user) => {
-               if (selectedType !== "all" && user.userType !== selectedType.toUpperCase())
-                    return false
                const fields = [
                     user.firstName,
                     user.lastName,
                     user.userType,
-                    userSection,
-                    userCourse,
+                    user.section,
+                    user.course,
                     user.studentNumber,
                     user.email,
                     user.contactNumber,
@@ -144,17 +121,10 @@ export default function RetrieveAllUsers() {
                     fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
                )
           })
-          setFilteredUsers(filtered)
-     }, [searchTerm, selectedType, selectedSection, selectedCourse, users])
-          setCurrentPage(1)
-     }, [searchTerm, selectedType, users])
 
-     useEffect(() => {
-          const uniqueSections = Array.from(
-               new Set(users.map((u) => u.section).filter((s): s is string => !!s))
-          )
-          setSections(uniqueSections)
-     }, [users])
+          setFilteredUsers(filtered)
+          setCurrentPage(1)
+     }, [searchTerm, selectedType, selectedSection, selectedCourse, users])
 
      const openDialog = (dialog: keyof typeof dialogState) =>
           setDialogState((prev) => ({ ...prev, [dialog]: true }))
@@ -182,7 +152,9 @@ export default function RetrieveAllUsers() {
           if (!dialogState.confirmDelete) return
           try {
                setDeleting(true)
-               await deleteStudentAccountBySection(dialogState.confirmDelete)
+               const sectionToDelete =
+                    dialogState.confirmDelete === "N/A" ? "" : dialogState.confirmDelete
+               await deleteStudentAccountBySection(sectionToDelete)
                loadUsers()
                setDialogState((prev) => ({
                     ...prev,
@@ -215,11 +187,13 @@ export default function RetrieveAllUsers() {
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
+                    {/* Header */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                          <div>
                               <h1 className="text-2xl font-bold md:text-3xl">Manage Users</h1>
                               <p className="text-muted-foreground mt-1">Manage all users here.</p>
                          </div>
+
                          <div className="flex justify-end space-x-2">
                               <DropdownMenu>
                                    <DropdownMenuTrigger asChild>
@@ -243,6 +217,7 @@ export default function RetrieveAllUsers() {
                          </div>
                     </div>
 
+                    {/* Filters */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
                          <div className="relative flex-1">
                               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -253,6 +228,7 @@ export default function RetrieveAllUsers() {
                                    onChange={(e) => setSearchTerm(e.target.value)}
                               />
                          </div>
+
                          <Button variant="outline" size="sm" onClick={loadUsers}>
                               Refresh
                          </Button>
@@ -278,14 +254,15 @@ export default function RetrieveAllUsers() {
                                    {sections.map((sec) => (
                                         <DropdownMenuItem
                                              key={sec}
-                                             onClick={() => setSelectedSection(sec)}
+                                             onClick={() =>
+                                                  setSelectedSection(
+                                                       sec === "All Sections" ? null : sec
+                                                  )
+                                             }
                                         >
                                              {sec}
                                         </DropdownMenuItem>
                                    ))}
-                                   <DropdownMenuItem onClick={() => setSelectedSection(null)}>
-                                        All Sections
-                                   </DropdownMenuItem>
                               </DropdownMenuContent>
                          </DropdownMenu>
 
@@ -299,17 +276,17 @@ export default function RetrieveAllUsers() {
                                    {courses.map((c) => (
                                         <DropdownMenuItem
                                              key={c}
-                                             onClick={() => setSelectedCourse(c)}
+                                             onClick={() =>
+                                                  setSelectedCourse(c === "All Courses" ? null : c)
+                                             }
                                         >
                                              {c}
                                         </DropdownMenuItem>
                                    ))}
-                                   <DropdownMenuItem onClick={() => setSelectedCourse(null)}>
-                                        All Courses
-                                   </DropdownMenuItem>
                               </DropdownMenuContent>
                          </DropdownMenu>
                     </div>
+
                     <ManagingUsersTable
                          users={paginatedUsers}
                          loading={loading}
@@ -344,9 +321,6 @@ export default function RetrieveAllUsers() {
                                         key={sec}
                                         variant="outline"
                                         className="w-full"
-                                        onClick={() => {
-                                             setConfirmDeleteSection(sec)
-                                        }}
                                         onClick={() =>
                                              setDialogState((prev) => ({
                                                   ...prev,
@@ -395,36 +369,6 @@ export default function RetrieveAllUsers() {
                               </Button>
                               <Button
                                    className="bg-red-500 text-white"
-                                   onClick={async () => {
-                                        if (!confirmDeleteSection) return
-                                        try {
-                                             setDeleting(true)
-                                             const sectionToDelete =
-                                                  confirmDeleteSection === "N/A"
-                                                       ? ""
-                                                       : confirmDeleteSection
-                                             await deleteStudentAccountBySection(sectionToDelete)
-                                             loadUsers()
-
-                                             setDeleteResult({
-                                                  success: true,
-                                                  message: `All users in section "${confirmDeleteSection}" have been successfully deleted.`,
-                                             })
-                                             setConfirmDeleteSection(null)
-                                             setOpenDeleteModal(false)
-                                             setOpenMoreSettings(false)
-                                        } catch (err) {
-                                             setDeleteResult({
-                                                  success: false,
-                                                  message: `Failed to delete users in section "${confirmDeleteSection}": ${err instanceof Error ? err.message : "Unknown error"}`,
-                                             })
-                                             setConfirmDeleteSection(null)
-                                             setOpenDeleteModal(false)
-                                             setOpenMoreSettings(false)
-                                        } finally {
-                                             setDeleting(false)
-                                        }
-                                   }}
                                    onClick={handleDeleteSection}
                                    disabled={deleting}
                               >
@@ -452,9 +396,13 @@ export default function RetrieveAllUsers() {
                          </DialogHeader>
 
                          <p
-                              className={`mt-2 text-sm font-semibold ${deleteResult?.success ? "text-green-600" : "text-red-600"}`}
+                              className={`mt-2 text-sm font-semibold ${
+                                   dialogState.deleteResult?.success
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                              }`}
                          >
-                              {deleteResult?.message}
+                              {dialogState.deleteResult?.message}
                          </p>
 
                          <div className="flex justify-end mt-4">
@@ -474,6 +422,7 @@ export default function RetrieveAllUsers() {
                          </div>
                     </DialogContent>
                </Dialog>
+
                <ImportStudentsDialog
                     open={dialogState.importStudents}
                     onOpenChange={(val) =>
