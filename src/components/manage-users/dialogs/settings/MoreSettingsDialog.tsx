@@ -88,10 +88,14 @@ export default function MoreSettingsDialog({
                                    </span>
                               </Button>
                          </div>
-                          <div className="flex justify-end mt-4 w-full">
-                              <Button variant="outline" className="w-fit "  onClick={() => onOpenChange(false)}>
-                                        Cancel
-                                   </Button>
+                         <div className="flex justify-end mt-4 w-full">
+                              <Button
+                                   variant="outline"
+                                   className="w-fit "
+                                   onClick={() => onOpenChange(false)}
+                              >
+                                   Cancel
+                              </Button>
                          </div>
                     </DialogContent>
                </Dialog>
