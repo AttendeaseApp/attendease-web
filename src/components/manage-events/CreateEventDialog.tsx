@@ -1,45 +1,46 @@
 "use client"
-import { useState, useEffect } from "react"
-import { format, addHours } from "date-fns"
+
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { Calendar } from "@/components/ui/calendar"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Command, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
 import {
      Dialog,
      DialogContent,
      DialogDescription,
+     DialogFooter,
      DialogHeader,
      DialogTitle,
-     DialogFooter,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Filter, ChevronRight, ChevronDownIcon, Plus, X } from "lucide-react"
 import {
      Select,
      SelectContent,
+     SelectGroup,
      SelectItem,
+     SelectLabel,
      SelectTrigger,
      SelectValue,
-     SelectGroup,
-     SelectLabel,
 } from "@/components/ui/select"
-import { Command, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
-import { Checkbox } from "@/components/ui/checkbox"
-import { createEvent } from "@/services/event-sessions"
-import { getAllLocations } from "@/services/locations-service"
+import { Textarea } from "@/components/ui/textarea"
+import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
+import { Course } from "@/interface/academic/course/CourseInterface"
+import { Section } from "@/interface/academic/section/SectionInterface"
 import { EventLocation } from "@/interface/location-interface"
 import {
      getAllClusters,
      getAllCourses,
      getAllSections,
 } from "@/services/cluster-and-course-sessions"
-import CreateLocationDialog from "../manage-locations/CreateLocationDialog"
-import { Course } from "@/interface/academic/course/CourseInterface"
-import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
-import { Section } from "@/interface/academic/section/SectionInterface"
+import { createEvent } from "@/services/event-sessions"
+import { getAllLocations } from "@/services/locations-service"
+import { addHours, format } from "date-fns"
+import { ChevronDownIcon, Plus, X } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import CreateLocationDialog from "../manage-locations/CreateLocationDialog"
 
 interface CreateEventDialogProps {
      isOpen: boolean
@@ -111,12 +112,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
           return items.filter(opts.predicate)
      }
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
-     const [createMessage, setCreateMessage] = useState("")
      const [createNewLocation, setCreateNewLocation] = useState(false)
-     const [editingLocation, setEditingLocation] = useState<EventLocation | null>(null)
-     const [isEditMode, setIsEditMode] = useState(false)
 
      const getCoursesUnderCluster = (clId: string) => {
           return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
@@ -362,20 +358,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           })
      }
 
-     const filteredCourses =
-          eligibility.selectedClusters.length === 0
-               ? courses
-               : courses.filter((course) =>
-                      eligibility.selectedClusters.includes(course.cluster?.clusterId || "")
-                 )
-
-     const filteredSections =
-          eligibility.selectedCourses.length === 0
-               ? sections
-               : sections.filter((section) =>
-                      eligibility.selectedCourses.includes(section.course?.id || "")
-                 )
-
      const isFormComplete =
           formData.eventName.trim() !== "" &&
           formData.eventLocationId !== "" &&
@@ -447,8 +429,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
      const closeDialog = () => {
           setCreateNewLocation(false)
-          setEditingLocation(null)
-          setIsEditMode(false)
      }
 
      const getDateDisplay = (date: Date): string => {

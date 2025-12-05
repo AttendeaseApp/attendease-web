@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Command, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
 import {
      Dialog,
      DialogContent,
@@ -21,7 +22,6 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import { Command, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
 import { Textarea } from "@/components/ui/textarea"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { Course } from "@/interface/academic/course/CourseInterface"
@@ -33,13 +33,13 @@ import {
      getAllCourses,
      getAllSections,
 } from "@/services/cluster-and-course-sessions"
-import { updateEvent, cancelEvent } from "@/services/event-sessions"
+import { cancelEvent, updateEvent } from "@/services/event-sessions"
 import { getAllLocations } from "@/services/locations-service"
 import { format } from "date-fns"
-import { ChevronDownIcon, ChevronRight, Filter, Save, X } from "lucide-react"
+import { ChevronDownIcon, Save, X } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
-import EditEventStatusDialog from "./EditEventStatusDialog"
 import { toast } from "sonner"
+import EditEventStatusDialog from "./EditEventStatusDialog"
 
 interface EditEventDialogProps {
      event: EventSession
@@ -116,11 +116,10 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
      const [loadingLocations, setLoadingLocations] = useState(true)
      const [open, setOpen] = useState(false)
      const [searchQuery, setSearchQuery] = useState("")
-     const [eventStatus, setEventStatus] = useState<EventStatus | null>(null)
 
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [editStatus, setEditStatus] = useState<"success" | "error">("success")
-     const [editMessage, setEditMessage] = useState("")
+     const [editStatus] = useState<"success" | "error">("success")
+     const [editMessage] = useState("")
 
      const getCoursesUnderCluster = useCallback(
           (clId: string) => {
@@ -209,25 +208,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
 
      useEffect(() => {
           if (isOpen && event && clusters.length > 0 && courses.length > 0 && sections.length > 0) {
-               // const formatToLocal = (dateStr?: string): string => {
-               //      if (!dateStr) return ""
-               //      try {
-               //           const parsedDate = new Date(dateStr.replace(" ", "T"))
-               //           if (isNaN(parsedDate.getTime())) {
-               //                return ""
-               //           }
-               //           const year = parsedDate.getFullYear()
-               //           const month = String(parsedDate.getMonth() + 1).padStart(2, "0")
-               //           const day = String(parsedDate.getDate()).padStart(2, "0")
-               //           const hours = String(parsedDate.getHours()).padStart(2, "0")
-               //           const minutes = String(parsedDate.getMinutes()).padStart(2, "0")
-               //           return `${year}-${month}-${day}T${hours}:${minutes}`
-               //      } catch (err) {
-               //           console.error("Date parsing error:", err)
-               //           return ""
-               //      }
-               // }
-
                setFormData({
                     ...formData,
                     eventName: event.eventName || "",
@@ -272,15 +252,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                setHasChanges(false)
                setErrors({})
           }
-     }, [
-          isOpen,
-          event,
-          clusters.length,
-          courses.length,
-          sections.length,
-          cleanEligibility,
-          formData,
-     ])
+
+          // TODO: fix this later
+     }, [isOpen, event, clusters.length, courses.length, sections.length, cleanEligibility])
 
      const validateForm = () => {
           const newErrors: Record<string, string> = {}
@@ -489,7 +463,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                setIsSubmitting(true)
                await cancelEvent(event.eventId)
                toast.success("Event cancelled")
-               setEventStatus(EventStatus.CANCELLED)
                onUpdate()
           } catch (error) {
                toast.error("Failed to cancel event" + error)
@@ -513,7 +486,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                return items.filter((item) => {
                     const value = normalize((item[key] ?? "").toString())
 
-                    if (!search) return true // allow empty or space input
+                    if (!search) return true
 
                     return value.includes(search)
                })
@@ -522,37 +495,11 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           return items.filter(opts.predicate)
      }
 
-     // const filteredClusters = filterItems(clusters, { key: "clusterName" });
-
-     // const filteredCourses =
-     //      eligibility.selectedClusters.length === 0
-     //           ? filterItems(courses, {key: "courseName"})
-     //           : filterItems (courses, {
-     //                predicate: (course) =>
-     //                  eligibility.selectedClusters.some(
-     //                       (clId) => String(course.cluster?.clusterId) === String(clId)
-     //                  ),
-     //           })
-
-     // const filteredSections =
-     //      eligibility.selectedCourses.length === 0
-     //           ? filterItems(sections, {key: "sectionName"})
-     //           : filterItems(sections, {
-     //                predicate: (section) =>
-     //                     eligibility.selectedCourses.some(
-     //                          (coId) => String(section.course?.id) === String(coId)
-     //                     ),
-     //                })
-
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           if (!validateForm()) return
           setIsSubmitting(true)
           try {
-               // const parseDateTime = (dateTimeStr: string): Date => {
-               //      return new Date(dateTimeStr)
-               // }
-
                let eligibleStudents: EligibilityCriteria | undefined
                if (eligibility.isDirty || !eligibility.allStudents) {
                     const cleaned = cleanEligibility(
@@ -581,7 +528,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     ),
                     startDateTime: format(formData.startDateTime, "yyyy-MM-dd hh:mm:ss a"),
                     endDateTime: format(formData.endDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    eventStatus: formData.eventStatus,
                     eventLocationId: formData.eventLocationId || undefined,
                     ...(eligibleStudents && { eligibleStudents }),
                }
@@ -1274,11 +1220,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         <p className="text-sm text-red-500">{errors.eligibility}</p>
                                    )}
                               </div>
-                              {errors.general && (
-                                   <p className="text-sm text-red-500 p-2 bg-red-50 rounded">
-                                        {errors.general}
-                                   </p>
-                              )}
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"
