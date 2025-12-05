@@ -17,7 +17,6 @@ import {
      DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
 import { UserStudentResponse } from "@/interface/UserStudent"
 import {
@@ -39,13 +38,9 @@ export default function RetrieveAllUsers() {
      const [courses, setCourses] = useState<string[]>([])
      const [sections, setSections] = useState<string[]>([])
      const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
-     const [confirmDeleteSection, setConfirmDeleteSection] = useState<string | null>(null)
      const [deleting, setDeleting] = useState(false)
-     const [deleteResult, setDeleteResult] = useState<{ success: boolean; message: string } | null>(
-          null
-     )
-     const [currentPage, setCurrentPage] = useState(1)
 
+     const [currentPage, setCurrentPage] = useState(1)
      const [dialogState, setDialogState] = useState({
           moreSettings: false,
           importStudents: false,
@@ -64,7 +59,18 @@ export default function RetrieveAllUsers() {
           (currentPage - 1) * itemsPerPage,
           currentPage * itemsPerPage
      )
-
+     const getTypeDisplay = (type: string) => {
+          switch (type) {
+               case "all":
+                    return "ALL"
+               case "osa":
+                    return "OSA"
+               case "student":
+                    return "STUDENT"
+               default:
+                    return "ALL"
+          }
+     }
      const loadUsers = async () => {
           try {
                setLoading(true)
@@ -229,21 +235,25 @@ export default function RetrieveAllUsers() {
                               />
                          </div>
 
-                         <Button variant="outline" size="sm" onClick={loadUsers}>
-                              Refresh
-                         </Button>
-
-                         <ToggleGroup
-                              type="single"
-                              value={selectedType}
-                              onValueChange={(value) => setSelectedType(value || "all")}
-                              className="flex space-x-2"
-                         >
-                              <ToggleGroupItem value="all">ALL</ToggleGroupItem>
-                              <ToggleGroupItem value="osa">OSA</ToggleGroupItem>
-                              <ToggleGroupItem value="student">STUDENT</ToggleGroupItem>
-                         </ToggleGroup>
-
+                         <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                   <Button variant="outline" size="sm">
+                                        {getTypeDisplay(selectedType)}{" "}
+                                        <ChevronDown className="ml-2 h-4 w-4" />
+                                   </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                   <DropdownMenuItem onClick={() => setSelectedType("all")}>
+                                        ALL
+                                   </DropdownMenuItem>
+                                   <DropdownMenuItem onClick={() => setSelectedType("osa")}>
+                                        OSA
+                                   </DropdownMenuItem>
+                                   <DropdownMenuItem onClick={() => setSelectedType("student")}>
+                                        STUDENT
+                                   </DropdownMenuItem>
+                              </DropdownMenuContent>
+                         </DropdownMenu>
                          <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                    <Button variant="outline" size="sm">
@@ -285,6 +295,10 @@ export default function RetrieveAllUsers() {
                                    ))}
                               </DropdownMenuContent>
                          </DropdownMenu>
+
+                         <Button variant="outline" size="sm" onClick={loadUsers}>
+                              Refresh
+                         </Button>
                     </div>
 
                     <ManagingUsersTable
