@@ -34,7 +34,18 @@ export default function RetrieveAllUsers() {
      const [loading, setLoading] = useState(true)
      const [searchTerm, setSearchTerm] = useState("")
      const [selectedType, setSelectedType] = useState("all")
+     const [selectedSection, setSelectedSection] = useState<string | null>(null)
+     const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
+     const [courses, setCourses] = useState<string[]>([])
+     const [sections, setSections] = useState<string[]>([])
+     const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
+     const [confirmDeleteSection, setConfirmDeleteSection] = useState<string | null>(null)
+     const [deleting, setDeleting] = useState(false)
+     const [deleteResult, setDeleteResult] = useState<{ success: boolean; message: string } | null>(
+          null
+     )
      const [currentPage, setCurrentPage] = useState(1)
+
      const [dialogState, setDialogState] = useState({
           moreSettings: false,
           importStudents: false,
@@ -46,9 +57,6 @@ export default function RetrieveAllUsers() {
           updateUser: false,
           updateStudent: false,
      })
-     const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
-     const [sections, setSections] = useState<string[]>([])
-     const [deleting, setDeleting] = useState(false)
 
      const itemsPerPage = 10
      const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
@@ -76,11 +84,28 @@ export default function RetrieveAllUsers() {
      }, [])
 
      useEffect(() => {
+          const uniqueSections = Array.from(
+               new Set(users.map((u) => u.section).filter((s): s is string => !!s))
+          )
+          const uniqueCourses = Array.from(
+               new Set(users.map((u) => u.course).filter((c): c is string => !!c))
+          )
+
+          setSections(["All Sections", ...uniqueSections])
+          setCourses(["All Courses", ...uniqueCourses])
+     }, [users])
+
+     useEffect(() => {
           const lowerSearch = searchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter(Boolean)
+
           const filtered = users.filter((user) => {
-               if (selectedType !== "all" && user.userType !== selectedType.toUpperCase())
+               if (selectedType !== "all" && user.userType?.toLowerCase() !== selectedType)
                     return false
+
+               if (selectedSection && user.section !== selectedSection) return false
+               if (selectedCourse && user.course !== selectedCourse) return false
+
                const fields = [
                     user.firstName,
                     user.lastName,
@@ -96,16 +121,10 @@ export default function RetrieveAllUsers() {
                     fields.some((f) => (f?.toString().toLowerCase() || "").includes(sw))
                )
           })
+
           setFilteredUsers(filtered)
           setCurrentPage(1)
-     }, [searchTerm, selectedType, users])
-
-     useEffect(() => {
-          const uniqueSections = Array.from(
-               new Set(users.map((u) => u.section).filter((s): s is string => !!s))
-          )
-          setSections(uniqueSections)
-     }, [users])
+     }, [searchTerm, selectedType, selectedSection, selectedCourse, users])
 
      const openDialog = (dialog: keyof typeof dialogState) =>
           setDialogState((prev) => ({ ...prev, [dialog]: true }))
@@ -133,7 +152,9 @@ export default function RetrieveAllUsers() {
           if (!dialogState.confirmDelete) return
           try {
                setDeleting(true)
-               await deleteStudentAccountBySection(dialogState.confirmDelete)
+               const sectionToDelete =
+                    dialogState.confirmDelete === "N/A" ? "" : dialogState.confirmDelete
+               await deleteStudentAccountBySection(sectionToDelete)
                loadUsers()
                setDialogState((prev) => ({
                     ...prev,
@@ -166,11 +187,13 @@ export default function RetrieveAllUsers() {
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
+                    {/* Header */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                          <div>
                               <h1 className="text-2xl font-bold md:text-3xl">Manage Users</h1>
                               <p className="text-muted-foreground mt-1">Manage all users here.</p>
                          </div>
+
                          <div className="flex justify-end space-x-2">
                               <DropdownMenu>
                                    <DropdownMenuTrigger asChild>
@@ -194,6 +217,7 @@ export default function RetrieveAllUsers() {
                          </div>
                     </div>
 
+                    {/* Filters */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
                          <div className="relative flex-1">
                               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -204,6 +228,7 @@ export default function RetrieveAllUsers() {
                                    onChange={(e) => setSearchTerm(e.target.value)}
                               />
                          </div>
+
                          <Button variant="outline" size="sm" onClick={loadUsers}>
                               Refresh
                          </Button>
@@ -211,22 +236,57 @@ export default function RetrieveAllUsers() {
                          <ToggleGroup
                               type="single"
                               value={selectedType}
-                              onValueChange={(value: string | undefined) =>
-                                   setSelectedType(value || "all")
-                              }
+                              onValueChange={(value) => setSelectedType(value || "all")}
                               className="flex space-x-2"
                          >
                               <ToggleGroupItem value="all">ALL</ToggleGroupItem>
                               <ToggleGroupItem value="osa">OSA</ToggleGroupItem>
                               <ToggleGroupItem value="student">STUDENT</ToggleGroupItem>
                          </ToggleGroup>
-                         <Button variant="outline" size="sm">
-                              SECTION <ChevronDown className="ml-2 h-4 w-4" />
-                         </Button>
-                         <Button variant="outline" size="sm">
-                              COURSE <ChevronDown className="ml-2 h-4 w-4" />
-                         </Button>
+
+                         <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                   <Button variant="outline" size="sm">
+                                        SECTION <ChevronDown className="ml-2 h-4 w-4" />
+                                   </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                   {sections.map((sec) => (
+                                        <DropdownMenuItem
+                                             key={sec}
+                                             onClick={() =>
+                                                  setSelectedSection(
+                                                       sec === "All Sections" ? null : sec
+                                                  )
+                                             }
+                                        >
+                                             {sec}
+                                        </DropdownMenuItem>
+                                   ))}
+                              </DropdownMenuContent>
+                         </DropdownMenu>
+
+                         <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                   <Button variant="outline" size="sm">
+                                        COURSE <ChevronDown className="ml-2 h-4 w-4" />
+                                   </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                   {courses.map((c) => (
+                                        <DropdownMenuItem
+                                             key={c}
+                                             onClick={() =>
+                                                  setSelectedCourse(c === "All Courses" ? null : c)
+                                             }
+                                        >
+                                             {c}
+                                        </DropdownMenuItem>
+                                   ))}
+                              </DropdownMenuContent>
+                         </DropdownMenu>
                     </div>
+
                     <ManagingUsersTable
                          users={paginatedUsers}
                          loading={loading}
@@ -334,6 +394,17 @@ export default function RetrieveAllUsers() {
                                    {dialogState.deleteResult?.success ? "Success" : "Failed"}
                               </DialogTitle>
                          </DialogHeader>
+
+                         <p
+                              className={`mt-2 text-sm font-semibold ${
+                                   dialogState.deleteResult?.success
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                              }`}
+                         >
+                              {dialogState.deleteResult?.message}
+                         </p>
+
                          <div className="flex justify-end mt-4">
                               <Button
                                    onClick={() =>
@@ -351,6 +422,7 @@ export default function RetrieveAllUsers() {
                          </div>
                     </DialogContent>
                </Dialog>
+
                <ImportStudentsDialog
                     open={dialogState.importStudents}
                     onOpenChange={(val) =>
