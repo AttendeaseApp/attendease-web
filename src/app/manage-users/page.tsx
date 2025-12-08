@@ -204,7 +204,7 @@ export default function RetrieveAllUsers() {
                               <DropdownMenu>
                                    <DropdownMenuTrigger asChild>
                                         <Button>
-                                             Manually Add Account 
+                                             Manually Add Account
                                              <ChevronDown className="ml-2 h-4 w-4" />
                                         </Button>
                                    </DropdownMenuTrigger>
