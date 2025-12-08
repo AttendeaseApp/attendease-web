@@ -36,6 +36,7 @@ export interface EventSession {
      startDateTime: string
      endDateTime: string
      eventStatus: EventStatus
+     facialVerificationEnabled?: boolean
      createdByUserId?: string | null
      createdAt?: string | null
      updatedAt?: string | null
