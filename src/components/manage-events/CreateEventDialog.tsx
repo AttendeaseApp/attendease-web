@@ -72,6 +72,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           startDateTime: addHours(now, 1),
           endDateTime: addHours(now, 3),
           eventLocationId: "",
+          facialVerificationEnabled: true,
      })
      const [eligibility, setEligibility] = useState<EligibilityState>({
           allStudents: true,
@@ -187,6 +188,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     startDateTime: addHours(now, 1),
                     endDateTime: addHours(now, 3),
                     eventLocationId: "",
+                    facialVerificationEnabled: true,
                })
                setEligibility({
                     allStudents: true,
@@ -197,8 +199,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                setError("")
           }
      }, [isOpen])
-
-     const handleInputChange = (field: keyof typeof formData, value: string | Date) => {
+     const handleInputChange = (field: keyof typeof formData, value: string | Date | boolean) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
@@ -406,6 +407,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                 course: cleaned.selectedCourses,
                                 sections: cleaned.selectedSections,
                            },
+                    facialVerificationEnabled: formData.facialVerificationEnabled,
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
@@ -1102,7 +1104,27 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         </PopoverContent>
                                    </Popover>
                               </div>
-
+                              <div className="space-y-2">
+                                   <Label>Registration Settings</Label>
+                                   <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                             id="facialVerificationEnabled"
+                                             checked={formData.facialVerificationEnabled}
+                                             onCheckedChange={(checked) =>
+                                                  handleInputChange(
+                                                       "facialVerificationEnabled",
+                                                       !!checked
+                                                  )
+                                             }
+                                        />
+                                        <Label
+                                             htmlFor="facialVerificationEnabled"
+                                             className="text-sm font-medium"
+                                        >
+                                             Require Facial Verification for Registration
+                                        </Label>
+                                   </div>
+                              </div>
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"
