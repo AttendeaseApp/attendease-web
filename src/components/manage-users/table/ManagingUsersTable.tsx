@@ -41,24 +41,6 @@ export default function ManagingUsersTable({
      totalPages,
      onPageChange,
 }: UsersTableProps) {
-     const sortedUsers = [...users].sort((a, b) => {
-          const userOrder: Record<string, number> = {
-               OSA: 0,
-               STUDENT: 1,
-          }
-          const userOsa = userOrder[a.userType!]
-          const userStudent = userOrder[b.userType!]
-
-          if (userOsa < userStudent) return -1
-          if (userOsa > userStudent) return 1
-
-          const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
-          const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
-
-          if (nameA < nameB) return -1
-          if (nameA > nameB) return 1
-          return 0
-     })
      const handleEdit = (user: UserStudentResponse) => {
           const commonData: UpdateUserDetailsInterface = {
                userId: String(user.userId),
@@ -183,21 +165,21 @@ export default function ManagingUsersTable({
                                    </TableCell>
                               </TableRow>
                          ) : users.length > 0 ? (
-                              sortedUsers.map((sortedUsers) => (
-                                   <TableRow key={sortedUsers.userId}>
-                                        <TableCell>{`${sortedUsers.firstName || ""} ${sortedUsers.lastName || ""}`}</TableCell>
-                                        <TableCell>{sortedUsers.userType || "N/A"}</TableCell>
-                                        <TableCell>{sortedUsers.section || "N/A"}</TableCell>
-                                        <TableCell>{sortedUsers.course || "N/A"}</TableCell>
-                                        <TableCell>{sortedUsers.studentNumber || "N/A"}</TableCell>
-                                        <TableCell>{sortedUsers.email || "N/A"}</TableCell>
-                                        <TableCell>{sortedUsers.contactNumber || "N/A"}</TableCell>
-                                        <TableCell>{sortedUsers.accountStatus || "N/A"}</TableCell>
+                              users.map((users) => (
+                                   <TableRow key={users.userId}>
+                                        <TableCell>{`${users.firstName || ""} ${users.lastName || ""}`}</TableCell>
+                                        <TableCell>{users.userType || "N/A"}</TableCell>
+                                        <TableCell>{users.section || "N/A"}</TableCell>
+                                        <TableCell>{users.course || "N/A"}</TableCell>
+                                        <TableCell>{users.studentNumber || "N/A"}</TableCell>
+                                        <TableCell>{users.email || "N/A"}</TableCell>
+                                        <TableCell>{users.contactNumber || "N/A"}</TableCell>
+                                        <TableCell>{users.accountStatus || "N/A"}</TableCell>
                                         <TableCell>
                                              <Button
                                                   variant="outline"
                                                   className="rounded-sm"
-                                                  onClick={() => handleEdit(sortedUsers)}
+                                                  onClick={() => handleEdit(users)}
                                              >
                                                   Update
                                              </Button>
