@@ -203,7 +203,10 @@ export default function RetrieveAllUsers() {
                          <div className="flex justify-end space-x-2">
                               <DropdownMenu>
                                    <DropdownMenuTrigger asChild>
-                                        <Button>Manually Add Account ▾</Button>
+                                        <Button>
+                                             Manually Add Account 
+                                             <ChevronDown className="ml-2 h-4 w-4" />
+                                        </Button>
                                    </DropdownMenuTrigger>
                                    <DropdownMenuContent>
                                         <DropdownMenuItem onClick={() => openDialog("addOSA")}>

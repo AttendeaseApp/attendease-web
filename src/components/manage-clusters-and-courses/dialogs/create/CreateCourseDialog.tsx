@@ -15,6 +15,7 @@ import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { createCourse } from "@/services/cluster-and-course-sessions"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 interface CreateCourseDialogProps {
      cluster: Cluster
@@ -59,7 +60,7 @@ export function CreateCourseDialog({
           )
 
           if (duplicate) {
-               setError("Course name already exists.")
+               toast.error("Course name already exists.")
                return
           }
           setIsSubmitting(true)
@@ -72,10 +73,11 @@ export function CreateCourseDialog({
                onCreate()
                onClose()
           } catch (err) {
-               const message = err + ", " + "Failed to create course."
+               const message = `${err instanceof Error ? err.message : String(err)}, Failed to create course.`
                setError(message)
-               console.error("Create failed:", err)
-               if (onError) onError(message)
+               toast.error(message)
+               // console.error("Create failed:", err)
+               // if (onError) onError(message)
           } finally {
                setIsSubmitting(false)
           }
@@ -104,11 +106,11 @@ export function CreateCourseDialog({
                                    required
                               />
                          </div>
-                         {error && (
+                         {/* {error && (
                               <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
                                    {error}
                               </div>
-                         )}
+                         )} */}
                          <DialogFooter className="flex justify-end space-x-2 pt-4">
                               <Button
                                    type="button"

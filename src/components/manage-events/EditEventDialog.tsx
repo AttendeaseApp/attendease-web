@@ -534,6 +534,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
 
                await updateEvent(event.eventId, updatedData)
                toast.success("Successfully updated the event.")
+               onUpdate()
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
