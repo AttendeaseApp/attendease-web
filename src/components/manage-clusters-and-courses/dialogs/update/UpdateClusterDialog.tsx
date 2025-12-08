@@ -104,11 +104,11 @@ export function UpdateClusterDialog({
                                    required
                               />
                          </div>
-                         {error && (
+                         {/* {error && (
                               <div className="p-3 text-sm text-red-700 bg-red-50 rounded-md border border-red-200">
                                    {error}
                               </div>
-                         )}
+                         )} */}
                          <DialogFooter className="flex justify-end space-x-2 pt-4">
                               <Button
                                    type="button"

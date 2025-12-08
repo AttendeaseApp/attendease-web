@@ -165,16 +165,18 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                                                   </DropdownMenuTrigger>
                                                   <DropdownMenuContent align="end">
                                                        {event.eventStatus !==
-                                                            EventStatus.FINALIZED && (
-                                                            <DropdownMenuItem
-                                                                 onClick={(e) =>
-                                                                      handleEdit(event, e)
-                                                                 }
-                                                            >
-                                                                 <Pencil className="mr-2 h-4 w-4" />
-                                                                 Edit
-                                                            </DropdownMenuItem>
-                                                       )}
+                                                            EventStatus.FINALIZED &&
+                                                            event.eventStatus !==
+                                                                 EventStatus.CANCELLED && (
+                                                                 <DropdownMenuItem
+                                                                      onClick={(e) =>
+                                                                           handleEdit(event, e)
+                                                                      }
+                                                                 >
+                                                                      <Pencil className="mr-2 h-4 w-4" />
+                                                                      Edit
+                                                                 </DropdownMenuItem>
+                                                            )}
                                                        <DropdownMenuItem
                                                             onClick={(e) =>
                                                                  openDeleteDialog(event, e)

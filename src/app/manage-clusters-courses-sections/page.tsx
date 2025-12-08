@@ -186,6 +186,8 @@ export default function ManageClustersPage() {
           setSelectedCluster(null)
           resetForm("cluster")
           loadClusters()
+          loadCourses()
+          loadSections()
           toast.success("Successfully updated Cluster.")
      }
 
@@ -204,7 +206,9 @@ export default function ManageClustersPage() {
           setIsEditCourseOpen(false)
           setSelectedCourse(null)
           resetForm("course")
+          loadClusters()
           loadCourses()
+          loadSections()
           toast.success("Successfully updated Course.")
      }
 
@@ -223,6 +227,8 @@ export default function ManageClustersPage() {
           setIsEditSectionOpen(false)
           setSelectedSections(null)
           resetForm("section")
+          loadClusters()
+          loadCourses()
           loadSections()
           toast.success("Successfully updated Sections.")
      }
@@ -239,6 +245,7 @@ export default function ManageClustersPage() {
           resetForm("cluster")
           loadClusters()
           loadCourses()
+          loadSections()
           toast.success("Successfully created Cluster.")
      }
 
@@ -247,6 +254,7 @@ export default function ManageClustersPage() {
      const handleCreateCourseSuccess = () => {
           setIsChooseClusterOpen(false)
           resetForm("course")
+          loadClusters()
           loadCourses()
           loadSections()
           toast.success("Successfully created Course.")
@@ -257,6 +265,8 @@ export default function ManageClustersPage() {
      const handleCreateSectionSuccess = () => {
           setIsChooseCourseOpen(false)
           resetForm("section")
+          loadClusters()
+          loadCourses()
           loadSections()
           toast.success("Successfully created Section.")
      }
@@ -275,7 +285,9 @@ export default function ManageClustersPage() {
           try {
                await deleteCluster(cluster.clusterId)
                setClusters((prev) => prev.filter((c) => c.clusterId !== cluster.clusterId))
+               loadClusters()
                loadCourses()
+               loadSections()
                toast.success(`Cluster "${cluster.clusterName}" deleted successfully.`)
           } catch (err) {
                console.error(err)
@@ -291,6 +303,9 @@ export default function ManageClustersPage() {
           try {
                await deleteSection(section.id)
                setSections((prev) => prev.filter((s) => s.id !== section.id))
+               loadClusters()
+               loadCourses()
+               loadSections()
                toast.success(`Section "${section.sectionName}" deleted successfully.`)
           } catch (error) {
                console.error("Delete failed:", error)
@@ -306,6 +321,9 @@ export default function ManageClustersPage() {
           try {
                await deleteCourse(course.id)
                setCourses((prev) => prev.filter((c) => c.id !== course.id))
+               loadClusters()
+               loadCourses()
+               loadSections()
                toast.success(`Course "${course.courseName}" deleted successfully.`)
           } catch (err) {
                console.error(err)
