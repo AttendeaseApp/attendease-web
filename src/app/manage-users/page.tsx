@@ -128,21 +128,21 @@ export default function RetrieveAllUsers() {
                )
           })
 
- const sortedFiltered = [...filtered].sort((a, b) => {
-        const userOrder: Record<string, number> = { OSA: 0, STUDENT: 1 }
-        const userOsa = userOrder[a.userType!]
-        const userStudent = userOrder[b.userType!]
-       
-        if (userOsa < userStudent) return -1
-         if (userOsa > userStudent) return 1
-     
-        const nameA = `${a.firstName } ${a.lastName }`.toLowerCase()
-        const nameB = `${b.firstName } ${b.lastName }`.toLowerCase()
-        
-         if (nameA < nameB) return -1
-          if (nameA > nameB) return 1
-          return 0
-    })
+          const sortedFiltered = [...filtered].sort((a, b) => {
+               const userOrder: Record<string, number> = { OSA: 0, STUDENT: 1 }
+               const userOsa = userOrder[a.userType!]
+               const userStudent = userOrder[b.userType!]
+
+               if (userOsa < userStudent) return -1
+               if (userOsa > userStudent) return 1
+
+               const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
+               const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
+
+               if (nameA < nameB) return -1
+               if (nameA > nameB) return 1
+               return 0
+          })
 
           setFilteredUsers(sortedFiltered)
           setCurrentPage(1)

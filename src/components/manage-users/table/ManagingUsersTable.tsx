@@ -41,7 +41,6 @@ export default function ManagingUsersTable({
      totalPages,
      onPageChange,
 }: UsersTableProps) {
-    
      const handleEdit = (user: UserStudentResponse) => {
           const commonData: UpdateUserDetailsInterface = {
                userId: String(user.userId),
