@@ -495,18 +495,25 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           return items.filter(opts.predicate)
      }
 
+     const originalRegistrationDate = new Date(event.timeInRegistrationStartDateTime)
+     const originalStartDate = new Date(event.startDateTime)
+     const originalEndDate = new Date(event.endDateTime)
+
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           if (!validateForm()) return
           setIsSubmitting(true)
+
           try {
                let eligibleStudents: EligibilityCriteria | undefined
+
                if (eligibility.isDirty || !eligibility.allStudents) {
                     const cleaned = cleanEligibility(
                          eligibility.selectedClusters,
                          eligibility.selectedCourses,
                          eligibility.selectedSections
                     )
+
                     eligibleStudents = {
                          allStudents: eligibility.allStudents,
                          ...(eligibility.allStudents
@@ -519,17 +526,36 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     } as EligibilityCriteria
                }
 
+               // Prepare updated event data
                const updatedData: Partial<EventSession> = {
                     eventName: formData.eventName,
                     description: formData.description || undefined,
-                    timeInRegistrationStartDateTime: format(
-                         formData.timeInRegistrationStartDateTime,
-                         "yyyy-MM-dd hh:mm:ss a"
-                    ),
-                    startDateTime: format(formData.startDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    endDateTime: format(formData.endDateTime, "yyyy-MM-dd hh:mm:ss a"),
                     eventLocationId: formData.eventLocationId || undefined,
                     ...(eligibleStudents && { eligibleStudents }),
+               }
+
+               // Update registration start if changed
+               if (
+                    formData.timeInRegistrationStartDateTime.getTime() !==
+                    originalRegistrationDate.getTime()
+               ) {
+                    updatedData.timeInRegistrationStartDateTime = format(
+                         formData.timeInRegistrationStartDateTime,
+                         "yyyy-MM-dd hh:mm:ss a"
+                    )
+               }
+
+               // Update start time if changed
+               if (formData.startDateTime.getTime() !== originalStartDate.getTime()) {
+                    updatedData.startDateTime = format(
+                         formData.startDateTime,
+                         "yyyy-MM-dd hh:mm:ss a"
+                    )
+               }
+
+               // Update end time if changed
+               if (formData.endDateTime.getTime() !== originalEndDate.getTime()) {
+                    updatedData.endDateTime = format(formData.endDateTime, "yyyy-MM-dd hh:mm:ss a")
                }
 
                await updateEvent(event.eventId, updatedData)
@@ -538,7 +564,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
-               toast.error("Failed to update the event. Please verify time and location" + error)
+               toast.error("Failed to update the event. Please verify time and location")
           } finally {
                setIsSubmitting(false)
           }
@@ -601,11 +627,16 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                handleInputChange(field, newDate)
           }
      }
-     if (!isOpen) return null
+     //if (!isOpen) return null
 
      return (
           <>
-               <Dialog open={isOpen} onOpenChange={handleClose}>
+               <Dialog
+                    open={isOpen}
+                    onOpenChange={(open) => {
+                         if (!open) handleClose()
+                    }}
+               >
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                          <DialogHeader>
                               <DialogTitle>Edit Event: {event.eventName}</DialogTitle>
