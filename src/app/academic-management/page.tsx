@@ -1,21 +1,35 @@
 "use client"
 
-import ProtectedLayout from "@/components/layouts/ProtectedLayout"
+import { AcademicYearCard } from "@/components/academic-management/card/AcademicYearCard"
+import { CreateAcademicYearDialog } from "@/components/academic-management/dialogs/create/CreateAcademicYearDialog"
 import { CreateClusterDialog } from "@/components/academic-management/dialogs/create/CreateClusterDialog"
 import { CreateCourseDialog } from "@/components/academic-management/dialogs/create/CreateCourseDialog"
 import { CreateSectionDialog } from "@/components/academic-management/dialogs/create/CreateSectionDialog"
+import { UpdateAcademicYearDialog } from "@/components/academic-management/dialogs/update/UpdateAcademicYearDialog"
 import { UpdateClusterDialog } from "@/components/academic-management/dialogs/update/UpdateClusterDialog"
 import { UpdateCourseDialog } from "@/components/academic-management/dialogs/update/UpdateCourseDialog"
 import { UpdateSectionDialog } from "@/components/academic-management/dialogs/update/UpdateSectionDialog"
-import { AcademicClusterTable } from "@/components/academic-management/tables/AcademicClusterTable"
-import { AcademicCourseTable } from "@/components/academic-management/tables/AcademicCourseTable"
-import { AcademicSectionTable } from "@/components/academic-management/tables/AcademicSectionTable"
+import { AcademicYearTable } from "@/components/academic-management/tables/AcademicYearTable"
+import { ClusterTable } from "@/components/academic-management/tables/ClusterTable"
+import { CourseTable } from "@/components/academic-management/tables/CourseTable"
+import { SectionTable } from "@/components/academic-management/tables/SectionTable"
+import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Plus } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { Course } from "@/interface/academic/course/CourseInterface"
 import { Section } from "@/interface/academic/section/SectionInterface"
+import {
+     AcademicYear,
+     activateAcademicYear,
+     deactivateAcademicYear,
+     deleteAcademicYear,
+     getActiveAcademicYear,
+     getAllAcademicYears,
+     getSemesterStatus,
+     SemesterStatus,
+} from "@/services/api/academic/academic-year"
 import {
      deleteCluster,
      deleteCourse,
@@ -23,13 +37,12 @@ import {
      getAllClusters,
      getAllCourses,
      getAllSections,
-} from "@/services/cluster-and-course-sessions"
-import { toast } from "sonner"
+} from "@/services/api/academic/cluster-and-course-sessions"
+import { Plus, RefreshCw, Search } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "sonner"
 
 export default function ManageClustersPage() {
-     // ------------------ Data ------------------
      const [clusters, setClusters] = useState<Cluster[]>([])
      const [courses, setCourses] = useState<Course[]>([])
      const [sections, setSections] = useState<Section[]>([])
@@ -53,14 +66,23 @@ export default function ManageClustersPage() {
      const [isEditCourseOpen, setIsEditCourseOpen] = useState(false)
      const [isEditSectionOpen, setIsEditSectionOpen] = useState(false)
 
-     // ------------------ Load Data ------------------
+     const [academicYears, setAcademicYears] = useState<AcademicYear[]>([])
+     const [activeAcademicYear, setActiveAcademicYear] = useState<AcademicYear | null>(null)
+     const [semesterStatus, setSemesterStatus] = useState<SemesterStatus | null>(null)
+     const [loadingAcademicYears, setLoadingAcademicYears] = useState(true)
+     const [loadingSemesterStatus, setLoadingSemesterStatus] = useState(true)
+     const [academicYearSearchTerm, setAcademicYearSearchTerm] = useState("")
+     const [selectedAcademicYear, setSelectedAcademicYear] = useState<AcademicYear | null>(null)
+     const [isCreateAcademicYearOpen, setIsCreateAcademicYearOpen] = useState(false)
+     const [isEditAcademicYearOpen, setIsEditAcademicYearOpen] = useState(false)
+
      const loadClusters = async () => {
           setLoadingClusters(true)
           try {
                const data = await getAllClusters()
                setClusters(data)
           } catch (err) {
-               toast.error(err instanceof Error ? err.message : "Failed to load clusters")
+               console.error("Failed to load clusters:", err)
           } finally {
                setLoadingClusters(false)
           }
@@ -72,7 +94,7 @@ export default function ManageClustersPage() {
                const data = await getAllCourses()
                setCourses(data)
           } catch (err) {
-               toast.error(err instanceof Error ? err.message : "Failed to load courses")
+               console.error("Failed to load courses:", err)
           } finally {
                setLoadingCourses(false)
           }
@@ -84,9 +106,43 @@ export default function ManageClustersPage() {
                const data = await getAllSections()
                setSections(data)
           } catch (err) {
-               toast.error(err instanceof Error ? err.message : "Failed to load sections")
+               console.error("Failed to load sections:", err)
           } finally {
                setLoadingSections(false)
+          }
+     }
+
+     const loadAcademicYears = async () => {
+          setLoadingAcademicYears(true)
+          try {
+               const data = await getAllAcademicYears()
+               setAcademicYears(data)
+          } catch (err) {
+               console.error("Failed to load academic years:", err)
+          } finally {
+               setLoadingAcademicYears(false)
+          }
+     }
+
+     const loadActiveAcademicYear = async () => {
+          try {
+               const data = await getActiveAcademicYear()
+               setActiveAcademicYear(data)
+          } catch (err) {
+               console.warn("No active academic year")
+               setActiveAcademicYear(null)
+          }
+     }
+
+     const loadSemesterStatus = async () => {
+          setLoadingSemesterStatus(true)
+          try {
+               const data = await getSemesterStatus()
+               setSemesterStatus(data)
+          } catch (err) {
+               console.warn("Failed to load semester status:", err)
+          } finally {
+               setLoadingSemesterStatus(false)
           }
      }
 
@@ -94,9 +150,11 @@ export default function ManageClustersPage() {
           loadClusters()
           loadCourses()
           loadSections()
+          loadAcademicYears()
+          loadActiveAcademicYear()
+          loadSemesterStatus()
      }, [])
 
-     // ------------------ Filtered Lists ------------------
      const filteredClusters = clusters.filter((c) =>
           c.clusterName.toLowerCase().includes(clusterSearchTerm.toLowerCase())
      )
@@ -106,99 +164,158 @@ export default function ManageClustersPage() {
      const filteredSections = sections.filter((s) =>
           s.sectionName.toLowerCase().includes(sectionSearchTerm.toLowerCase())
      )
+     const filteredAcademicYears = academicYears.filter((ay) =>
+          ay.academicYearName.toLowerCase().includes(academicYearSearchTerm.toLowerCase())
+     )
 
-     // ------------------ Delete Handlers ------------------
      const handleDeleteCluster = async (cluster: Cluster) => {
           try {
                await deleteCluster(cluster.clusterId)
-               toast.success(`Cluster "${cluster.clusterName}" deleted`)
                loadClusters()
                loadCourses()
                loadSections()
           } catch (err) {
-               toast.error(err instanceof Error ? err.message : "Delete failed")
+               console.error("Failed to delete cluster:", err)
           }
      }
 
      const handleDeleteCourse = async (course: Course) => {
           try {
                await deleteCourse(course.id)
-               toast.success(`Course "${course.courseName}" deleted`)
                loadCourses()
                loadSections()
           } catch (err) {
-               toast.error(err instanceof Error ? err.message : "Delete failed")
+               console.error("Failed to delete course:", err)
           }
      }
 
      const handleDeleteSection = async (section: Section) => {
           try {
                await deleteSection(section.id)
-               toast.success(`Section "${section.sectionName}" deleted`)
                loadSections()
           } catch (err) {
-               toast.error(err instanceof Error ? err.message : "Delete failed")
+               console.error("Failed to delete section:", err)
           }
+     }
+
+     const handleDeleteAcademicYear = async (academicYear: AcademicYear) => {
+          try {
+               await deleteAcademicYear(academicYear.id)
+               loadAcademicYears()
+               loadActiveAcademicYear()
+               loadSemesterStatus()
+          } catch (err) {
+               console.error("Failed to delete academic year:", err)
+          }
+     }
+
+     const handleActivateAcademicYear = async (academicYear: AcademicYear) => {
+          try {
+               await activateAcademicYear(academicYear.id)
+               loadAcademicYears()
+               loadActiveAcademicYear()
+               loadSemesterStatus()
+          } catch (err) {
+               console.error("Failed to activate academic year:", err)
+          }
+     }
+
+     const handleDeactivateAcademicYear = async (academicYear: AcademicYear) => {
+          try {
+               await deactivateAcademicYear(academicYear.id)
+               loadAcademicYears()
+               loadActiveAcademicYear()
+               loadSemesterStatus()
+          } catch (err) {
+               console.error("Failed to deactivate academic year:", err)
+          }
+     }
+
+     const handleRefreshAll = () => {
+          loadClusters()
+          loadCourses()
+          loadSections()
+          loadAcademicYears()
+          loadActiveAcademicYear()
+          loadSemesterStatus()
+          toast.success("All data refreshed")
      }
 
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full gap-6">
-                    {/* ------------------ Header ------------------ */}
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                          <div>
                               <h1 className="text-2xl md:text-3xl font-bold">
-                                   Manage Clusters, Courses & Sections
+                                   Academic Management
                               </h1>
                               <p className="text-muted-foreground mt-1">
-                                   Create and manage clusters, courses, and sections here.
+                                   Manage academic years, clusters, courses, and sections
                               </p>
                          </div>
-                         <div className="flex gap-4">
-                              <Button onClick={() => setIsCreateClusterOpen(true)}>
-                                   <Plus className="mr-2 h-4 w-4" />
-                                   Create Cluster
-                              </Button>
-                              <Button
-                                   onClick={() => {
-                                        if (clusters.length === 0) {
-                                             toast.error("Please create a cluster first")
-                                             return
-                                        }
-                                        setSelectedCluster(clusters[0]) // default first cluster
-                                        setIsCreateCourseOpen(true)
-                                   }}
-                              >
-                                   <Plus className="mr-2 h-4 w-4" />
-                                   Create Course
-                              </Button>
-                              <Button
-                                   onClick={() => {
-                                        if (courses.length === 0) {
-                                             toast.error("Please create a course first")
-                                             return
-                                        }
-                                        setSelectedCourse(courses[0]) // default first course
-                                        setIsCreateSectionOpen(true)
-                                   }}
-                              >
-                                   <Plus className="mr-2 h-4 w-4" />
-                                   Create Section
-                              </Button>
-                         </div>
+                         <Button variant="outline" onClick={handleRefreshAll}>
+                              <RefreshCw className="mr-2 h-4 w-4" />
+                              Refresh All
+                         </Button>
                     </div>
 
-                    {/* ------------------ Tabs ------------------ */}
-                    <Tabs defaultValue="clusters" className="flex flex-col gap-4">
-                         <TabsList>
+                    {activeAcademicYear && <AcademicYearCard academicYear={activeAcademicYear} />}
+
+                    <Tabs defaultValue="academic-years" className="flex flex-col gap-4">
+                         <TabsList className="grid w-full grid-cols-4">
+                              <TabsTrigger value="academic-years">Academic Years</TabsTrigger>
                               <TabsTrigger value="clusters">Clusters</TabsTrigger>
                               <TabsTrigger value="courses">Courses</TabsTrigger>
                               <TabsTrigger value="sections">Sections</TabsTrigger>
                          </TabsList>
 
-                         {/* ------------------ Clusters Tab ------------------ */}
-                         <TabsContent value="clusters">
-                              <div className="flex flex-col gap-4 md:flex-row md:items-center mb-2">
+                         <TabsContent value="academic-years" className="space-y-4">
+                              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                   <div className="relative flex-1">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                             placeholder="Search academic years..."
+                                             className="pl-8"
+                                             value={academicYearSearchTerm}
+                                             onChange={(e) =>
+                                                  setAcademicYearSearchTerm(e.target.value)
+                                             }
+                                        />
+                                   </div>
+                                   <div className="flex gap-2">
+                                        <Button
+                                             variant="outline"
+                                             size="sm"
+                                             onClick={loadAcademicYears}
+                                        >
+                                             Refresh
+                                        </Button>
+                                        <Button
+                                             size="sm"
+                                             onClick={() => setIsCreateAcademicYearOpen(true)}
+                                        >
+                                             <Plus className="mr-2 h-4 w-4" />
+                                             Create Academic Year
+                                        </Button>
+                                   </div>
+                              </div>
+
+                              <AcademicYearTable
+                                   academicYears={filteredAcademicYears}
+                                   loading={loadingAcademicYears}
+                                   onEdit={(ay) => {
+                                        setSelectedAcademicYear(ay)
+                                        setIsEditAcademicYearOpen(true)
+                                   }}
+                                   onDelete={handleDeleteAcademicYear}
+                                   onActivate={handleActivateAcademicYear}
+                                   onDeactivate={handleDeactivateAcademicYear}
+                              />
+                         </TabsContent>
+
+                         {/*clusters tab */}
+                         <TabsContent value="clusters" className="space-y-4">
+                              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                    <div className="relative flex-1">
                                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -208,12 +325,21 @@ export default function ManageClustersPage() {
                                              onChange={(e) => setClusterSearchTerm(e.target.value)}
                                         />
                                    </div>
-                                   <Button variant="outline" size="sm" onClick={loadClusters}>
-                                        Refresh
-                                   </Button>
+                                   <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={loadClusters}>
+                                             Refresh
+                                        </Button>
+                                        <Button
+                                             size="sm"
+                                             onClick={() => setIsCreateClusterOpen(true)}
+                                        >
+                                             <Plus className="mr-2 h-4 w-4" />
+                                             Create Cluster
+                                        </Button>
+                                   </div>
                               </div>
 
-                              <AcademicClusterTable
+                              <ClusterTable
                                    clusters={filteredClusters}
                                    loading={loadingClusters}
                                    onEditAction={(c) => {
@@ -224,9 +350,9 @@ export default function ManageClustersPage() {
                               />
                          </TabsContent>
 
-                         {/* ------------------ Courses Tab ------------------ */}
-                         <TabsContent value="courses">
-                              <div className="flex flex-col gap-4 md:flex-row md:items-center mb-2">
+                         {/*courses tab*/}
+                         <TabsContent value="courses" className="space-y-4">
+                              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                    <div className="relative flex-1">
                                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -236,12 +362,28 @@ export default function ManageClustersPage() {
                                              onChange={(e) => setCourseSearchTerm(e.target.value)}
                                         />
                                    </div>
-                                   <Button variant="outline" size="sm" onClick={loadCourses}>
-                                        Refresh
-                                   </Button>
+                                   <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={loadCourses}>
+                                             Refresh
+                                        </Button>
+                                        <Button
+                                             size="sm"
+                                             onClick={() => {
+                                                  if (clusters.length === 0) {
+                                                       toast.error("Please create a cluster first")
+                                                       return
+                                                  }
+                                                  setSelectedCluster(clusters[0])
+                                                  setIsCreateCourseOpen(true)
+                                             }}
+                                        >
+                                             <Plus className="mr-2 h-4 w-4" />
+                                             Create Course
+                                        </Button>
+                                   </div>
                               </div>
 
-                              <AcademicCourseTable
+                              <CourseTable
                                    courses={filteredCourses}
                                    loading={loadingCourses}
                                    onEdit={(c) => {
@@ -252,9 +394,9 @@ export default function ManageClustersPage() {
                               />
                          </TabsContent>
 
-                         {/* ------------------ Sections Tab ------------------ */}
-                         <TabsContent value="sections">
-                              <div className="flex flex-col gap-4 md:flex-row md:items-center mb-2">
+                         {/*section tab*/}
+                         <TabsContent value="sections" className="space-y-4">
+                              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                    <div className="relative flex-1">
                                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -264,12 +406,28 @@ export default function ManageClustersPage() {
                                              onChange={(e) => setSectionSearchTerm(e.target.value)}
                                         />
                                    </div>
-                                   <Button variant="outline" size="sm" onClick={loadSections}>
-                                        Refresh
-                                   </Button>
+                                   <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={loadSections}>
+                                             Refresh
+                                        </Button>
+                                        <Button
+                                             size="sm"
+                                             onClick={() => {
+                                                  if (courses.length === 0) {
+                                                       toast.error("Please create a course first")
+                                                       return
+                                                  }
+                                                  setSelectedCourse(courses[0])
+                                                  setIsCreateSectionOpen(true)
+                                             }}
+                                        >
+                                             <Plus className="mr-2 h-4 w-4" />
+                                             Create Section
+                                        </Button>
+                                   </div>
                               </div>
 
-                              <AcademicSectionTable
+                              <SectionTable
                                    sections={filteredSections}
                                    loading={loadingSections}
                                    onEdit={(s) => {
@@ -281,7 +439,38 @@ export default function ManageClustersPage() {
                          </TabsContent>
                     </Tabs>
 
-                    {/* ------------------ Dialogs ------------------ */}
+                    {/* DIALOGS */}
+                    {/* Academic Year Dialogs */}
+                    <CreateAcademicYearDialog
+                         isOpen={isCreateAcademicYearOpen}
+                         onClose={() => setIsCreateAcademicYearOpen(false)}
+                         onCreate={() => {
+                              setIsCreateAcademicYearOpen(false)
+                              loadAcademicYears()
+                              loadActiveAcademicYear()
+                              loadSemesterStatus()
+                         }}
+                    />
+
+                    {selectedAcademicYear && (
+                         <UpdateAcademicYearDialog
+                              academicYear={selectedAcademicYear}
+                              isOpen={isEditAcademicYearOpen}
+                              onClose={() => {
+                                   setIsEditAcademicYearOpen(false)
+                                   setSelectedAcademicYear(null)
+                              }}
+                              onUpdate={() => {
+                                   setIsEditAcademicYearOpen(false)
+                                   loadAcademicYears()
+                                   loadActiveAcademicYear()
+                                   loadSemesterStatus()
+                                   // Success toast handled by service
+                              }}
+                         />
+                    )}
+
+                    {/* Cluster/Course/Section Dialogs */}
                     <CreateClusterDialog
                          isOpen={isCreateClusterOpen}
                          onClose={() => setIsCreateClusterOpen(false)}
@@ -293,63 +482,63 @@ export default function ManageClustersPage() {
                     />
 
                     {selectedCluster && (
-                         <CreateCourseDialog
-                              cluster={selectedCluster}
-                              courses={courses}
-                              isOpen={isCreateCourseOpen}
-                              onClose={() => {
-                                   setIsCreateCourseOpen(false)
-                                   setSelectedCluster(null)
-                              }}
-                              onCreate={() => {
-                                   setIsCreateCourseOpen(false)
-                                   loadCourses()
-                                   toast.success("Course created successfully")
-                              }}
-                         />
+                         <>
+                              <CreateCourseDialog
+                                   cluster={selectedCluster}
+                                   courses={courses}
+                                   isOpen={isCreateCourseOpen}
+                                   onClose={() => {
+                                        setIsCreateCourseOpen(false)
+                                        setSelectedCluster(null)
+                                   }}
+                                   onCreate={() => {
+                                        setIsCreateCourseOpen(false)
+                                        loadCourses()
+                                        toast.success("Course created successfully")
+                                   }}
+                              />
+
+                              <UpdateClusterDialog
+                                   clusters={selectedCluster}
+                                   isOpen={isEditClusterOpen}
+                                   onClose={() => setIsEditClusterOpen(false)}
+                                   onUpdate={() => {
+                                        setIsEditClusterOpen(false)
+                                        loadClusters()
+                                        toast.success("Cluster updated successfully")
+                                   }}
+                              />
+                         </>
                     )}
 
                     {selectedCourse && (
-                         <CreateSectionDialog
-                              course={selectedCourse}
-                              isOpen={isCreateSectionOpen}
-                              onClose={() => {
-                                   setIsCreateSectionOpen(false)
-                                   setSelectedCourse(null)
-                              }}
-                              onCreate={() => {
-                                   setIsCreateSectionOpen(false)
-                                   loadSections()
-                                   toast.success("Section created successfully")
-                              }}
-                         />
-                    )}
+                         <>
+                              <CreateSectionDialog
+                                   course={selectedCourse}
+                                   isOpen={isCreateSectionOpen}
+                                   onClose={() => {
+                                        setIsCreateSectionOpen(false)
+                                        setSelectedCourse(null)
+                                   }}
+                                   onCreate={() => {
+                                        setIsCreateSectionOpen(false)
+                                        loadSections()
+                                        toast.success("Section created successfully")
+                                   }}
+                              />
 
-                    {selectedCluster && (
-                         <UpdateClusterDialog
-                              clusters={selectedCluster}
-                              isOpen={isEditClusterOpen}
-                              onClose={() => setIsEditClusterOpen(false)}
-                              onUpdate={() => {
-                                   setIsEditClusterOpen(false)
-                                   loadClusters()
-                                   toast.success("Cluster updated successfully")
-                              }}
-                         />
-                    )}
-
-                    {selectedCourse && (
-                         <UpdateCourseDialog
-                              cluster={selectedCourse.cluster!}
-                              courses={selectedCourse}
-                              isOpen={isEditCourseOpen}
-                              onClose={() => setIsEditCourseOpen(false)}
-                              onUpdate={() => {
-                                   setIsEditCourseOpen(false)
-                                   loadCourses()
-                                   toast.success("Course updated successfully")
-                              }}
-                         />
+                              <UpdateCourseDialog
+                                   cluster={selectedCourse.cluster!}
+                                   courses={selectedCourse}
+                                   isOpen={isEditCourseOpen}
+                                   onClose={() => setIsEditCourseOpen(false)}
+                                   onUpdate={() => {
+                                        setIsEditCourseOpen(false)
+                                        loadCourses()
+                                        toast.success("Course updated successfully")
+                                   }}
+                              />
+                         </>
                     )}
 
                     {selectedSection && (
@@ -361,7 +550,6 @@ export default function ManageClustersPage() {
                               onUpdate={() => {
                                    setIsEditSectionOpen(false)
                                    loadSections()
-                                   toast.success("Section updated successfully")
                               }}
                          />
                     )}

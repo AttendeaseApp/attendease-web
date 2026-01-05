@@ -19,6 +19,18 @@ export const EVENT_MANAGEMENT_API_ENDPOINTS = {
  * All cluster and course management related API endpoints.
  */
 export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
+     TRIGGER_ACADEMIC_SCHEDULER: `${API_BASE}/api/scheduler/trigger-academic-year-activation`,
+     GET_ACTIVE_ACADEMIC_YEAR: `${API_BASE}/api/academic-years/active`,
+     CREATE_ACADEMIC_YEAR: `${API_BASE}/api/academic-years`,
+     GET_ALL_ACADEMIC_YEARS: `${API_BASE}/api/academic-years`,
+     ACTIVATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}/activate`,
+     DELETE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}`,
+     GET_ACADEMIC_YEAR_BY_ID: (id: string) => `${API_BASE}/api/academic-years/${id}`,
+     UPDATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}`,
+     DEACTIVATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}/deactivate`,
+     GET_CURRENT_SEMESTER: `${API_BASE}/api/academic-years/current-semester`,
+     GET_CURRENT_SEMESTER_NAME: `${API_BASE}/api/academic-years/current-semester-name`,
+     GET_SEMESTER_STATUS: `${API_BASE}/api/academic-years/semester-status`,
      GET_ALL_COURSES: `${API_BASE}/api/courses`,
      GET_ALL_CLUSTERS: `${API_BASE}/api/clusters`,
      DELETE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
