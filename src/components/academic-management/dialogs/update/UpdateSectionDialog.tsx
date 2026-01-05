@@ -32,54 +32,78 @@ export function UpdateSectionDialog({
      isOpen,
      onClose,
      onUpdate,
+     onError,
      section,
 }: UpdateSectionDialogProps) {
      const [formData, setFormData] = useState({
-          sectionName: section.sectionName,
+          sectionName: "",
+          yearLevel: 1,
+          semester: 1,
      })
 
      const [error, setError] = useState<string>("")
-
      const [isSubmitting, setIsSubmitting] = useState(false)
+
      useEffect(() => {
           if (isOpen) {
                setFormData({
-                    sectionName: section.sectionName || "",
+                    sectionName: section.sectionName ?? "",
+                    yearLevel: section.yearLevel ?? 1,
+                    semester: section.semester ?? 1,
                })
                setError("")
           }
-     }, [isOpen, section.sectionName])
+     }, [isOpen, section])
 
-     const handleInputChange = (field: keyof typeof formData, value: string) => {
+     const handleInputChange = (field: keyof typeof formData, value: string | number) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
 
+     const hasChanges =
+          formData.sectionName.trim() !== section.sectionName ||
+          formData.yearLevel !== section.yearLevel ||
+          formData.semester !== section.semester
+
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
-          setError("")
+          if (!hasChanges) {
+               return
+          }
+
           setIsSubmitting(true)
+          setError("")
+
           try {
-               const updateSectionData = {
-                    sectionName: formData.sectionName,
+               const payload = {
+                    sectionName: formData.sectionName.trim(),
+                    yearLevel: formData.yearLevel,
+                    semester: formData.semester,
                }
-               console.log("Sending update payload:", updateSectionData)
-               await updateSection(section.id, updateSectionData)
+
+               console.log("Updating section:", payload)
+
+               await updateSection(section.id, payload)
+
+               toast.success("Section updated successfully")
                onUpdate()
                onClose()
           } catch (err) {
-               const message =
-                    (err instanceof Error ? err.message : String(err)) + "Failed to update section."
+               let message = "Failed to update section"
+
+               if (err instanceof Error) {
+                    message = err.message
+               }
+
                setError(message)
-               console.error("Update failed:", err)
-               toast.error(message)
+               onError?.(message)
           } finally {
                setIsSubmitting(false)
           }
      }
 
      const handleClose = () => {
-          onClose()
+          if (!isSubmitting) onClose()
      }
 
      if (!isOpen) return null
@@ -90,10 +114,12 @@ export function UpdateSectionDialog({
                     <DialogHeader>
                          <DialogTitle>Update Section: {section.sectionName}</DialogTitle>
                          <DialogDescription>
-                              Fill in the details to update the section in {course.courseName}.
+                              Update section details for <strong>{course.courseName}</strong>
                          </DialogDescription>
                     </DialogHeader>
+
                     <form onSubmit={handleSubmit} className="space-y-4">
+                         {/* section name*/}
                          <div className="space-y-2">
                               <Label htmlFor="sectionName">Section Name</Label>
                               <Input
@@ -102,7 +128,39 @@ export function UpdateSectionDialog({
                                    onChange={(e) =>
                                         handleInputChange("sectionName", e.target.value)
                                    }
-                                   placeholder="Enter section name"
+                                   placeholder="e.g. BSCS-201"
+                                   required
+                              />
+                         </div>
+
+                         {/* year lvl*/}
+                         <div className="space-y-2">
+                              <Label htmlFor="yearLevel">Year Level</Label>
+                              <Input
+                                   id="yearLevel"
+                                   type="number"
+                                   min={1}
+                                   max={4}
+                                   value={formData.yearLevel}
+                                   onChange={(e) =>
+                                        handleInputChange("yearLevel", Number(e.target.value))
+                                   }
+                                   required
+                              />
+                         </div>
+
+                         {/* semster*/}
+                         <div className="space-y-2">
+                              <Label htmlFor="semester">Semester</Label>
+                              <Input
+                                   id="semester"
+                                   type="number"
+                                   min={1}
+                                   max={2}
+                                   value={formData.semester}
+                                   onChange={(e) =>
+                                        handleInputChange("semester", Number(e.target.value))
+                                   }
                                    required
                               />
                          </div>
@@ -119,7 +177,9 @@ export function UpdateSectionDialog({
                               </Button>
                               <Button
                                    type="submit"
-                                   disabled={isSubmitting || !formData.sectionName.trim()}
+                                   disabled={
+                                        isSubmitting || !formData.sectionName.trim() || !hasChanges
+                                   }
                               >
                                    <Plus className="mr-2 h-4 w-4" />
                                    {isSubmitting ? "Updating..." : "Update Section"}
