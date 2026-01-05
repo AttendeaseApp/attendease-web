@@ -57,7 +57,7 @@ interface SectionProps {
      onRefresh?: () => void
 }
 
-export function SectionTable({ sections, loading, onEdit, onDelete, onRefresh }: SectionProps) {
+export function SectionTable({ sections, loading, onEdit, onRefresh }: SectionProps) {
      const [deleteTarget, setDeleteTarget] = useState<Section | null>(null)
      const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
      const [isDeleting, setIsDeleting] = useState(false)
@@ -108,11 +108,17 @@ export function SectionTable({ sections, loading, onEdit, onDelete, onRefresh }:
                     handleCloseDeleteDialog()
                     onRefresh?.()
                }, 1500)
-          } catch (error: any) {
-               const errorMsg = error.message || "Failed to delete section."
-               toast.error("Error", {
-                    description: errorMsg,
-               })
+          } catch (error: unknown) {
+               if (error instanceof Error) {
+                    const errorMsg = error.message || "Failed to delete section."
+                    toast.error("Error", {
+                         description: errorMsg,
+                    })
+               } else {
+                    toast.error("Error", {
+                         description: "An unknown error occurred.",
+                    })
+               }
           } finally {
                setIsDeleting(false)
           }
@@ -147,8 +153,12 @@ export function SectionTable({ sections, loading, onEdit, onDelete, onRefresh }:
                     handleCloseActivationDialog()
                     onRefresh?.()
                }, 1500)
-          } catch (error: any) {
-               setActivationError(error.message || "Failed to activate section.")
+          } catch (error: unknown) {
+               if (error instanceof Error) {
+                    setActivationError(error.message || "Failed to activate section.")
+               } else {
+                    setActivationError("An unknown error occurred.")
+               }
           } finally {
                setIsActivating(false)
           }
@@ -164,7 +174,6 @@ export function SectionTable({ sections, loading, onEdit, onDelete, onRefresh }:
 
      const isConfirm = !hasAttemptedActivation
      const isLoading = isActivating
-     const isSuccess = !isLoading && !activationError && hasAttemptedActivation
      const isError = !isLoading && !!activationError
 
      return (

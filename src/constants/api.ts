@@ -62,16 +62,15 @@ export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
  * All user management related API endpoints.
  */
 export const USER_MANAGEMENT_API_ENDPOINTS = {
-     RETRIEVE_ALL_USERS: `${API_BASE}/api/users/management`,
-     IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/users/management/import`,
-     RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/users/management/students`,
+     RETRIEVE_ALL_USERS: `${API_BASE}/api/user/management`,
+     IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/user/management/import`,
+     RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/user/management/students`,
 
-     EDIT_USER_DETAILS: (userId: string) =>
-          `${API_BASE}/api/users/information/management/${userId}`,
+     EDIT_USER_DETAILS: (userId: string) => `${API_BASE}/api/user/information/management/${userId}`,
 
      ADD_OSA_ACCOUNT: `${API_BASE}/api/auth/osa/register`,
      ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
-     DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/users/information/management/students/remove-all`,
+     DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/user/information/management/students/remove-all`,
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {

@@ -1,4 +1,5 @@
 "use client"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
@@ -40,24 +41,20 @@ export const AcademicYearCard = ({ academicYear }: AcademicYearCardProps) => {
                toast.success("Success", {
                     description: response.message,
                })
-          } catch (error: any) {
-               toast.error("Error", {
-                    description: error.message || "Failed to trigger activation.",
-               })
+          } catch (error: unknown) {
+               if (error instanceof Error) {
+                    toast.error("Error", {
+                         description: error.message || "Failed to trigger activation.",
+                    })
+               } else {
+                    toast.error("Error", {
+                         description: "An unknown error occurred.",
+                    })
+               }
           } finally {
                setIsTriggering(false)
           }
      }
-
-     const semesterInfo = academicYear.currentSemester ? (
-          <p className="text-sm text-center sm:text-left">
-               {academicYear.currentSemester.name} (
-               {format(new Date(academicYear.currentSemester.startDate), "MMM d, yyyy")} –{" "}
-               {format(new Date(academicYear.currentSemester.endDate), "MMM d, yyyy")})
-          </p>
-     ) : (
-          <p className="text-sm text-muted-foreground text-center">No semester currently active.</p>
-     )
 
      return (
           <TooltipProvider>
