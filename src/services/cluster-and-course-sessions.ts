@@ -4,6 +4,49 @@ import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { authFetch } from "./auth-fetch"
 import { CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 
+interface BulkSectionRequest {
+     sectionName: string
+     yearLevel: number
+     semester: number
+}
+
+export const bulkCreateSections = async (
+     courseId: string,
+     sections: BulkSectionRequest[]
+): Promise<any> => {
+     try {
+          const res = await authFetch(
+               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.CREATE_SECTIONS_BULK(courseId),
+               {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(sections),
+               }
+          )
+
+          if (!res.ok) {
+               let errorMsg = `Failed to create sections: ${res.status}`
+               try {
+                    const errorBody = await res.json()
+                    errorMsg =
+                         errorBody.message ||
+                         errorBody.error ||
+                         (Array.isArray(errorBody.errors)
+                              ? errorBody.errors[0]?.defaultMessage
+                              : JSON.stringify(errorBody))
+               } catch (parseErr) {
+                    errorMsg = res.statusText || errorMsg + JSON.stringify(parseErr)
+               }
+               throw new Error(errorMsg)
+          }
+
+          return await res.json()
+     } catch (error) {
+          console.error("Error creating sections in bulk:", error)
+          throw error
+     }
+}
+
 export const getAllCourses = async (): Promise<Course[]> => {
      try {
           const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_COURSES)

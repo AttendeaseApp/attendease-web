@@ -28,7 +28,6 @@ import {
 import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import { Section } from "@/interface/academic/section/SectionInterface"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
-
 import {
      Pagination,
      PaginationContent,
@@ -37,7 +36,7 @@ import {
      PaginationPrevious,
      PaginationNext,
 } from "@/components/ui/pagination"
-
+import { Badge } from "@/components/ui/badge"
 import { useMemo, useState } from "react"
 
 interface SectionProps {
@@ -89,28 +88,47 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                <Table>
                     <TableHeader>
                          <TableRow>
-                              <TableHead>SECTIONS for: {currentCourse?.name || "—"}</TableHead>
-                              <TableHead className="text-right"></TableHead>
+                              <TableHead>Section Name</TableHead>
+                              <TableHead>Year Level</TableHead>
+                              <TableHead>Semester</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
                          </TableRow>
                     </TableHeader>
 
                     <TableBody>
                          {loading ? (
                               <TableRow>
-                                   <TableCell colSpan={2} className="text-center py-8">
+                                   <TableCell colSpan={5} className="text-center py-8">
                                         Loading sections...
                                    </TableCell>
                               </TableRow>
                          ) : filteredSections.length === 0 ? (
                               <TableRow>
-                                   <TableCell colSpan={2} className="text-center py-8">
+                                   <TableCell colSpan={5} className="text-center py-8">
                                         No sections for this course.
                                    </TableCell>
                               </TableRow>
                          ) : (
                               filteredSections.map((section) => (
                                    <TableRow key={section.id}>
-                                        <TableCell>{section.sectionName}</TableCell>
+                                        <TableCell className="font-medium">
+                                             {section.sectionName}
+                                        </TableCell>
+
+                                        <TableCell>{section.yearLevel}</TableCell>
+
+                                        <TableCell>Sem {section.semester}</TableCell>
+
+                                        <TableCell>
+                                             <Badge
+                                                  variant={
+                                                       section.isActive ? "default" : "secondary"
+                                                  }
+                                             >
+                                                  {section.isActive ? "Active" : "Inactive"}
+                                             </Badge>
+                                        </TableCell>
 
                                         <TableCell className="text-right">
                                              <DropdownMenu>
@@ -124,7 +142,8 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                                                        <DropdownMenuItem
                                                             onClick={(e) => handleEdit(section, e)}
                                                        >
-                                                            <Pencil className="mr-2 h-4 w-4" /> Edit
+                                                            <Pencil className="mr-2 h-4 w-4" />
+                                                            Edit
                                                        </DropdownMenuItem>
 
                                                        <DropdownMenuItem
@@ -132,7 +151,7 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                                                                  openDeleteDialog(section, e)
                                                             }
                                                        >
-                                                            <Trash className="mr-2 h-4 w-4" />{" "}
+                                                            <Trash className="mr-2 h-4 w-4" />
                                                             Delete
                                                        </DropdownMenuItem>
 
@@ -165,7 +184,6 @@ export function AcademicSectionTable({ sections, loading, onEdit, onDelete }: Se
                                         <PaginationLink
                                              href="#"
                                              isActive={currentCourse?.id === course.id}
-                                             className="px-3 py-1 min-w-15 max-w-max"
                                              onClick={(e) => {
                                                   e.preventDefault()
                                                   setCurrentPage(index + 1)
