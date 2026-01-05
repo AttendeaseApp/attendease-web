@@ -30,7 +30,7 @@ import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import React, { useState } from "react"
 
-export function AcademicClusterTable({
+export function ClusterTable({
      clusters,
      loading,
      onEditAction,
@@ -73,8 +73,8 @@ export function AcademicClusterTable({
                <Table className="w-full">
                     <TableHeader>
                          <TableRow>
-                              <TableHead>CLUSTER</TableHead>
-                              <TableHead className="text-right"></TableHead>
+                              <TableHead>Cluster</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
                          </TableRow>
                     </TableHeader>
                     <TableBody>

@@ -36,7 +36,7 @@ interface CourseTableProps {
      onDelete: (course: Course) => Promise<void>
 }
 
-export function AcademicCourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
+export function CourseTable({ courses, loading, onEdit, onDelete }: CourseTableProps) {
      const sortedCourses = [...courses].sort((a, b) => {
           const nameA = `${a.courseName} ${a.courseName}`.toLowerCase()
           const nameB = `${b.courseName} ${b.courseName}`.toLowerCase()
@@ -76,9 +76,9 @@ export function AcademicCourseTable({ courses, loading, onEdit, onDelete }: Cour
                <Table className="w-full">
                     <TableHeader>
                          <TableRow>
-                              <TableHead>COURSE</TableHead>
-                              <TableHead>REFERENCED CLUSTER</TableHead>
-                              <TableHead className="text-right"></TableHead>
+                              <TableHead>Course Name</TableHead>
+                              <TableHead>Referenced Cluster</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
                          </TableRow>
                     </TableHeader>
                     <TableBody>

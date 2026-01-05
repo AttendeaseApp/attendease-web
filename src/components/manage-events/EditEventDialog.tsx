@@ -32,7 +32,7 @@ import {
      getAllClusters,
      getAllCourses,
      getAllSections,
-} from "@/services/cluster-and-course-sessions"
+} from "@/services/api/academic/cluster-and-course-sessions"
 import { cancelEvent, updateEvent } from "@/services/event-sessions"
 import { getAllLocations } from "@/services/locations-service"
 import { format } from "date-fns"

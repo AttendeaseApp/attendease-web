@@ -12,86 +12,87 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
-import { Course } from "@/interface/academic/course/CourseInterface"
-import { updateCourse } from "@/services/cluster-and-course-sessions"
+import { createCourse } from "@/services/api/academic/cluster-and-course-sessions"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-interface UpdateCourseDialogProps {
+interface CreateCourseDialogProps {
      cluster: Cluster
      isOpen: boolean
      onClose: () => void
-     onUpdate: () => void
+     onCreate: () => void
      onError?: (message: string) => void
-     courses: Course
+     courses: { courseName: string }[]
 }
 
-export function UpdateCourseDialog({
+export function CreateCourseDialog({
      cluster,
      isOpen,
      onClose,
-     onUpdate,
+     onCreate,
+     onError,
      courses,
-}: UpdateCourseDialogProps) {
+}: CreateCourseDialogProps) {
      const [formData, setFormData] = useState({
-          courseName: courses.courseName,
+          courseName: "",
      })
-
      const [error, setError] = useState<string>("")
-
      const [isSubmitting, setIsSubmitting] = useState(false)
-
      useEffect(() => {
           if (isOpen) {
                setFormData({
-                    courseName: courses.courseName || "",
+                    courseName: "",
                })
                setError("")
           }
-     }, [isOpen, courses.courseName])
-
+     }, [isOpen])
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
           if (error) setError("")
      }
-
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
+
+          const duplicate = courses.some(
+               (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
+          )
+
+          if (duplicate) {
+               toast.error("Course name already exists.")
+               return
+          }
           setIsSubmitting(true)
           try {
-               const updateCourseData = {
+               const newCourseData = {
                     courseName: formData.courseName,
                }
-               console.log("Sending update payload:", updateCourseData)
-               await updateCourse(courses.id, updateCourseData)
-               onUpdate()
+               console.log("Sending create payload:", newCourseData)
+               await createCourse(cluster.clusterId, newCourseData)
+               onCreate()
                onClose()
           } catch (err) {
-               const message =
-                    (err instanceof Error ? err.message : String(err)) + " Failed to update course."
+               const message = `${err instanceof Error ? err.message : String(err)}, Failed to create course.`
                setError(message)
-               console.error("Update failed:", err)
                toast.error(message)
+               // console.error("Create failed:", err)
+               // if (onError) onError(message)
           } finally {
                setIsSubmitting(false)
           }
      }
-
      const handleClose = () => {
           onClose()
      }
-
      if (!isOpen) return null
-
      return (
           <Dialog open={isOpen} onOpenChange={handleClose}>
                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                         <DialogTitle>Update Course: {courses.courseName}</DialogTitle>
+                         <DialogTitle>Create New Course</DialogTitle>
                          <DialogDescription>
-                              Fill in the details to update the course in {cluster.clusterName}.
+                              Fill in the details to create a new course in {cluster.clusterName}.
                          </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -125,7 +126,7 @@ export function UpdateCourseDialog({
                                    disabled={isSubmitting || !formData.courseName.trim()}
                               >
                                    <Plus className="mr-2 h-4 w-4" />
-                                   {isSubmitting ? "Updating..." : "Update Course"}
+                                   {isSubmitting ? "Creating..." : "Create Course"}
                               </Button>
                          </DialogFooter>
                     </form>
