@@ -82,12 +82,11 @@ export default function CreateLocationDialog({
                return
           }
 
-              if (!locationPurpose.trim()) {
+          if (!locationPurpose.trim()) {
                toast.error("Location Purpose is required.")
                return
           }
 
-     
           const exists = existingLocations.some(
                (loc) => loc.locationName.trim().toLowerCase() === locationName.trim().toLowerCase()
           )
@@ -131,7 +130,7 @@ export default function CreateLocationDialog({
           const layer = e.layer as L.Polygon
           const latlngs = layer.getLatLngs()[0] as L.LatLng[]
           const coords = latlngs.map((point) => [point.lng, point.lat])
-          // if (coords.length > 0 && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1])) 
+          // if (coords.length > 0 && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]))
           //    { coords.push([...coords[0]]) }
           setPolygon(coords)
      }
@@ -173,8 +172,7 @@ export default function CreateLocationDialog({
                                         <option value="OUTDOOR">Outdoor</option>
                                    </select>
 
-                                   
-                                 <select
+                                   <select
                                         className="border rounded-md px-3 py-2"
                                         value={locationPurpose}
                                         onChange={(e) => setLocationPurpose(e.target.value)}
@@ -183,7 +181,7 @@ export default function CreateLocationDialog({
                                         <option value="REGISTRATION_AREA">Registration Area</option>
                                    </select>
 
-                                     <Input
+                                   <Input
                                         placeholder="Description"
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}

@@ -52,7 +52,9 @@ export default function UpdateLocationDialog({
 }: UpdateLocationModalProps) {
      const [locationName, setLocationName] = useState(location.locationName || "")
      const [locationType, setLocationType] = useState(location.locationType || "INDOOR")
-     const [locationPurpose, setLocationPurpose] = useState(location.locationPurpose || "EVENT_VENUE")
+     const [locationPurpose, setLocationPurpose] = useState(
+          location.locationPurpose || "EVENT_VENUE"
+     )
      const [description, setDescription] = useState(location.description || "")
      const [polygon, setPolygon] = useState<number[][]>(location.coordinates || [])
      const [loading, setLoading] = useState(false)
@@ -113,7 +115,7 @@ export default function UpdateLocationDialog({
           const layer = e.layer as L.Polygon
           const latlngs = layer.getLatLngs()[0] as L.LatLng[]
           const coords = latlngs.map((point) => [point.lng, point.lat])
-          // if (coords.length > 0 && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1])) 
+          // if (coords.length > 0 && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]))
           //    { coords.push([...coords[0]]) }
           setPolygon(coords)
      }
@@ -158,7 +160,7 @@ export default function UpdateLocationDialog({
                                         <option value="OUTDOOR">Outdoor</option>
                                    </select>
 
-                                    <select
+                                   <select
                                         className="border rounded-md px-3 py-2"
                                         value={locationPurpose}
                                         onChange={(e) => setLocationPurpose(e.target.value)}
@@ -167,7 +169,7 @@ export default function UpdateLocationDialog({
                                         <option value="REGISTRATION_AREA">Registration Area</option>
                                    </select>
 
-                                     <Input
+                                   <Input
                                         placeholder="Description"
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
