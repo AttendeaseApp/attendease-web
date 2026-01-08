@@ -42,12 +42,11 @@ export function LocationsTable({ locations, loading, onDelete, onEdit }: Locatio
           <Table>
                <TableHeader className="font-semibold text-gray-900">
                     <TableRow>
-                         <TableHead>LOCATION NAME</TableHead>
-                         <TableHead>TYPE</TableHead>
-                         <TableHead>CREATED (DATE-TIME)</TableHead>
-                         {/* <TableHead></TableHead> */}
-                         <TableHead>PURPOSE</TableHead>
-                         <TableHead>DESCRIPTION</TableHead>
+                         <TableHead>Location Name</TableHead>
+                         <TableHead>Purpose</TableHead>
+                         <TableHead>Environment</TableHead>
+                         <TableHead>Created (DATE-TIME)</TableHead>
+                         <TableHead>Description</TableHead>
                          <TableHead></TableHead>
                     </TableRow>
                </TableHeader>
@@ -82,11 +81,12 @@ export function LocationsTable({ locations, loading, onDelete, onEdit }: Locatio
                                    <TableCell className="font-medium">
                                         {eventLocation.locationName}
                                    </TableCell>
-                                   <TableCell>{eventLocation.locationType}</TableCell>
+                                   <TableCell>{eventLocation.locationPurposeType}</TableCell>
+                                   <TableCell>{eventLocation.locationEnvironment}</TableCell>
                                    <TableCell>
                                         {new Date(eventLocation.createdAt).toLocaleString()}
                                    </TableCell>
-                                   <TableCell>{eventLocation.locationPurpose}</TableCell>
+
                                    <TableCell>{eventLocation.description}</TableCell>
                                    <TableCell className="text-right">
                                         <div className="flex justify-end space-x-2">

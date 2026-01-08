@@ -4,8 +4,8 @@
 export interface EventLocation {
      locationId: string
      locationName: string
-     locationType: string
-     locationPurpose: string
+     locationEnvironment: string
+     locationPurposeType: string
      description: string
      latitude: number
      longitude: number
