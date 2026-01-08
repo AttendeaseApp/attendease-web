@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table"
 import { UserStudentResponse } from "@/interface/UserStudent"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
+import { UserTypeEnum } from "@/interface/users/type/UserType"
 import { cn } from "@/lib/utils"
 
 interface UsersTableProps {
@@ -30,6 +31,8 @@ interface UsersTableProps {
      currentPage: number
      totalPages: number
      onPageChange: (page: number) => void
+     selectedUserIds: string[]
+     onToggleUser: (userId: string) => void
 }
 
 export default function ManagingUsersTable({
@@ -40,6 +43,8 @@ export default function ManagingUsersTable({
      currentPage,
      totalPages,
      onPageChange,
+     selectedUserIds,
+     onToggleUser,
 }: UsersTableProps) {
      const handleEdit = (user: UserStudentResponse) => {
           const commonData: UpdateUserDetailsInterface = {
@@ -52,7 +57,7 @@ export default function ManagingUsersTable({
                sectionId: user.sectionId?.toString(),
                section: user.section,
           }
-          if (user.userType === "STUDENT") {
+          if (user.userType === UserTypeEnum.STUDENT) {
                onUpdateStudent(commonData)
           } else {
                onUpdateUser(commonData)
@@ -132,28 +137,27 @@ export default function ManagingUsersTable({
      return (
           <div>
                <Table>
-                    <TableHeader className="bg-gray-100">
+                    <TableHeader>
                          <TableRow>
+                              <TableHead className="w-10" />
+                              <TableHead className="font-semibold text-gray-900">Name</TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   FULL NAME
+                                   User Type
+                              </TableHead>
+                              <TableHead className="font-semibold text-gray-900">Section</TableHead>
+                              <TableHead className="font-semibold text-gray-900">Course</TableHead>
+                              <TableHead className="font-semibold text-gray-900">
+                                   Student Number
+                              </TableHead>
+                              <TableHead className="font-semibold text-gray-900">Email</TableHead>
+                              <TableHead className="font-semibold text-gray-900">
+                                   Contact Number
                               </TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   USER TYPE
+                                   Account Status
                               </TableHead>
-                              <TableHead className="font-semibold text-gray-900">SECTION</TableHead>
-                              <TableHead className="font-semibold text-gray-900">COURSE</TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   STUDENT NUMBER
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">EMAIL</TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   CONTACT NUMBER
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   ACCOUNT STATUS
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   VIEW/ UPDATE
+                              <TableHead className="text-center font-semibold text-gray-900">
+                                   Update Info
                               </TableHead>
                          </TableRow>
                     </TableHeader>
@@ -167,6 +171,19 @@ export default function ManagingUsersTable({
                          ) : users.length > 0 ? (
                               users.map((users) => (
                                    <TableRow key={users.userId}>
+                                        <TableCell>
+                                             {users.userType === UserTypeEnum.STUDENT && (
+                                                  <input
+                                                       type="checkbox"
+                                                       checked={selectedUserIds.includes(
+                                                            String(users.userId)
+                                                       )}
+                                                       onChange={() =>
+                                                            onToggleUser(String(users.userId))
+                                                       }
+                                                  />
+                                             )}
+                                        </TableCell>
                                         <TableCell>{`${users.firstName || ""} ${users.lastName || ""}`}</TableCell>
                                         <TableCell>{users.userType || "N/A"}</TableCell>
                                         <TableCell>{users.section || "N/A"}</TableCell>
@@ -175,10 +192,9 @@ export default function ManagingUsersTable({
                                         <TableCell>{users.email || "N/A"}</TableCell>
                                         <TableCell>{users.contactNumber || "N/A"}</TableCell>
                                         <TableCell>{users.accountStatus || "N/A"}</TableCell>
-                                        <TableCell>
+                                        <TableCell align="center">
                                              <Button
                                                   variant="outline"
-                                                  className="rounded-sm"
                                                   onClick={() => handleEdit(users)}
                                              >
                                                   Update

@@ -4,9 +4,9 @@
 export interface EventLocation {
      locationId: string
      locationName: string
+     locationEnvironment: string
+     locationPurposeType: string
      description: string
-     locationEnvironment: "INDOOR" | "OUTDOOR"
-     locationPurposeType: "EVENT_VENUE" | "REGISTRATION_AREA"
      latitude: number
      longitude: number
      createdAt: string
@@ -28,5 +28,7 @@ export interface Geometry {
 export interface EventLocationRequest {
      locationName: string
      locationType: string
-     geoJsonData: Geometry
+     locationPurpose: string
+     description: string
+     locationGeometry: Geometry
 }

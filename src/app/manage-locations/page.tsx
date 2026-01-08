@@ -48,13 +48,18 @@ export default function ManageLocationsPage() {
           const lowerSearch = searchTerm.trim().toLowerCase()
           const searchWords = lowerSearch.split(" ").filter((w) => w)
 
-          if (selectedType !== "all" && location.locationType !== selectedType) {
+          if (
+               selectedType !== "all" &&
+               location.locationEnvironment !== selectedType &&
+               location.locationPurposeType !== selectedType
+          ) {
                return false
           }
 
           const fields = [
                location.locationName,
-               location.locationType,
+               location.locationEnvironment,
+               location.locationPurposeType,
                new Date(location.createdAt).toLocaleString(),
           ]
 
@@ -93,9 +98,10 @@ export default function ManageLocationsPage() {
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                          <div>
-                              <h1 className="text-2xl font-bold md:text-3xl">Manage Venues</h1>
+                              <h1 className="text-2xl font-bold md:text-3xl">Manage Locations</h1>
                               <p className="text-muted-foreground mt-1">
-                                   Define physical locations available for future events.
+                                   Define physical locations available for future event venues and
+                                   registration areas.
                               </p>
                          </div>
                          <Button className="sm:w-auto" onClick={() => setOpenModal(true)}>
