@@ -58,7 +58,10 @@ export const updateEvent = async (
                )
           }
           if (payload.endingDateTime) {
-               payload.endingDateTime = format(new Date(payload.endingDateTime), "yyyy-MM-dd HH:mm:ss")
+               payload.endingDateTime = format(
+                    new Date(payload.endingDateTime),
+                    "yyyy-MM-dd HH:mm:ss"
+               )
           }
           const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.UPDATE_EVENT(id), {
                method: "PATCH",
@@ -95,7 +98,10 @@ export const updateEvent = async (
  * @returns data as EventSession
  */
 export const createEvent = async (
-     newEventData: Partial<EventSession> & { registrationLocationId: string, venueLocationId: string }
+     newEventData: Partial<EventSession> & {
+          registrationLocationId: string
+          venueLocationId: string
+     }
 ): Promise<EventSession> => {
      try {
           const payload = { ...newEventData }
@@ -112,7 +118,10 @@ export const createEvent = async (
                )
           }
           if (payload.endingDateTime) {
-               payload.endingDateTime = format(new Date(payload.endingDateTime), "yyyy-MM-dd HH:mm:ss")
+               payload.endingDateTime = format(
+                    new Date(payload.endingDateTime),
+                    "yyyy-MM-dd HH:mm:ss"
+               )
           }
           const res = await authFetch(EVENT_MANAGEMENT_API_ENDPOINTS.CREATE_EVENT, {
                method: "POST",

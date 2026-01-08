@@ -59,10 +59,7 @@ export default function ManageEventsPage() {
                event.eventName.toLowerCase().includes(term) ||
                event.registrationLocationName.toLowerCase().includes(term) ||
                event.venueLocationName.toLowerCase().includes(term) ||
-               new Date(event.registrationDateTime)
-                    .toLocaleString()
-                    .toLowerCase()
-                    .includes(term) ||
+               new Date(event.registrationDateTime).toLocaleString().toLowerCase().includes(term) ||
                new Date(event.startingDateTime).toLocaleString().toLowerCase().includes(term) ||
                new Date(event.endingDateTime).toLocaleString().toLowerCase().includes(term) ||
                event.eventStatus.toLowerCase().includes(term)

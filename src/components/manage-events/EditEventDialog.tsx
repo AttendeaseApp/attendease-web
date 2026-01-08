@@ -24,19 +24,10 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
@@ -91,7 +82,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           registrationLocationId?: string | undefined
           venueLocationId?: string | undefined
           facialVerificationEnabled?: boolean
-          attendanceLocationMonitoringEnabled?: boolean 
+          attendanceLocationMonitoringEnabled?: boolean
           strictLocationValidation?: boolean
      }>({
           eventName: event.eventName,
@@ -104,7 +95,8 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           registrationLocationId: event.registrationLocationId || undefined,
           venueLocationId: event.venueLocationId || undefined,
           facialVerificationEnabled: event.facialVerificationEnabled || undefined,
-          attendanceLocationMonitoringEnabled: event.attendanceLocationMonitoringEnabled || undefined,
+          attendanceLocationMonitoringEnabled:
+               event.attendanceLocationMonitoringEnabled || undefined,
           strictLocationValidation: event.strictLocationValidation || undefined,
      })
 
@@ -238,9 +230,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     ...formData,
                     eventName: event.eventName || "",
                     description: event.description || "",
-                    registrationDateTime: new Date(
-                         event.registrationDateTime
-                    ),
+                    registrationDateTime: new Date(event.registrationDateTime),
                     startingDateTime: new Date(event.startingDateTime),
                     endingDateTime: new Date(event.endingDateTime),
                     eventStatus: event.eventStatus,
@@ -293,7 +283,8 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                newErrors.registrationDateTime = "Registration start is required"
           if (!formData.startingDateTime) newErrors.startingDateTime = "Start date is required"
           if (!formData.endingDateTime) newErrors.endingDateTime = "End date is required"
-          if (!formData.registrationLocationId) newErrors.registrationLocationId = "Location is required"
+          if (!formData.registrationLocationId)
+               newErrors.registrationLocationId = "Location is required"
           if (!formData.venueLocationId) newErrors.venueLocationId = "Location is required"
           if (
                !eligibility.allStudents &&
@@ -696,9 +687,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                   >
                                                        <Calendar
                                                             mode="single"
-                                                            selected={
-                                                                 formData.registrationDateTime
-                                                            }
+                                                            selected={formData.registrationDateTime}
                                                             onSelect={(selectedDate) =>
                                                                  handleDateSelect(
                                                                       "registrationDateTime",
@@ -796,7 +785,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                             className="w-full justify-between font-normal"
                                                             id="start-date"
                                                        >
-                                                            {getDateDisplay(formData.startingDateTime)}
+                                                            {getDateDisplay(
+                                                                 formData.startingDateTime
+                                                            )}
                                                             <ChevronDownIcon className="h-4 w-4" />
                                                        </Button>
                                                   </PopoverTrigger>
@@ -893,7 +884,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                             className="w-full justify-between font-normal"
                                                             id="end-date"
                                                        >
-                                                            {getDateDisplay(formData.endingDateTime)}
+                                                            {getDateDisplay(
+                                                                 formData.endingDateTime
+                                                            )}
                                                             <ChevronDownIcon className="h-4 w-4" />
                                                        </Button>
                                                   </PopoverTrigger>
@@ -980,365 +973,425 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                               </div>
 
                               <div className="grid grid-cols-2 gap-4 w-full">
-                                                                 
-                                                                   <div className="space-y-2">
-                                                                      <Label htmlFor="registrationLocationId">Registration Location</Label>
-                                                                      <Select
-                                                                           value={formData.registrationLocationId}
-                                                                           onValueChange={(value) =>
-                                                                                handleInputChange("registrationLocationId", value)
-                                                                           }
-                                                                           disabled={loadingLocations}
-                                                                      >
-                                                                           <SelectTrigger
-                                                                                className={
-                                                                                     errors.registrationLocationId ? "border-red-500" : ""
-                                                                                }
-                                                                           >
-                                                                                <SelectValue
-                                                                                     placeholder={
-                                                                                          loadingLocations
-                                                                                               ? "Loading locations..."
-                                                                                               : event.registrationLocationName ||
-                                                                                                "Select registration location"
-                                                                                     }
-                                                                                />
-                                                                           </SelectTrigger>
-                                                                           <SelectContent>
-                                                                                <SelectGroup>
-                                                                                     <SelectLabel className="mb-3">Registration Venues</SelectLabel>
-                                                                                     {locations
-                                                                                     .filter((loc) => loc.locationPurposeType === "REGISTRATION_AREA")
-                                                                                     .map((loc) => (
-                                                                                          <SelectItem
-                                                                                               key={loc.locationId}
-                                                                                               value={loc.locationId}
-                                                                                          >
-                                                                                               {loc.locationName}
-                                                                                          </SelectItem>
-                                                                                     ))}
-                                                                                </SelectGroup>
-                                                                           </SelectContent>
-                                                                      </Select>
-                                                                 </div>
-                                                                 
-                                                                 <div className="space-y-2">
-                                                                      <Label htmlFor="venueLocationId">Event Location</Label>
-                                                                      <Select
-                                                                           value={formData.venueLocationId}
-                                                                           onValueChange={(value) =>
-                                                                                handleInputChange("venueLocationId", value)
-                                                                           }
-                                                                           disabled={loadingLocations}
-                                                                      >
-                                                                           <SelectTrigger
-                                                                                className={
-                                                                                     errors.venueLocationId ? "border-red-500" : ""
-                                                                                }
-                                                                           >
-                                                                                <SelectValue
-                                                                                     placeholder={
-                                                                                          loadingLocations
-                                                                                               ? "Loading locations..."
-                                                                                               : event.venueLocationName ||
-                                                                                                "Select event location"
-                                                                                     }
-                                                                                />
-                                                                           </SelectTrigger>
-                                                                           <SelectContent>
-                                                                                <SelectGroup>
-                                                                                     <SelectLabel className="mb-3">Event Venues</SelectLabel>
-                                                                                     {locations
-                                                                                     .filter((loc) => loc.locationPurposeType === "EVENT_VENUE")
-                                                                                     .map((loc) => (
-                                                                                          <SelectItem
-                                                                                               key={loc.locationId}
-                                                                                               value={loc.locationId}
-                                                                                          >
-                                                                                               {loc.locationName}
-                                                                                          </SelectItem>
-                                                                                     ))}
-                                                                                </SelectGroup>
-                                                                           </SelectContent>
-                                                                      </Select>
-                                                                 </div>
-                                                            </div>
+                                   <div className="space-y-2">
+                                        <Label htmlFor="registrationLocationId">
+                                             Registration Location
+                                        </Label>
+                                        <Select
+                                             value={formData.registrationLocationId}
+                                             onValueChange={(value) =>
+                                                  handleInputChange("registrationLocationId", value)
+                                             }
+                                             disabled={loadingLocations}
+                                        >
+                                             <SelectTrigger
+                                                  className={
+                                                       errors.registrationLocationId
+                                                            ? "border-red-500"
+                                                            : ""
+                                                  }
+                                             >
+                                                  <SelectValue
+                                                       placeholder={
+                                                            loadingLocations
+                                                                 ? "Loading locations..."
+                                                                 : event.registrationLocationName ||
+                                                                   "Select registration location"
+                                                       }
+                                                  />
+                                             </SelectTrigger>
+                                             <SelectContent>
+                                                  <SelectGroup>
+                                                       <SelectLabel className="mb-3">
+                                                            Registration Venues
+                                                       </SelectLabel>
+                                                       {locations
+                                                            .filter(
+                                                                 (loc) =>
+                                                                      loc.locationPurposeType ===
+                                                                      "REGISTRATION_AREA"
+                                                            )
+                                                            .map((loc) => (
+                                                                 <SelectItem
+                                                                      key={loc.locationId}
+                                                                      value={loc.locationId}
+                                                                 >
+                                                                      {loc.locationName}
+                                                                 </SelectItem>
+                                                            ))}
+                                                  </SelectGroup>
+                                             </SelectContent>
+                                        </Select>
+                                   </div>
+
+                                   <div className="space-y-2">
+                                        <Label htmlFor="venueLocationId">Event Location</Label>
+                                        <Select
+                                             value={formData.venueLocationId}
+                                             onValueChange={(value) =>
+                                                  handleInputChange("venueLocationId", value)
+                                             }
+                                             disabled={loadingLocations}
+                                        >
+                                             <SelectTrigger
+                                                  className={
+                                                       errors.venueLocationId
+                                                            ? "border-red-500"
+                                                            : ""
+                                                  }
+                                             >
+                                                  <SelectValue
+                                                       placeholder={
+                                                            loadingLocations
+                                                                 ? "Loading locations..."
+                                                                 : event.venueLocationName ||
+                                                                   "Select event location"
+                                                       }
+                                                  />
+                                             </SelectTrigger>
+                                             <SelectContent>
+                                                  <SelectGroup>
+                                                       <SelectLabel className="mb-3">
+                                                            Event Venues
+                                                       </SelectLabel>
+                                                       {locations
+                                                            .filter(
+                                                                 (loc) =>
+                                                                      loc.locationPurposeType ===
+                                                                      "EVENT_VENUE"
+                                                            )
+                                                            .map((loc) => (
+                                                                 <SelectItem
+                                                                      key={loc.locationId}
+                                                                      value={loc.locationId}
+                                                                 >
+                                                                      {loc.locationName}
+                                                                 </SelectItem>
+                                                            ))}
+                                                  </SelectGroup>
+                                             </SelectContent>
+                                        </Select>
+                                   </div>
+                              </div>
 
                               <div className="space-y-4 flex flex-col">
-                                                                 <Label>Eligible Attendees</Label>
-                                                                 {/* <Input 
+                                   <Label>Eligible Attendees</Label>
+                                   {/* <Input 
                                                                    placeholder="Search clusters, courses, and sections..."
                                                                    value={searchQuery}
                                                                    onChange={(e) => setSearchQuery(e.target.value)}
                                                                    className="mt-2"
                                                                  /> */}
-                                                                 <div className="flex items-center space-x-2">
-                                                                      <Checkbox
-                                                                        id="allStudents"
-                                                                        checked={eligibility.allStudents}
-                                                                        onCheckedChange={
-                                                                           handleAllStudentsToggle
-                                                                        }
-                                                                      />
-                                                                      <Label
-                                                                           htmlFor="allStudents"
-                                                                           className="text-sm font-medium"
+                                   <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                             id="allStudents"
+                                             checked={eligibility.allStudents}
+                                             onCheckedChange={handleAllStudentsToggle}
+                                        />
+                                        <Label
+                                             htmlFor="allStudents"
+                                             className="text-sm font-medium"
+                                        >
+                                             All Students
+                                        </Label>
+                                   </div>
+
+                                   {!eligibility.allStudents && (
+                                        <Tabs defaultValue="clusters">
+                                             <TabsList className="grid grid-cols-3 w-full">
+                                                  <TabsTrigger value="clusters">
+                                                       Clusters
+                                                  </TabsTrigger>
+                                                  <TabsTrigger value="courses">Courses</TabsTrigger>
+                                                  <TabsTrigger value="sections">
+                                                       Sections
+                                                  </TabsTrigger>
+                                             </TabsList>
+
+                                             <TabsContent value="clusters" className="mt-4">
+                                                  <ScrollArea className="h-30 pr-4">
+                                                       {loadingHierarchy ? (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 Loading clusters...
+                                                            </p>
+                                                       ) : filterItems(clusters, {
+                                                              key: "clusterName",
+                                                         }).length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                 {filterItems(clusters, {
+                                                                      key: "clusterName",
+                                                                 }).map((cluster) => (
+                                                                      <div
+                                                                           key={cluster.clusterId}
+                                                                           className="flex items-center space-x-2"
                                                                       >
-                                                                        All Students
-                                                                      </Label>
-                                                                 </div>
-                              
-                                                                 {!eligibility.allStudents && (
-                                                                      <Tabs defaultValue="clusters">
-                                                                           <TabsList className="grid grid-cols-3 w-full">
-                                                                                <TabsTrigger value="clusters">Clusters</TabsTrigger>
-                                                                                <TabsTrigger value="courses">Courses</TabsTrigger>
-                                                                                <TabsTrigger value="sections">Sections</TabsTrigger>
-                                                                           </TabsList>
-                              
-                                                                           <TabsContent value="clusters" className="mt-4">
-                                                                                <ScrollArea className="h-30 pr-4">
-                                                                                     {loadingHierarchy ? (
-                                                                                          <p className="text-sm text-muted-foreground">
-                                                                                               Loading clusters...
-                                                                                          </p>
-                                                                                     ) : filterItems(clusters, {key: "clusterName"}).length > 0 ? (
-                                                                                          <div className="space-y-2">
-                                                                                               {filterItems(clusters, { key: "clusterName" }).map((cluster) => (
-                                                                                               <div
-                                                                                               key={cluster.clusterId}
-                                                                                               className="flex items-center space-x-2"
-                                                                                               >
-                                                                                                    <Checkbox 
-                                                                                                    id={`cluster-${cluster.clusterId}`}
-                                                                                                    checked={eligibility.selectedClusters.includes(
-                                                                                                         cluster.clusterId
-                                                                                                    )}
-                                                                                                    onCheckedChange={(checked) =>
-                                                                                                         handleClusterSelect(cluster.clusterId, !!checked)
-                                                                                                    }
-                                                                                                    />
-                                                                                                    <Label
-                                                                                                    htmlFor={`cluster-${cluster.clusterId}`}
-                                                                                                    className="text-sm"
-                                                                                                    >
-                                                                                                         {cluster.clusterName}
-                                                                                                    </Label>
-                                                                                               </div>
-                                                                                               ))}
-                                                                                          </div>
-                                                                                     ) : (
-                                                                                          <p className="text-sm text-muted-foreground">
-                                                                                               No clusters found.
-                                                                                          </p>
-                                                                                     )}
-                                                                                </ScrollArea>
-                                                                           </TabsContent>
-                              
-                                                                           <TabsContent value="courses" className="mt-4">
-                                                                                <ScrollArea className="h-30 pr-4">
-                                                                                     {loadingHierarchy ? (
-                                                                                          <p className="text-sm text-muted-foreground">
-                                                                                               Loading courses...
-                                                                                          </p>
-                                                                                     ) : filterItems(courses, {key: "courseName"}).length > 0 ? (
-                                                                                          <div className="space-y-2">
-                                                                                               {filterItems(courses, { key: "courseName" }).map((course) => (
-                                                                                               <div
-                                                                                               key={course.id}
-                                                                                               className="flex items-center space-x-2"
-                                                                                               >
-                                                                                                    <Checkbox 
-                                                                                                    id={`course-${course.id}`}
-                                                                                                    checked={eligibility.selectedCourses.includes(
-                                                                                                         course.id
-                                                                                                    )}
-                                                                                                    onCheckedChange={(checked) =>
-                                                                                                         handleCourseSelect(course.id, !!checked)
-                                                                                                    }
-                                                                                                    />
-                                                                                                    <Label
-                                                                                                    htmlFor={`course-${course.id}`}
-                                                                                                    className="text-sm"
-                                                                                                    >
-                                                                                                         {course.courseName}
-                                                                                                    </Label>
-                                                                                               </div>
-                                                                                               ))}
-                                                                                          </div>
-                                                                                     ) : (
-                                                                                          <p className="text-sm text-muted-foreground">
-                                                                                               No courses found.
-                                                                                          </p>
-                                                                                     )}
-                                                                                </ScrollArea>
-                                                                           </TabsContent>
-                              
-                                                                           <TabsContent value="sections" className="mt-4">
-                                                                                <ScrollArea className="h-30 pr-4">
-                                                                                     {loadingHierarchy ? (
-                                                                                          <p className="text-sm text-muted-foreground">
-                                                                                               Loading sections...
-                                                                                          </p>
-                                                                                     ) : filterItems(sections, {key: "sectionName"}).length > 0 ? (
-                                                                                          <div className="space-y-2">
-                                                                                               {filterItems(sections, { key: "sectionName" }).map((section) => (
-                                                                                               <div
-                                                                                               key={section.id}
-                                                                                               className="flex items-center space-x-2"
-                                                                                               >
-                                                                                                    <Checkbox 
-                                                                                                    id={`section-${section.id}`}
-                                                                                                    checked={eligibility.selectedSections.includes(
-                                                                                                         section.id
-                                                                                                    )}
-                                                                                                    onCheckedChange={(checked) =>
-                                                                                                         handleSectionSelect(section.id, !!checked)
-                                                                                                    }
-                                                                                                    />
-                                                                                                    <Label
-                                                                                                    htmlFor={`section-${section.id}`}
-                                                                                                    className="text-sm"
-                                                                                                    >
-                                                                                                         {section.sectionName}
-                                                                                                    </Label>
-                                                                                               </div>
-                                                                                               ))}
-                                                                                          </div>
-                                                                                     ) : (
-                                                                                          <p className="text-sm text-muted-foreground">
-                                                                                               No sections found.
-                                                                                          </p>
-                                                                                     )}
-                                                                                </ScrollArea>
-                                                                           </TabsContent>
-                                                                      </Tabs>                     
-                                                                 )}
+                                                                           <Checkbox
+                                                                                id={`cluster-${cluster.clusterId}`}
+                                                                                checked={eligibility.selectedClusters.includes(
+                                                                                     cluster.clusterId
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleClusterSelect(
+                                                                                          cluster.clusterId,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`cluster-${cluster.clusterId}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {
+                                                                                     cluster.clusterName
+                                                                                }
+                                                                           </Label>
+                                                                      </div>
+                                                                 ))}
                                                             </div>
-                              <Card className="relative w-full p-4">
-                                                                 <Tooltip>
-                                                                      <TooltipTrigger asChild>
-                                                                      <Button 
-                                                                      type="button"
-                                                                      variant="outline"
-                                                                      size="icon"
-                                                                      className="absolute right-4 top-4"
+                                                       ) : (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 No clusters found.
+                                                            </p>
+                                                       )}
+                                                  </ScrollArea>
+                                             </TabsContent>
+
+                                             <TabsContent value="courses" className="mt-4">
+                                                  <ScrollArea className="h-30 pr-4">
+                                                       {loadingHierarchy ? (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 Loading courses...
+                                                            </p>
+                                                       ) : filterItems(courses, {
+                                                              key: "courseName",
+                                                         }).length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                 {filterItems(courses, {
+                                                                      key: "courseName",
+                                                                 }).map((course) => (
+                                                                      <div
+                                                                           key={course.id}
+                                                                           className="flex items-center space-x-2"
                                                                       >
-                                                                           
-                                                                           <HelpCircle className="h-3 w-3" />
-                                                                      </Button>
-                                                                      </TooltipTrigger>
-                                                                      <TooltipContent side="bottom" align="center" sideOffset={8}>
-                                                                      <p className="text-sm">
-                                                                                <strong>What are these checkboxes for?</strong> 
-                                                                                {/* This
+                                                                           <Checkbox
+                                                                                id={`course-${course.id}`}
+                                                                                checked={eligibility.selectedCourses.includes(
+                                                                                     course.id
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleCourseSelect(
+                                                                                          course.id,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`course-${course.id}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {course.courseName}
+                                                                           </Label>
+                                                                      </div>
+                                                                 ))}
+                                                            </div>
+                                                       ) : (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 No courses found.
+                                                            </p>
+                                                       )}
+                                                  </ScrollArea>
+                                             </TabsContent>
+
+                                             <TabsContent value="sections" className="mt-4">
+                                                  <ScrollArea className="h-30 pr-4">
+                                                       {loadingHierarchy ? (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 Loading sections...
+                                                            </p>
+                                                       ) : filterItems(sections, {
+                                                              key: "sectionName",
+                                                         }).length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                 {filterItems(sections, {
+                                                                      key: "sectionName",
+                                                                 }).map((section) => (
+                                                                      <div
+                                                                           key={section.id}
+                                                                           className="flex items-center space-x-2"
+                                                                      >
+                                                                           <Checkbox
+                                                                                id={`section-${section.id}`}
+                                                                                checked={eligibility.selectedSections.includes(
+                                                                                     section.id
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleSectionSelect(
+                                                                                          section.id,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`section-${section.id}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {
+                                                                                     section.sectionName
+                                                                                }
+                                                                           </Label>
+                                                                      </div>
+                                                                 ))}
+                                                            </div>
+                                                       ) : (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 No sections found.
+                                                            </p>
+                                                       )}
+                                                  </ScrollArea>
+                                             </TabsContent>
+                                        </Tabs>
+                                   )}
+                              </div>
+                              <Card className="relative w-full p-4">
+                                   <Tooltip>
+                                        <TooltipTrigger asChild>
+                                             <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="icon"
+                                                  className="absolute right-4 top-4"
+                                             >
+                                                  <HelpCircle className="h-3 w-3" />
+                                             </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" align="center" sideOffset={8}>
+                                             <p className="text-sm">
+                                                  <strong>What are these checkboxes for?</strong>
+                                                  {/* This
                                                                                 button runs the academic year activation scheduler
                                                                                 immediately, without waiting for the nightly cron
                                                                                 job.
                                                                                 <br /> */}
-                                                                                <br />
-                                                                                <br />
-                                                                                <strong>Facial Verification:</strong>
-                                                                                <ul className="list-disc list-inside mt-1 text-xs">
-                                                                                     <li>
-                                                                                          This require the student to authenticate their identity
-                                                                                          through facial recognition. 
-                                                                                     </li>
-                                                                                     <li>
-                                                                                          They will be marked as 'Absent' to the event
-                                                                                          until their facial is confirmed.
-                                                                                     </li>
-                                                                                     <br />
-                                                                                </ul>
-                                                                                <strong>Attendance Monitoring:</strong>
-                                                                                <ul className="list-disc list-inside mt-1 text-xs">
-                                                                                     <li>
-                                                                                          This monitors the student's location while the event is 'Ongoing'
-                                                                                          when they leave the <br /> venue it may affect their attendance. 
-                                                                                     </li> 
-                                                                                     <li>
-                                                                                          <strong>Note:</strong> This require the students an internet connection throughout the whole event. <br />
-                                                                                          If internet connection failed, students will marked as 'Absent'
-                                                                                     </li>
-                                                                                     <br />
-                                                                                </ul>
-                                                                                <strong>Location Validation:</strong>
-                                                                                <ul className="list-disc list-inside mt-1 text-xs">
-                                                                                     <li>
-                                                                                          This requires the student to register on both venues.
-                                                                                     </li> 
-                                                                                     <li>
-                                                                                          They will only marked as 'Present' when they succesfully registered on both venues.
-                                                                                     </li> 
-                                                                                </ul>
-                                                                           </p>
-                                                                      </TooltipContent>
-                                                                 </Tooltip>
-                                                                 <Label className="text-base">Other Settings</Label>
-                                                                 <div className="space-y-2 pl-2 pb-2">
-                                                                      <Label>Facial Verification</Label>
-                                                                      <div className="flex items-center space-x-2">
-                                                                           <Checkbox
-                                                                                id="facialVerificationEnabled"
-                                                                                checked={formData.facialVerificationEnabled}
-                                                                                onCheckedChange={(checked) =>
-                                                                                     handleInputChange(
-                                                                                          "facialVerificationEnabled",
-                                                                                          !!checked
-                                                                                     )
-                                                                                }
-                                                                           />
-                                                                           <Label
-                                                                                htmlFor="facialVerificationEnabled"
-                                                                                className="text-sm font-medium"
-                                                                           >
-                                                                                Require Facial Verification for Registration
-                                                                           </Label>
-                                                                      </div>
-                                                                 </div>
-                                                                 <div className="space-y-2 pl-2 pb-2">
-                                                                      <Label>Attendance Monitoring</Label>
-                                                                      <div className="flex items-center space-x-2">
-                                                                           <Checkbox
-                                                                                id="attendanceLocationMonitoringEnabled"
-                                                                                checked={formData.attendanceLocationMonitoringEnabled}
-                                                                                onCheckedChange={(checked) =>
-                                                                                     handleInputChange(
-                                                                                          "attendanceLocationMonitoringEnabled",
-                                                                                          !!checked
-                                                                                     )
-                                                                                }
-                                                                           />
-                                                                           <Label
-                                                                                htmlFor="attendanceLocationMonitoringEnabled"
-                                                                                className="text-sm font-medium"
-                                                                           >
-                                                                                Require Location Monitoring while Event is Ongoing
-                                                                           </Label>
-                                                                      </div>
-                                                                 </div>
-                                                                 <div className="space-y-2 pl-2 pb-2">
-                                                                      <Label>Location Validation</Label>
-                                                                      <div className="flex items-center space-x-2">
-                                                                           <Checkbox
-                                                                                id="strictLocationValidation"
-                                                                                checked={formData.strictLocationValidation}
-                                                                                onCheckedChange={(checked) =>
-                                                                                     handleInputChange(
-                                                                                          "strictLocationValidation",
-                                                                                          !!checked
-                                                                                     )
-                                                                                }
-                                                                           />
-                                                                           <Label
-                                                                                htmlFor="strictLocationValidation"
-                                                                                className="text-sm font-medium"
-                                                                           >
-                                                                                Require Location Validation for Both Locations
-                                                                           </Label>
-                                                                      </div>
-                                                                 </div>
-                                                            </Card>
+                                                  <br />
+                                                  <br />
+                                                  <strong>Facial Verification:</strong>
+                                                  <ul className="list-disc list-inside mt-1 text-xs">
+                                                       <li>
+                                                            This require the student to authenticate
+                                                            their identity through facial
+                                                            recognition.
+                                                       </li>
+                                                       <li>
+                                                            They will be marked as 'Absent' to the
+                                                            event until their facial is confirmed.
+                                                       </li>
+                                                       <br />
+                                                  </ul>
+                                                  <strong>Attendance Monitoring:</strong>
+                                                  <ul className="list-disc list-inside mt-1 text-xs">
+                                                       <li>
+                                                            This monitors the student's location
+                                                            while the event is 'Ongoing' when they
+                                                            leave the <br /> venue it may affect
+                                                            their attendance.
+                                                       </li>
+                                                       <li>
+                                                            <strong>Note:</strong> This require the
+                                                            students an internet connection
+                                                            throughout the whole event. <br />
+                                                            If internet connection failed, students
+                                                            will marked as 'Absent'
+                                                       </li>
+                                                       <br />
+                                                  </ul>
+                                                  <strong>Location Validation:</strong>
+                                                  <ul className="list-disc list-inside mt-1 text-xs">
+                                                       <li>
+                                                            This requires the student to register on
+                                                            both venues.
+                                                       </li>
+                                                       <li>
+                                                            They will only marked as 'Present' when
+                                                            they succesfully registered on both
+                                                            venues.
+                                                       </li>
+                                                  </ul>
+                                             </p>
+                                        </TooltipContent>
+                                   </Tooltip>
+                                   <Label className="text-base">Other Settings</Label>
+                                   <div className="space-y-2 pl-2 pb-2">
+                                        <Label>Facial Verification</Label>
+                                        <div className="flex items-center space-x-2">
+                                             <Checkbox
+                                                  id="facialVerificationEnabled"
+                                                  checked={formData.facialVerificationEnabled}
+                                                  onCheckedChange={(checked) =>
+                                                       handleInputChange(
+                                                            "facialVerificationEnabled",
+                                                            !!checked
+                                                       )
+                                                  }
+                                             />
+                                             <Label
+                                                  htmlFor="facialVerificationEnabled"
+                                                  className="text-sm font-medium"
+                                             >
+                                                  Require Facial Verification for Registration
+                                             </Label>
+                                        </div>
+                                   </div>
+                                   <div className="space-y-2 pl-2 pb-2">
+                                        <Label>Attendance Monitoring</Label>
+                                        <div className="flex items-center space-x-2">
+                                             <Checkbox
+                                                  id="attendanceLocationMonitoringEnabled"
+                                                  checked={
+                                                       formData.attendanceLocationMonitoringEnabled
+                                                  }
+                                                  onCheckedChange={(checked) =>
+                                                       handleInputChange(
+                                                            "attendanceLocationMonitoringEnabled",
+                                                            !!checked
+                                                       )
+                                                  }
+                                             />
+                                             <Label
+                                                  htmlFor="attendanceLocationMonitoringEnabled"
+                                                  className="text-sm font-medium"
+                                             >
+                                                  Require Location Monitoring while Event is Ongoing
+                                             </Label>
+                                        </div>
+                                   </div>
+                                   <div className="space-y-2 pl-2 pb-2">
+                                        <Label>Location Validation</Label>
+                                        <div className="flex items-center space-x-2">
+                                             <Checkbox
+                                                  id="strictLocationValidation"
+                                                  checked={formData.strictLocationValidation}
+                                                  onCheckedChange={(checked) =>
+                                                       handleInputChange(
+                                                            "strictLocationValidation",
+                                                            !!checked
+                                                       )
+                                                  }
+                                             />
+                                             <Label
+                                                  htmlFor="strictLocationValidation"
+                                                  className="text-sm font-medium"
+                                             >
+                                                  Require Location Validation for Both Locations
+                                             </Label>
+                                        </div>
+                                   </div>
+                              </Card>
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"

@@ -24,19 +24,10 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
@@ -208,7 +199,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     venueLocationId: "",
                     facialVerificationEnabled: true,
                     attendanceLocationMonitoringEnabled: true,
-                    strictLocationValidation:true,
+                    strictLocationValidation: true,
                })
                setEligibility({
                     allStudents: true,
@@ -430,7 +421,8 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                 sections: cleaned.selectedSections,
                            },
                     facialVerificationEnabled: !!formData.facialVerificationEnabled,
-                    attendanceLocationMonitoringEnabled: !!formData.attendanceLocationMonitoringEnabled,
+                    attendanceLocationMonitoringEnabled:
+                         !!formData.attendanceLocationMonitoringEnabled,
                     strictLocationValidation: !!formData.strictLocationValidation,
                }
                console.log("Sending create payload:", newEventData)
@@ -583,9 +575,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                   >
                                                        <Calendar
                                                             mode="single"
-                                                            selected={
-                                                                 formData.registrationDateTime
-                                                            }
+                                                            selected={formData.registrationDateTime}
                                                             onSelect={(selectedDate) =>
                                                                  handleDateSelect(
                                                                       "registrationDateTime",
@@ -673,7 +663,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             className="w-full justify-between font-normal"
                                                             id="start-date"
                                                        >
-                                                            {getDateDisplay(formData.startingDateTime)}
+                                                            {getDateDisplay(
+                                                                 formData.startingDateTime
+                                                            )}
                                                             <ChevronDownIcon className="h-4 w-4" />
                                                        </Button>
                                                   </PopoverTrigger>
@@ -765,7 +757,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             className="w-full justify-between font-normal"
                                                             id="end-date"
                                                        >
-                                                            {getDateDisplay(formData.endingDateTime)}
+                                                            {getDateDisplay(
+                                                                 formData.endingDateTime
+                                                            )}
                                                             <ChevronDownIcon className="h-4 w-4" />
                                                        </Button>
                                                   </PopoverTrigger>
@@ -847,9 +841,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                               </div>
 
                               <div className="grid grid-cols-2 gap-4 w-full">
-                                   
-                                     <div className="space-y-2">
-                                        <Label htmlFor="registrationLocationId">Registration Location</Label>
+                                   <div className="space-y-2">
+                                        <Label htmlFor="registrationLocationId">
+                                             Registration Location
+                                        </Label>
                                         <Select
                                              value={formData.registrationLocationId}
                                              onValueChange={(value) =>
@@ -868,32 +863,40 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                              </SelectTrigger>
                                              <SelectContent>
                                                   <SelectGroup>
-                                                       <SelectLabel className="mb-3">Registration Venues</SelectLabel>
+                                                       <SelectLabel className="mb-3">
+                                                            Registration Venues
+                                                       </SelectLabel>
                                                        {locations
-                                                       .filter((loc) => loc.locationPurposeType === "REGISTRATION_AREA")
-                                                       .map((loc) => (
-                                                            <SelectItem
-                                                                 key={loc.locationId}
-                                                                 value={loc.locationId}
-                                                            >
-                                                                 {loc.locationName}
-                                                            </SelectItem>
-                                                       ))}
+                                                            .filter(
+                                                                 (loc) =>
+                                                                      loc.locationPurposeType ===
+                                                                      "REGISTRATION_AREA"
+                                                            )
+                                                            .map((loc) => (
+                                                                 <SelectItem
+                                                                      key={loc.locationId}
+                                                                      value={loc.locationId}
+                                                                 >
+                                                                      {loc.locationName}
+                                                                 </SelectItem>
+                                                            ))}
                                                   </SelectGroup>
                                                   <SelectGroup>
                                                        <SelectLabel className="mb-3" />
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
-                                                            onClick={() => setCreateNewLocation(true)}
+                                                            onClick={() =>
+                                                                 setCreateNewLocation(true)
+                                                            }
                                                        >
                                                             <Plus className="w-4 h-4" />
-                                                            <span>Create New Registration Venue </span>
+                                                            <span>Create New Venue </span>
                                                        </div>
                                                   </SelectGroup>
                                              </SelectContent>
                                         </Select>
                                    </div>
-                                   
+
                                    <div className="space-y-2">
                                         <Label htmlFor="venueLocationId">Event Location</Label>
                                         <Select
@@ -914,26 +917,34 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                              </SelectTrigger>
                                              <SelectContent>
                                                   <SelectGroup>
-                                                       <SelectLabel className="mb-3">Event Venues</SelectLabel>
+                                                       <SelectLabel className="mb-3">
+                                                            Event Venues
+                                                       </SelectLabel>
                                                        {locations
-                                                       .filter((loc) => loc.locationPurposeType === "EVENT_VENUE")
-                                                       .map((loc) => (
-                                                            <SelectItem
-                                                                 key={loc.locationId}
-                                                                 value={loc.locationId}
-                                                            >
-                                                                 {loc.locationName}
-                                                            </SelectItem>
-                                                       ))}
+                                                            .filter(
+                                                                 (loc) =>
+                                                                      loc.locationPurposeType ===
+                                                                      "EVENT_VENUE"
+                                                            )
+                                                            .map((loc) => (
+                                                                 <SelectItem
+                                                                      key={loc.locationId}
+                                                                      value={loc.locationId}
+                                                                 >
+                                                                      {loc.locationName}
+                                                                 </SelectItem>
+                                                            ))}
                                                   </SelectGroup>
                                                   <SelectGroup>
                                                        <SelectLabel className="mb-3" />
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
-                                                            onClick={() => setCreateNewLocation(true)}
+                                                            onClick={() =>
+                                                                 setCreateNewLocation(true)
+                                                            }
                                                        >
                                                             <Plus className="w-4 h-4" />
-                                                            <span>Create New Event Venue </span>
+                                                            <span>Create New Venue </span>
                                                        </div>
                                                   </SelectGroup>
                                              </SelectContent>
@@ -957,26 +968,28 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    /> */}
                                    <div className="flex items-center space-x-2">
                                         <Checkbox
-                                          id="allStudents"
-                                          checked={eligibility.allStudents}
-                                          onCheckedChange={
-                                             handleAllStudentsToggle
-                                          }
+                                             id="allStudents"
+                                             checked={eligibility.allStudents}
+                                             onCheckedChange={handleAllStudentsToggle}
                                         />
                                         <Label
                                              htmlFor="allStudents"
                                              className="text-sm font-medium"
                                         >
-                                          All Students
+                                             All Students
                                         </Label>
                                    </div>
 
                                    {!eligibility.allStudents && (
                                         <Tabs defaultValue="clusters">
                                              <TabsList className="grid grid-cols-3 w-full">
-                                                  <TabsTrigger value="clusters">Clusters</TabsTrigger>
+                                                  <TabsTrigger value="clusters">
+                                                       Clusters
+                                                  </TabsTrigger>
                                                   <TabsTrigger value="courses">Courses</TabsTrigger>
-                                                  <TabsTrigger value="sections">Sections</TabsTrigger>
+                                                  <TabsTrigger value="sections">
+                                                       Sections
+                                                  </TabsTrigger>
                                              </TabsList>
 
                                              <TabsContent value="clusters" className="mt-4">
@@ -985,29 +998,40 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             <p className="text-sm text-muted-foreground">
                                                                  Loading clusters...
                                                             </p>
-                                                       ) : filterItems(clusters, {key: "clusterName"}).length > 0 ? (
+                                                       ) : filterItems(clusters, {
+                                                              key: "clusterName",
+                                                         }).length > 0 ? (
                                                             <div className="space-y-2">
-                                                                 {filterItems(clusters, { key: "clusterName" }).map((cluster) => (
-                                                                 <div
-                                                                 key={cluster.clusterId}
-                                                                 className="flex items-center space-x-2"
-                                                                 >
-                                                                      <Checkbox 
-                                                                      id={`cluster-${cluster.clusterId}`}
-                                                                      checked={eligibility.selectedClusters.includes(
-                                                                           cluster.clusterId
-                                                                      )}
-                                                                      onCheckedChange={(checked) =>
-                                                                           handleClusterSelect(cluster.clusterId, !!checked)
-                                                                      }
-                                                                      />
-                                                                      <Label
-                                                                      htmlFor={`cluster-${cluster.clusterId}`}
-                                                                      className="text-sm"
+                                                                 {filterItems(clusters, {
+                                                                      key: "clusterName",
+                                                                 }).map((cluster) => (
+                                                                      <div
+                                                                           key={cluster.clusterId}
+                                                                           className="flex items-center space-x-2"
                                                                       >
-                                                                           {cluster.clusterName}
-                                                                      </Label>
-                                                                 </div>
+                                                                           <Checkbox
+                                                                                id={`cluster-${cluster.clusterId}`}
+                                                                                checked={eligibility.selectedClusters.includes(
+                                                                                     cluster.clusterId
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleClusterSelect(
+                                                                                          cluster.clusterId,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`cluster-${cluster.clusterId}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {
+                                                                                     cluster.clusterName
+                                                                                }
+                                                                           </Label>
+                                                                      </div>
                                                                  ))}
                                                             </div>
                                                        ) : (
@@ -1024,29 +1048,38 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             <p className="text-sm text-muted-foreground">
                                                                  Loading courses...
                                                             </p>
-                                                       ) : filterItems(courses, {key: "courseName"}).length > 0 ? (
+                                                       ) : filterItems(courses, {
+                                                              key: "courseName",
+                                                         }).length > 0 ? (
                                                             <div className="space-y-2">
-                                                                 {filterItems(courses, { key: "courseName" }).map((course) => (
-                                                                 <div
-                                                                 key={course.id}
-                                                                 className="flex items-center space-x-2"
-                                                                 >
-                                                                      <Checkbox 
-                                                                      id={`course-${course.id}`}
-                                                                      checked={eligibility.selectedCourses.includes(
-                                                                           course.id
-                                                                      )}
-                                                                      onCheckedChange={(checked) =>
-                                                                           handleCourseSelect(course.id, !!checked)
-                                                                      }
-                                                                      />
-                                                                      <Label
-                                                                      htmlFor={`course-${course.id}`}
-                                                                      className="text-sm"
+                                                                 {filterItems(courses, {
+                                                                      key: "courseName",
+                                                                 }).map((course) => (
+                                                                      <div
+                                                                           key={course.id}
+                                                                           className="flex items-center space-x-2"
                                                                       >
-                                                                           {course.courseName}
-                                                                      </Label>
-                                                                 </div>
+                                                                           <Checkbox
+                                                                                id={`course-${course.id}`}
+                                                                                checked={eligibility.selectedCourses.includes(
+                                                                                     course.id
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleCourseSelect(
+                                                                                          course.id,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`course-${course.id}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {course.courseName}
+                                                                           </Label>
+                                                                      </div>
                                                                  ))}
                                                             </div>
                                                        ) : (
@@ -1063,29 +1096,40 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             <p className="text-sm text-muted-foreground">
                                                                  Loading sections...
                                                             </p>
-                                                       ) : filterItems(sections, {key: "sectionName"}).length > 0 ? (
+                                                       ) : filterItems(sections, {
+                                                              key: "sectionName",
+                                                         }).length > 0 ? (
                                                             <div className="space-y-2">
-                                                                 {filterItems(sections, { key: "sectionName" }).map((section) => (
-                                                                 <div
-                                                                 key={section.id}
-                                                                 className="flex items-center space-x-2"
-                                                                 >
-                                                                      <Checkbox 
-                                                                      id={`section-${section.id}`}
-                                                                      checked={eligibility.selectedSections.includes(
-                                                                           section.id
-                                                                      )}
-                                                                      onCheckedChange={(checked) =>
-                                                                           handleSectionSelect(section.id, !!checked)
-                                                                      }
-                                                                      />
-                                                                      <Label
-                                                                      htmlFor={`section-${section.id}`}
-                                                                      className="text-sm"
+                                                                 {filterItems(sections, {
+                                                                      key: "sectionName",
+                                                                 }).map((section) => (
+                                                                      <div
+                                                                           key={section.id}
+                                                                           className="flex items-center space-x-2"
                                                                       >
-                                                                           {section.sectionName}
-                                                                      </Label>
-                                                                 </div>
+                                                                           <Checkbox
+                                                                                id={`section-${section.id}`}
+                                                                                checked={eligibility.selectedSections.includes(
+                                                                                     section.id
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleSectionSelect(
+                                                                                          section.id,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`section-${section.id}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {
+                                                                                     section.sectionName
+                                                                                }
+                                                                           </Label>
+                                                                      </div>
                                                                  ))}
                                                             </div>
                                                        ) : (
@@ -1095,25 +1139,24 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        )}
                                                   </ScrollArea>
                                              </TabsContent>
-                                        </Tabs>                     
+                                        </Tabs>
                                    )}
                               </div>
                               <Card className="relative w-full p-4">
                                    <Tooltip>
                                         <TooltipTrigger asChild>
-                                        <Button 
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        className="absolute right-4 top-4"
-                                        >
-                                             
-                                             <HelpCircle className="h-3 w-3" />
-                                        </Button>
+                                             <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="icon"
+                                                  className="absolute right-4 top-4"
+                                             >
+                                                  <HelpCircle className="h-3 w-3" />
+                                             </Button>
                                         </TooltipTrigger>
                                         <TooltipContent side="bottom" align="center" sideOffset={8}>
-                                        <p className="text-sm">
-                                                  <strong>What are these checkboxes for?</strong> 
+                                             <p className="text-sm">
+                                                  <strong>What are these checkboxes for?</strong>
                                                   {/* This
                                                   button runs the academic year activation scheduler
                                                   immediately, without waiting for the nightly cron
@@ -1124,35 +1167,44 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                   <strong>Facial Verification:</strong>
                                                   <ul className="list-disc list-inside mt-1 text-xs">
                                                        <li>
-                                                            This require the student to authenticate their identity
-                                                            through facial recognition. 
+                                                            This require the student to authenticate
+                                                            their identity through facial
+                                                            recognition.
                                                        </li>
                                                        <li>
-                                                            They will be marked as 'Absent' to the event
-                                                            until their facial is confirmed.
+                                                            They will be marked as 'Absent' to the
+                                                            event until their facial is confirmed.
                                                        </li>
                                                        <br />
                                                   </ul>
                                                   <strong>Attendance Monitoring:</strong>
                                                   <ul className="list-disc list-inside mt-1 text-xs">
                                                        <li>
-                                                            This monitors the student's location while the event is 'Ongoing'
-                                                            when they leave the <br /> venue it may affect their attendance. 
-                                                       </li> 
+                                                            This monitors the student's location
+                                                            while the event is 'Ongoing' when they
+                                                            leave the <br /> venue it may affect
+                                                            their attendance.
+                                                       </li>
                                                        <li>
-                                                            <strong>Note:</strong> This require the students an internet connection throughout the whole event. <br />
-                                                            If internet connection failed, students will marked as 'Absent'
+                                                            <strong>Note:</strong> This require the
+                                                            students an internet connection
+                                                            throughout the whole event. <br />
+                                                            If internet connection failed, students
+                                                            will marked as 'Absent'
                                                        </li>
                                                        <br />
                                                   </ul>
                                                   <strong>Location Validation:</strong>
                                                   <ul className="list-disc list-inside mt-1 text-xs">
                                                        <li>
-                                                            This requires the student to register on both venues.
-                                                       </li> 
+                                                            This requires the student to register on
+                                                            both venues.
+                                                       </li>
                                                        <li>
-                                                            They will only marked as 'Present' when they succesfully registered on both venues.
-                                                       </li> 
+                                                            They will only marked as 'Present' when
+                                                            they succesfully registered on both
+                                                            venues.
+                                                       </li>
                                                   </ul>
                                              </p>
                                         </TooltipContent>
@@ -1184,7 +1236,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         <div className="flex items-center space-x-2">
                                              <Checkbox
                                                   id="attendanceLocationMonitoringEnabled"
-                                                  checked={formData.attendanceLocationMonitoringEnabled}
+                                                  checked={
+                                                       formData.attendanceLocationMonitoringEnabled
+                                                  }
                                                   onCheckedChange={(checked) =>
                                                        handleInputChange(
                                                             "attendanceLocationMonitoringEnabled",

@@ -59,7 +59,7 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
           e.stopPropagation()
           setDeleteTarget(event)
           setDeleteDialogOpen(true)
-     } 
+     }
      const confirmDelete = async () => {
           if (deleteTarget) {
                onDelete(deleteTarget)
@@ -72,8 +72,12 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                     <TableHeader className="bg-gray-100">
                          <TableRow>
                               <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
-                              <TableHead className="font-semibold text-gray-900">REGISTRATION VENUE</TableHead>
-                              <TableHead className="font-semibold text-gray-900">EVENT VENUE</TableHead>
+                              <TableHead className="font-semibold text-gray-900">
+                                   REGISTRATION VENUE
+                              </TableHead>
+                              <TableHead className="font-semibold text-gray-900">
+                                   EVENT VENUE
+                              </TableHead>
                               <TableHead className="font-semibold text-gray-900">
                                    ELIGIBLE STUDENTS
                               </TableHead>
@@ -121,9 +125,7 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                                              {formatEligibility(event.eligibleStudents)}
                                         </TableCell>
                                         <TableCell>
-                                             {new Date(
-                                                  event.registrationDateTime
-                                             ).toLocaleString()}
+                                             {new Date(event.registrationDateTime).toLocaleString()}
                                         </TableCell>
                                         <TableCell>
                                              {new Date(event.startingDateTime).toLocaleString()}
