@@ -25,6 +25,10 @@ export default function OsaProfilePage() {
           router.push("/change-password")
      }
 
+     const GoToEditMyProfile = async () => {
+          router.push("/edit-my-profile")
+     }
+
      const loadProfile = async () => {
           try {
                setLoading(true)
@@ -64,9 +68,12 @@ export default function OsaProfilePage() {
                          {/* buttons for user's edit account, change password and logging out */}
                          <div className="m-5">
                               {/* to add onClick */}
-                              <Button className="rounded-sm self-start m-2 w-35">
+                              <Button 
+                                   className="rounded-sm self-start m-2 w-35"
+                                   onClick={GoToEditMyProfile}
+                              >
                                    {" "}
-                                   Edit Account
+                                   Edit My Profile
                               </Button>
 
                               <Button
