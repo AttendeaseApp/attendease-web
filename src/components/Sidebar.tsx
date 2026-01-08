@@ -40,7 +40,7 @@ const menu = [
           icon: Calendar,
      },
      {
-          title: "Venues",
+          title: "Locations",
           url: "/manage-locations",
           icon: LocationEditIcon,
      },
