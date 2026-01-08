@@ -54,6 +54,8 @@ export default function CreateLocationDialog({
 }: CreateLocationModalProps) {
      const [locationName, setLocationName] = useState("")
      const [locationType, setLocationType] = useState("INDOOR")
+     const [locationPurpose, setLocationPurpose] = useState("EVENT_VENUE")
+     const [description, setDescription] = useState("")
      const [polygon, setPolygon] = useState<number[][]>([])
      const [loading, setLoading] = useState(false)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
@@ -96,6 +98,8 @@ export default function CreateLocationDialog({
           const payload: EventLocationRequest = {
                locationName,
                locationType,
+               locationPurpose,
+               description,
                geoJsonData: {
                     type: "Polygon",
                     coordinates: [polygon],
