@@ -1288,18 +1288,20 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                             recognition.
                                                        </li>
                                                        <li>
-                                                            They will be marked as &apos;Absent&apos; to the
-                                                            event until their facial is confirmed.
+                                                            They will be marked as
+                                                            &apos;Absent&apos; to the event until
+                                                            their facial is confirmed.
                                                        </li>
                                                        <br />
                                                   </ul>
                                                   <strong>Attendance Monitoring:</strong>
                                                   <ul className="list-disc list-inside mt-1 text-xs">
                                                        <li>
-                                                            This monitors the student&apos;s location
-                                                            while the event is &apos;Ongoing&apos; when they
-                                                            leave the <br /> venue it may affect
-                                                            their attendance.
+                                                            This monitors the student&apos;s
+                                                            location while the event is
+                                                            &apos;Ongoing&apos; when they leave the{" "}
+                                                            <br /> venue it may affect their
+                                                            attendance.
                                                        </li>
                                                        <li>
                                                             <strong>Note:</strong> This require the
@@ -1317,9 +1319,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                                             both venues.
                                                        </li>
                                                        <li>
-                                                            They will only marked as &apos;Present&apos; when
-                                                            they succesfully registered on both
-                                                            venues.
+                                                            They will only marked as
+                                                            &apos;Present&apos; when they
+                                                            succesfully registered on both venues.
                                                        </li>
                                                   </ul>
                                              </p>
