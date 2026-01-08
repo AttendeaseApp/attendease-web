@@ -1172,7 +1172,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             recognition.
                                                        </li>
                                                        <li>
-                                                            They will be marked as 'Absent' to the
+                                                            They will be marked as &apos;Absent&apos; to the
                                                             event until their facial is confirmed.
                                                        </li>
                                                        <br />
@@ -1180,8 +1180,8 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                   <strong>Attendance Monitoring:</strong>
                                                   <ul className="list-disc list-inside mt-1 text-xs">
                                                        <li>
-                                                            This monitors the student's location
-                                                            while the event is 'Ongoing' when they
+                                                            This monitors the student&apos;s location
+                                                            while the event is &apos;Ongoing&apos; when they
                                                             leave the <br /> venue it may affect
                                                             their attendance.
                                                        </li>
@@ -1190,7 +1190,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             students an internet connection
                                                             throughout the whole event. <br />
                                                             If internet connection failed, students
-                                                            will marked as 'Absent'
+                                                            will marked as &apos;Absent&apos;
                                                        </li>
                                                        <br />
                                                   </ul>
@@ -1201,7 +1201,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             both venues.
                                                        </li>
                                                        <li>
-                                                            They will only marked as 'Present' when
+                                                            They will only marked as &apos;Present&apos; when
                                                             they succesfully registered on both
                                                             venues.
                                                        </li>
