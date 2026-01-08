@@ -80,7 +80,9 @@ export default function AllAttendanceRecordsManagementPage() {
           if (selectedRecordId) {
                try {
                     await deleteRecord(selectedRecordId)
-                    toast.success("Attendance record deleted successfully")
+                    toast.success("Attendance record deleted successfully", {
+                         className: "text-green-600",
+                    })
                     setShowDeleteDialog(false)
                     setSelectedRecordId(null)
                } catch (err) {
@@ -91,7 +93,9 @@ export default function AllAttendanceRecordsManagementPage() {
      const confirmDeleteAll = async () => {
           try {
                await deleteAll()
-               toast.success("All attendance records deleted successfully")
+               toast.success("All attendance records deleted successfully", {
+                    className: "text-green-600",
+               })
                setShowDeleteAllDialog(false)
           } catch (err) {
                toast.error(`Failed to delete all records: ${(err as Error).message}`)

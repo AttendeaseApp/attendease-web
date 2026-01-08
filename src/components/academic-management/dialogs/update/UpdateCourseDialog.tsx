@@ -66,6 +66,9 @@ export function UpdateCourseDialog({
                }
                console.log("Sending update payload:", updateCourseData)
                await updateCourse(courses.id, updateCourseData)
+               toast.success("Course updated successfully", {
+                    className: "text-green-600",
+               })
                onUpdate()
                onClose()
           } catch (err) {

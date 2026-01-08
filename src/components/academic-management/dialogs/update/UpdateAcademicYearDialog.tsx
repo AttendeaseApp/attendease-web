@@ -15,6 +15,7 @@ import {
      UpdateAcademicYearRequest,
 } from "@/services/api/academic/academic-year"
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 interface UpdateAcademicYearDialogProps {
      academicYear: AcademicYear
@@ -56,6 +57,9 @@ export function UpdateAcademicYearDialog({
 
           try {
                await updateAcademicYear(academicYear.id, formData)
+               toast.success("Section updated successfully", {
+                    className: "text-green-600",
+               })
                onUpdate()
                onClose()
           } catch (err) {

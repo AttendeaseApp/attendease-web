@@ -62,6 +62,9 @@ export function UpdateClusterDialog({
                }
                console.log("Sending update payload:", updateClusterData)
                await updateCluster(clusters.clusterId, updateClusterData)
+               toast.success("Cluster updated successfully", {
+                    className: "text-green-600",
+               })
                onUpdate()
                onClose()
           } catch (err) {

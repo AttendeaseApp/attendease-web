@@ -37,7 +37,9 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                     })
                }
 
-               toast.info(message)
+               toast.info(message, {
+                    className: "text-black-600",
+               })
 
                setSelectedFile(null)
                onOpenChange(false)

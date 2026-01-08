@@ -67,7 +67,9 @@ export default function ManageLocationsPage() {
           try {
                await deleteLocation(location.locationId)
                setLocations((prev) => prev.filter((e) => e.locationId !== location.locationId))
-               toast.success("Location deleted successfully!")
+               toast.success("Location deleted successfully!", {
+                    className: "text-green-600",
+               })
           } catch (error) {
                console.error("Delete failed:", error)
                const errorMessage =

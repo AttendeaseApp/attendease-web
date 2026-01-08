@@ -85,7 +85,9 @@ export function UpdateSectionDialog({
 
                await updateSection(section.id, payload)
 
-               toast.success("Section updated successfully")
+               toast.success("Section updated successfully", {
+                    className: "text-green-600",
+               })
                onUpdate()
                onClose()
           } catch (err) {

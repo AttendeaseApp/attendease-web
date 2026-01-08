@@ -238,7 +238,9 @@ export default function ManageClustersPage() {
           loadAcademicYears()
           loadActiveAcademicYear()
           loadSemesterStatus()
-          toast.success("All data refreshed")
+          toast.success("All data refreshed", {
+               className: "text-green-600",
+          })
      }
 
      return (

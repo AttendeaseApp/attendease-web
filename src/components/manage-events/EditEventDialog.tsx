@@ -462,7 +462,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           try {
                setIsSubmitting(true)
                await cancelEvent(event.eventId)
-               toast.success("Event cancelled")
+               toast.success("Event cancelled", {
+                    className: "text-green-600",
+               })
                onUpdate()
           } catch (error) {
                toast.error("Failed to cancel event" + error)
@@ -533,7 +535,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                }
 
                await updateEvent(event.eventId, updatedData)
-               toast.success("Successfully updated the event.")
+               toast.success("Successfully updated the event.", {
+                    className: "text-green-600",
+               })
                onUpdate()
           } catch (error) {
                console.error("Update failed:", error)

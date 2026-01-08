@@ -79,7 +79,9 @@ export default function EditUserDetailsDialog({
                }
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               toast.success("Successfully updated user.")
+               toast.success("Successfully updated user.", {
+                    className: "text-green-600",
+               })
                onOpenChange(false)
           } catch (err) {
                const message =

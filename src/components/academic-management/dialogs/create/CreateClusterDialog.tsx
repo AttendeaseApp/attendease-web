@@ -45,7 +45,9 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
 
           try {
                await createCluster({ clusterName })
-               toast.success(`Cluster '${clusterName}' created successfully.`)
+               toast.success(`Cluster '${clusterName}' created successfully.`, {
+                    className: "text-green-600",
+               })
                onCreate()
                onClose()
           } catch (err: unknown) {

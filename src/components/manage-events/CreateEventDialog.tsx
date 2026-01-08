@@ -411,7 +411,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
-               toast.success("Successfully created the event.")
+               toast.success("Successfully created the event.", {
+                    className: "text-green-600",
+               })
                onClose()
                onCreate()
           } catch (err) {
