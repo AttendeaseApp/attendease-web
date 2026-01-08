@@ -40,7 +40,7 @@ const menu = [
           icon: Calendar,
      },
      {
-          title: "Venues",
+          title: "Locations",
           url: "/manage-locations",
           icon: LocationEditIcon,
      },
@@ -50,8 +50,8 @@ const menu = [
           icon: Users,
      },
      {
-          title: "Clusters, Courses & Sections",
-          url: "/manage-clusters-courses-sections",
+          title: "Academic Management",
+          url: "/academic-management",
           icon: GraduationCap,
      },
 ]

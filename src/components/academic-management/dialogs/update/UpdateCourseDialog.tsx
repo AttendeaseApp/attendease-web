@@ -1,4 +1,5 @@
 "use client"
+
 import { Button } from "@/components/ui/button"
 import {
      Dialog,
@@ -11,27 +12,30 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
-import { updateCluster } from "@/services/cluster-and-course-sessions"
+import { Course } from "@/interface/academic/course/CourseInterface"
+import { updateCourse } from "@/services/api/academic/cluster-and-course-sessions"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-interface UpdateClusterDialogProps {
+interface UpdateCourseDialogProps {
+     cluster: Cluster
      isOpen: boolean
      onClose: () => void
      onUpdate: () => void
      onError?: (message: string) => void
-     clusters: Cluster
+     courses: Course
 }
 
-export function UpdateClusterDialog({
+export function UpdateCourseDialog({
+     cluster,
      isOpen,
      onClose,
      onUpdate,
-     clusters,
-}: UpdateClusterDialogProps) {
+     courses,
+}: UpdateCourseDialogProps) {
      const [formData, setFormData] = useState({
-          clusterName: clusters.clusterName,
+          courseName: courses.courseName,
      })
 
      const [error, setError] = useState<string>("")
@@ -41,11 +45,11 @@ export function UpdateClusterDialog({
      useEffect(() => {
           if (isOpen) {
                setFormData({
-                    clusterName: clusters.clusterName || "",
+                    courseName: courses.courseName || "",
                })
                setError("")
           }
-     }, [isOpen, clusters])
+     }, [isOpen, courses.courseName])
 
      const handleInputChange = (field: keyof typeof formData, value: string) => {
           setFormData((prev) => ({ ...prev, [field]: value }))
@@ -57,17 +61,16 @@ export function UpdateClusterDialog({
           setError("")
           setIsSubmitting(true)
           try {
-               const updateClusterData = {
-                    clusterName: formData.clusterName,
+               const updateCourseData = {
+                    courseName: formData.courseName,
                }
-               console.log("Sending update payload:", updateClusterData)
-               await updateCluster(clusters.clusterId, updateClusterData)
+               console.log("Sending update payload:", updateCourseData)
+               await updateCourse(courses.id, updateCourseData)
                onUpdate()
                onClose()
           } catch (err) {
                const message =
-                    (err instanceof Error ? err.message : String(err)) +
-                    " Failed to update cluster."
+                    (err instanceof Error ? err.message : String(err)) + " Failed to update course."
                setError(message)
                console.error("Update failed:", err)
                toast.error(message)
@@ -86,21 +89,19 @@ export function UpdateClusterDialog({
           <Dialog open={isOpen} onOpenChange={handleClose}>
                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                         <DialogTitle>Update Cluster: {clusters.clusterName}</DialogTitle>
+                         <DialogTitle>Update Course: {courses.courseName}</DialogTitle>
                          <DialogDescription>
-                              Fill in the details to update the cluster.
+                              Fill in the details to update the course in {cluster.clusterName}.
                          </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
                          <div className="space-y-2">
-                              <Label htmlFor="clusterName">Cluster Name</Label>
+                              <Label htmlFor="courseName">Course Name</Label>
                               <Input
-                                   id="clusterName"
-                                   value={formData.clusterName}
-                                   onChange={(e) =>
-                                        handleInputChange("clusterName", e.target.value)
-                                   }
-                                   placeholder="Enter cluster name"
+                                   id="courseName"
+                                   value={formData.courseName}
+                                   onChange={(e) => handleInputChange("courseName", e.target.value)}
+                                   placeholder="Enter course name"
                                    required
                               />
                          </div>
@@ -121,10 +122,10 @@ export function UpdateClusterDialog({
                               </Button>
                               <Button
                                    type="submit"
-                                   disabled={isSubmitting || !formData.clusterName.trim()}
+                                   disabled={isSubmitting || !formData.courseName.trim()}
                               >
                                    <Plus className="mr-2 h-4 w-4" />
-                                   {isSubmitting ? "Updating..." : "Update Cluster"}
+                                   {isSubmitting ? "Updating..." : "Update Course"}
                               </Button>
                          </DialogFooter>
                     </form>
