@@ -46,9 +46,9 @@ export function LocationsTable({ locations, loading, onDelete, onEdit }: Locatio
                          <TableHead>TYPE</TableHead>
                          <TableHead>CREATED (DATE-TIME)</TableHead>
                          {/* <TableHead></TableHead> */}
-                          <TableHead>PURPOSE</TableHead>
-                          <TableHead>DESCRIPTION</TableHead>
-                           <TableHead></TableHead>
+                         <TableHead>PURPOSE</TableHead>
+                         <TableHead>DESCRIPTION</TableHead>
+                         <TableHead></TableHead>
                     </TableRow>
                </TableHeader>
                <TableBody>
