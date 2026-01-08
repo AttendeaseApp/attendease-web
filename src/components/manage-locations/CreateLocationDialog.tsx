@@ -54,6 +54,8 @@ export default function CreateLocationDialog({
 }: CreateLocationModalProps) {
      const [locationName, setLocationName] = useState("")
      const [locationType, setLocationType] = useState("INDOOR")
+     const [locationPurpose, setLocationPurpose] = useState("EVENT_VENUE")
+     const [description, setDescription] = useState("")
      const [polygon, setPolygon] = useState<number[][]>([])
      const [loading, setLoading] = useState(false)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
@@ -69,6 +71,7 @@ export default function CreateLocationDialog({
      useEffect(() => {
           if (!open) {
                setLocationName("")
+               setDescription("")
                setPolygon([])
           }
      }, [open])
@@ -76,6 +79,11 @@ export default function CreateLocationDialog({
      const handleCreate = async () => {
           if (!locationName.trim()) {
                toast.error("Location name is required.")
+               return
+          }
+
+          if (!locationPurpose.trim()) {
+               toast.error("Location Purpose is required.")
                return
           }
 
@@ -96,7 +104,9 @@ export default function CreateLocationDialog({
           const payload: EventLocationRequest = {
                locationName,
                locationType,
-               geoJsonData: {
+               locationPurpose,
+               description,
+               locationGeometry: {
                     type: "Polygon",
                     coordinates: [polygon],
                },
@@ -120,6 +130,13 @@ export default function CreateLocationDialog({
           const layer = e.layer as L.Polygon
           const latlngs = layer.getLatLngs()[0] as L.LatLng[]
           const coords = latlngs.map((point) => [point.lng, point.lat])
+          if (
+               coords.length > 0 &&
+               (coords[0][0] !== coords[coords.length - 1][0] ||
+                    coords[0][1] !== coords[coords.length - 1][1])
+          ) {
+               coords.push([...coords[0]])
+          }
           setPolygon(coords)
      }
 
@@ -131,7 +148,7 @@ export default function CreateLocationDialog({
      const titleColor = isSuccess ? "text-green-600" : "text-red-600"
      return (
           <Dialog open={open} onOpenChange={onClose}>
-               <DialogContent_ className="max-w-7xl">
+               <DialogContent_ className="max-w-7xl max-h-[90vh] overflow-auto">
                     <DialogHeader>
                          <DialogTitle>Create New Location</DialogTitle>
                          <DialogDescription className="text-sm text-muted-foreground mb-4">
@@ -159,6 +176,21 @@ export default function CreateLocationDialog({
                                         <option value="INDOOR">Indoor</option>
                                         <option value="OUTDOOR">Outdoor</option>
                                    </select>
+
+                                   <select
+                                        className="border rounded-md px-3 py-2"
+                                        value={locationPurpose}
+                                        onChange={(e) => setLocationPurpose(e.target.value)}
+                                   >
+                                        <option value="EVENT_VENUE">Event Venue</option>
+                                        <option value="REGISTRATION_AREA">Registration Area</option>
+                                   </select>
+
+                                   <Input
+                                        placeholder="Description"
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                   />
                               </div>
 
                               <div className="flex flex-col gap-2 mb-6">
