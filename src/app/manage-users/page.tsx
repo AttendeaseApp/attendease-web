@@ -25,6 +25,11 @@ import {
 } from "@/services/api/user/management/user-management-services"
 import { ChevronDown, Search } from "lucide-react"
 import { useEffect, useState } from "react"
+import { bulkActivateStudents } from "@/services/api/user/management/bulk-activate-students-service"
+import { bulkDeactivateStudents } from "@/services/api/user/management/bulk-deactivate-students-service"
+import { StudentStatusFilter } from "@/interface/users/account/status/AccountStatus"
+import { getActiveStudents } from "@/services/api/user/management/retrive-all-active-students"
+import { getInactiveStudents } from "@/services/api/user/management/retrive-all-inactive-students"
 import { toast } from "sonner"
 
 export default function RetrieveAllUsers() {
@@ -39,6 +44,8 @@ export default function RetrieveAllUsers() {
      const [sections, setSections] = useState<string[]>([])
      const [currentUser, setCurrentUser] = useState<UpdateUserDetailsInterface | null>(null)
      const [deleting, setDeleting] = useState(false)
+     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
+     const [statusFilter, setStatusFilter] = useState<StudentStatusFilter>("ALL")
 
      const [currentPage, setCurrentPage] = useState(1)
      const [dialogState, setDialogState] = useState({
@@ -85,9 +92,33 @@ export default function RetrieveAllUsers() {
           }
      }
 
+     const loadStudents = async () => {
+          setLoading(true)
+          try {
+               let data: UserStudentResponse[] = []
+
+               switch (statusFilter) {
+                    case "ACTIVE":
+                         data = await getActiveStudents()
+                         break
+                    case "INACTIVE":
+                         data = await getInactiveStudents()
+                         break
+                    default:
+                         data = await getAllUsers()
+               }
+
+               setUsers(data)
+          } catch (err) {
+               toast.error(err instanceof Error ? err.message : "Failed to load students")
+          } finally {
+               setLoading(false)
+          }
+     }
+
      useEffect(() => {
-          loadUsers()
-     }, [])
+          loadStudents()
+     }, [statusFilter])
 
      useEffect(() => {
           const uniqueSections = Array.from(
@@ -205,6 +236,15 @@ export default function RetrieveAllUsers() {
                setDeleting(false)
           }
      }
+     const toggleUserSelection = (userId: string) => {
+          setSelectedUserIds((prev) =>
+               prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+          )
+     }
+
+     useEffect(() => {
+          setSelectedUserIds([])
+     }, [users])
 
      return (
           <ProtectedLayout>
@@ -239,6 +279,51 @@ export default function RetrieveAllUsers() {
                               <Button variant="outline" onClick={() => openDialog("moreSettings")}>
                                    More Settings <ChevronDown className="ml-2 h-4 w-4" />
                               </Button>
+                              {selectedUserIds.length > 0 && (
+                                   <div className="flex gap-2">
+                                        <Button
+                                             variant="outline"
+                                             onClick={async () => {
+                                                  try {
+                                                       await bulkActivateStudents(selectedUserIds)
+                                                       toast.success(
+                                                            "Students activated successfully"
+                                                       )
+                                                       loadUsers()
+                                                  } catch (e) {
+                                                       toast.error(
+                                                            e instanceof Error
+                                                                 ? e.message
+                                                                 : "Activation failed"
+                                                       )
+                                                  }
+                                             }}
+                                        >
+                                             Activate
+                                        </Button>
+
+                                        <Button
+                                             variant="destructive"
+                                             onClick={async () => {
+                                                  try {
+                                                       await bulkDeactivateStudents(selectedUserIds)
+                                                       toast.success(
+                                                            "Students deactivated successfully"
+                                                       )
+                                                       loadUsers()
+                                                  } catch (e) {
+                                                       toast.error(
+                                                            e instanceof Error
+                                                                 ? e.message
+                                                                 : "Deactivation failed"
+                                                       )
+                                                  }
+                                             }}
+                                        >
+                                             Deactivate
+                                        </Button>
+                                   </div>
+                              )}
                          </div>
                     </div>
 
@@ -257,7 +342,7 @@ export default function RetrieveAllUsers() {
                          <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                    <Button variant="outline" size="sm">
-                                        {getTypeDisplay(selectedType)}{" "}
+                                        User Type: {getTypeDisplay(selectedType)}
                                         <ChevronDown className="ml-2 h-4 w-4" />
                                    </Button>
                               </DropdownMenuTrigger>
@@ -276,7 +361,7 @@ export default function RetrieveAllUsers() {
                          <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                    <Button variant="outline" size="sm">
-                                        SECTION <ChevronDown className="ml-2 h-4 w-4" />
+                                        By Section <ChevronDown className="ml-2 h-4 w-4" />
                                    </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
@@ -298,7 +383,7 @@ export default function RetrieveAllUsers() {
                          <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                    <Button variant="outline" size="sm">
-                                        COURSE <ChevronDown className="ml-2 h-4 w-4" />
+                                        By Course <ChevronDown className="ml-2 h-4 w-4" />
                                    </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
@@ -315,7 +400,27 @@ export default function RetrieveAllUsers() {
                               </DropdownMenuContent>
                          </DropdownMenu>
 
-                         <Button variant="outline" size="sm" onClick={loadUsers}>
+                         <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                   <Button variant="outline" size="sm">
+                                        Account Status: {statusFilter}{" "}
+                                        <ChevronDown className="ml-2 h-4 w-4" />
+                                   </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                   <DropdownMenuItem onClick={() => setStatusFilter("ALL")}>
+                                        ALL
+                                   </DropdownMenuItem>
+                                   <DropdownMenuItem onClick={() => setStatusFilter("ACTIVE")}>
+                                        ACTIVE
+                                   </DropdownMenuItem>
+                                   <DropdownMenuItem onClick={() => setStatusFilter("INACTIVE")}>
+                                        INACTIVE
+                                   </DropdownMenuItem>
+                              </DropdownMenuContent>
+                         </DropdownMenu>
+
+                         <Button variant="outline" size="sm" onClick={loadStudents}>
                               Refresh
                          </Button>
                     </div>
@@ -328,6 +433,8 @@ export default function RetrieveAllUsers() {
                          currentPage={currentPage}
                          totalPages={totalPages}
                          onPageChange={setCurrentPage}
+                         selectedUserIds={selectedUserIds}
+                         onToggleUser={toggleUserSelection}
                     />
                </div>
 
