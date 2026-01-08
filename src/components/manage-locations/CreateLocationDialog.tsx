@@ -130,8 +130,8 @@ export default function CreateLocationDialog({
           const layer = e.layer as L.Polygon
           const latlngs = layer.getLatLngs()[0] as L.LatLng[]
           const coords = latlngs.map((point) => [point.lng, point.lat])
-          // if (coords.length > 0 && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]))
-          //    { coords.push([...coords[0]]) }
+          if (coords.length > 0 && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]))
+             { coords.push([...coords[0]]) }
           setPolygon(coords)
      }
 
