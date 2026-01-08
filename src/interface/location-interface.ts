@@ -30,5 +30,5 @@ export interface EventLocationRequest {
      locationType: string
      locationPurpose: string
      description: string
-     geoJsonData: Geometry
+     locationGeometry: Geometry
 }
