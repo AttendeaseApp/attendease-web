@@ -4,7 +4,9 @@
 export interface EventLocation {
      locationId: string
      locationName: string
-     locationType: string
+     description: string
+     locationEnvironment: "INDOOR" | "OUTDOOR"
+     locationPurposeType: "EVENT_VENUE" | "REGISTRATION_AREA"
      latitude: number
      longitude: number
      createdAt: string

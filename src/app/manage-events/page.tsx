@@ -57,13 +57,14 @@ export default function ManageEventsPage() {
 
           const matchesSearch =
                event.eventName.toLowerCase().includes(term) ||
-               event.eventLocation?.locationName?.toLowerCase().includes(term) ||
-               new Date(event.timeInRegistrationStartDateTime)
+               event.registrationLocationName.toLowerCase().includes(term) ||
+               event.venueLocationName.toLowerCase().includes(term) ||
+               new Date(event.registrationDateTime)
                     .toLocaleString()
                     .toLowerCase()
                     .includes(term) ||
-               new Date(event.startDateTime).toLocaleString().toLowerCase().includes(term) ||
-               new Date(event.endDateTime).toLocaleString().toLowerCase().includes(term) ||
+               new Date(event.startingDateTime).toLocaleString().toLowerCase().includes(term) ||
+               new Date(event.endingDateTime).toLocaleString().toLowerCase().includes(term) ||
                event.eventStatus.toLowerCase().includes(term)
 
           const matchesStatus =

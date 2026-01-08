@@ -79,7 +79,8 @@ export function LocationsTable({ locations, loading, onDelete, onEdit }: Locatio
                                    <TableCell className="font-medium">
                                         {eventLocation.locationName}
                                    </TableCell>
-                                   <TableCell>{eventLocation.locationType}</TableCell>
+                                   <TableCell>{eventLocation.locationEnvironment}</TableCell>
+                                   <TableCell>{eventLocation.locationPurposeType}</TableCell>
                                    <TableCell>
                                         {new Date(eventLocation.createdAt).toLocaleString()}
                                    </TableCell>
