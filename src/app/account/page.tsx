@@ -68,7 +68,7 @@ export default function OsaProfilePage() {
                          {/* buttons for user's edit account, change password and logging out */}
                          <div className="m-5">
                               {/* to add onClick */}
-                              <Button 
+                              <Button
                                    className="rounded-sm self-start m-2 w-35"
                                    onClick={GoToEditMyProfile}
                               >
