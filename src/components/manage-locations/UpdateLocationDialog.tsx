@@ -51,9 +51,9 @@ export default function UpdateLocationDialog({
      location,
 }: UpdateLocationModalProps) {
      const [locationName, setLocationName] = useState(location.locationName || "")
-     const [locationType, setLocationType] = useState(location.locationType || "INDOOR")
+     const [locationType, setLocationType] = useState(location.locationEnvironment || "INDOOR")
      const [locationPurpose, setLocationPurpose] = useState(
-          location.locationPurpose || "EVENT_VENUE"
+          location.locationPurposeType || "EVENT_VENUE"
      )
      const [description, setDescription] = useState(location.description || "")
      const [polygon, setPolygon] = useState<number[][]>(location.coordinates || [])
@@ -74,7 +74,7 @@ export default function UpdateLocationDialog({
                setPolygon([])
           } else if (open && location) {
                setLocationName(location.locationName || "")
-               setLocationType(location.locationType || "INDOOR")
+               setLocationType(location.locationEnvironment || "INDOOR")
                setPolygon(location.coordinates || [])
           }
      }, [open, location])
