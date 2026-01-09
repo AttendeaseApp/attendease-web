@@ -8,6 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { changePassword } from "@/services/OSA-change-password"
+import {
+     Breadcrumb,
+     BreadcrumbItem,
+     BreadcrumbLink,
+     BreadcrumbList,
+     BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import Link from "next/link"
 
 export default function OsaChangePasswordPage() {
      const [passwords, setPasswords] = useState({
@@ -59,14 +67,29 @@ export default function OsaChangePasswordPage() {
      return (
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6 p-6">
+                    <div>
+                         <Breadcrumb>
+                              <BreadcrumbList>
+                                   <BreadcrumbItem>
+                                        <BreadcrumbLink asChild>
+                                             <Link href="/account">My Profile Page</Link>
+                                        </BreadcrumbLink>
+                                   </BreadcrumbItem>
+                                   <BreadcrumbSeparator />
+                                   <BreadcrumbItem>
+                                        <BreadcrumbLink>{"Change Password"}</BreadcrumbLink>
+                                   </BreadcrumbItem>
+                              </BreadcrumbList>
+                         </Breadcrumb>
+                    </div>
                     <Label className="block mb-2 text-2xl font-bold text-slate-900">
-                         My Profile
+                         Change Password
                     </Label>
 
                     <div className="flex flex-col gap-6">
-                         <Label className="block text-xl font-semibold text-slate-900">
+                         {/* <Label className="block text-xl font-semibold text-slate-900">
                               Change Password
-                         </Label>
+                         </Label> */}
 
                          <div className="flex flex-col gap-4 w-full max-w-3xl">
                               {/* old password */}
