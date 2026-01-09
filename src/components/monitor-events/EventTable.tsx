@@ -29,7 +29,10 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
                <TableHeader className="bg-gray-100">
                     <TableRow>
                          <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
-                         <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              REGISTRATION VENUE
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">EVENT VENUE</TableHead>
                          <TableHead className="font-semibold text-gray-900">
                               REGISTRATION (DATE-TIME)
                          </TableHead>
@@ -62,18 +65,19 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
                               <TableRow key={event.eventId}>
                                    <TableCell>{event.eventName}</TableCell>
                                    <TableCell className="font-medium">
-                                        {event.eventLocation?.locationName ?? "No location"}
+                                        {event.registrationLocationName ?? "No location"}
+                                   </TableCell>
+                                   <TableCell className="font-medium">
+                                        {event.venueLocationName ?? "No location"}
                                    </TableCell>
                                    <TableCell>
-                                        {new Date(
-                                             event.timeInRegistrationStartDateTime
-                                        ).toLocaleString()}
+                                        {new Date(event.registrationDateTime).toLocaleString()}
                                    </TableCell>
                                    <TableCell>
-                                        {new Date(event.startDateTime).toLocaleString()}
+                                        {new Date(event.startingDateTime).toLocaleString()}
                                    </TableCell>
                                    <TableCell>
-                                        {new Date(event.endDateTime).toLocaleString()}
+                                        {new Date(event.endingDateTime).toLocaleString()}
                                    </TableCell>
                                    <TableCell>
                                         <span

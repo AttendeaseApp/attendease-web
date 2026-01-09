@@ -58,10 +58,11 @@ export default function EventMonitoringPage() {
 
           const fields = [
                event.eventName,
-               event.eventLocation?.locationName,
-               new Date(event.timeInRegistrationStartDateTime).toLocaleString(),
-               new Date(event.startDateTime).toLocaleString(),
-               new Date(event.endDateTime).toLocaleString(),
+               event.registrationLocationName,
+               event.venueLocationName,
+               new Date(event.registrationDateTime).toLocaleString(),
+               new Date(event.startingDateTime).toLocaleString(),
+               new Date(event.endingDateTime).toLocaleString(),
                event.eventStatus,
           ]
 

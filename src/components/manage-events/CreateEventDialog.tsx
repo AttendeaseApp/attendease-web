@@ -24,6 +24,11 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { Course } from "@/interface/academic/course/CourseInterface"
@@ -48,7 +53,7 @@ interface CreateEventDialogProps {
      onCreate: () => void
 }
 
-type DateFields = "timeInRegistrationStartDateTime" | "startDateTime" | "endDateTime"
+type DateFields = "registrationDateTime" | "startingDateTime" | "endingDateTime"
 
 interface EligibilityState {
      allStudents: boolean
@@ -68,11 +73,14 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      const [formData, setFormData] = useState({
           eventName: "",
           description: "",
-          timeInRegistrationStartDateTime: now,
-          startDateTime: addHours(now, 1),
-          endDateTime: addHours(now, 3),
-          eventLocationId: "",
+          registrationDateTime: now,
+          startingDateTime: addHours(now, 1),
+          endingDateTime: addHours(now, 3),
+          registrationLocationId: "",
+          venueLocationId: "",
           facialVerificationEnabled: true,
+          attendanceLocationMonitoringEnabled: true,
+          strictLocationValidation: true,
      })
      const [eligibility, setEligibility] = useState<EligibilityState>({
           allStudents: true,
@@ -184,11 +192,14 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                setFormData({
                     eventName: "",
                     description: "",
-                    timeInRegistrationStartDateTime: now,
-                    startDateTime: addHours(now, 1),
-                    endDateTime: addHours(now, 3),
-                    eventLocationId: "",
+                    registrationDateTime: now,
+                    startingDateTime: addHours(now, 1),
+                    endingDateTime: addHours(now, 3),
+                    registrationLocationId: "",
+                    venueLocationId: "",
                     facialVerificationEnabled: true,
+                    attendanceLocationMonitoringEnabled: true,
+                    strictLocationValidation: true,
                })
                setEligibility({
                     allStudents: true,
@@ -206,7 +217,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
      const handleCreateVenue = (newLocation: EventLocation) => {
           setLocations((prev) => [...prev, newLocation])
-          handleInputChange("eventLocationId", newLocation.locationId)
+          handleInputChange("venueLocationId", newLocation.locationId)
      }
 
      const handleAllStudentsToggle = (checked: boolean) => {
@@ -361,7 +372,8 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
      const isFormComplete =
           formData.eventName.trim() !== "" &&
-          formData.eventLocationId !== "" &&
+          formData.registrationLocationId !== "" &&
+          formData.venueLocationId !== "" &&
           (eligibility.allStudents ||
                eligibility.selectedClusters.length > 0 ||
                eligibility.selectedCourses.length > 0 ||
@@ -392,22 +404,26 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                const newEventData = {
                     eventName: formData.eventName,
                     description: formData.description || undefined,
-                    timeInRegistrationStartDateTime: format(
-                         formData.timeInRegistrationStartDateTime,
+                    registrationDateTime: format(
+                         formData.registrationDateTime,
                          "yyyy-MM-dd hh:mm:ss a"
                     ),
-                    startDateTime: format(formData.startDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    endDateTime: format(formData.endDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    eventLocationId: formData.eventLocationId,
+                    startingDateTime: format(formData.startingDateTime, "yyyy-MM-dd hh:mm:ss a"),
+                    endingDateTime: format(formData.endingDateTime, "yyyy-MM-dd hh:mm:ss a"),
+                    registrationLocationId: formData.registrationLocationId,
+                    venueLocationId: formData.venueLocationId,
                     eligibleStudents: eligibility.allStudents
                          ? { allStudents: true }
                          : {
                                 allStudents: false,
-                                cluster: cleaned.selectedClusters,
-                                course: cleaned.selectedCourses,
+                                clusters: cleaned.selectedClusters,
+                                courses: cleaned.selectedCourses,
                                 sections: cleaned.selectedSections,
                            },
-                    facialVerificationEnabled: formData.facialVerificationEnabled,
+                    facialVerificationEnabled: !!formData.facialVerificationEnabled,
+                    attendanceLocationMonitoringEnabled:
+                         !!formData.attendanceLocationMonitoringEnabled,
+                    strictLocationValidation: !!formData.strictLocationValidation,
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
@@ -550,7 +566,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             id="reg-date"
                                                        >
                                                             {getDateDisplay(
-                                                                 formData.timeInRegistrationStartDateTime
+                                                                 formData.registrationDateTime
                                                             )}
                                                             <ChevronDownIcon className="h-4 w-4" />
                                                        </Button>
@@ -561,12 +577,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                   >
                                                        <Calendar
                                                             mode="single"
-                                                            selected={
-                                                                 formData.timeInRegistrationStartDateTime
-                                                            }
+                                                            selected={formData.registrationDateTime}
                                                             onSelect={(selectedDate) =>
                                                                  handleDateSelect(
-                                                                      "timeInRegistrationStartDateTime",
+                                                                      "registrationDateTime",
                                                                       selectedDate
                                                                  )
                                                             }
@@ -581,11 +595,11 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        min={1}
                                                        max={12}
                                                        value={getHour12(
-                                                            formData.timeInRegistrationStartDateTime
+                                                            formData.registrationDateTime
                                                        )}
                                                        onChange={(e) =>
                                                             updateTime(
-                                                                 "timeInRegistrationStartDateTime",
+                                                                 "registrationDateTime",
                                                                  e.target.value,
                                                                  undefined,
                                                                  undefined
@@ -601,11 +615,11 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        max={59}
                                                        step={1}
                                                        value={getMinute(
-                                                            formData.timeInRegistrationStartDateTime
+                                                            formData.registrationDateTime
                                                        )}
                                                        onChange={(e) =>
                                                             updateTime(
-                                                                 "timeInRegistrationStartDateTime",
+                                                                 "registrationDateTime",
                                                                  undefined,
                                                                  e.target.value,
                                                                  undefined
@@ -616,11 +630,11 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                   />
                                                   <Select
                                                        value={getPeriod(
-                                                            formData.timeInRegistrationStartDateTime
+                                                            formData.registrationDateTime
                                                        )}
                                                        onValueChange={(value) =>
                                                             updateTime(
-                                                                 "timeInRegistrationStartDateTime",
+                                                                 "registrationDateTime",
                                                                  undefined,
                                                                  undefined,
                                                                  value as "AM" | "PM"
@@ -651,7 +665,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             className="w-full justify-between font-normal"
                                                             id="start-date"
                                                        >
-                                                            {getDateDisplay(formData.startDateTime)}
+                                                            {getDateDisplay(
+                                                                 formData.startingDateTime
+                                                            )}
                                                             <ChevronDownIcon className="h-4 w-4" />
                                                        </Button>
                                                   </PopoverTrigger>
@@ -661,10 +677,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                   >
                                                        <Calendar
                                                             mode="single"
-                                                            selected={formData.startDateTime}
+                                                            selected={formData.startingDateTime}
                                                             onSelect={(selectedDate) =>
                                                                  handleDateSelect(
-                                                                      "startDateTime",
+                                                                      "startingDateTime",
                                                                       selectedDate
                                                                  )
                                                             }
@@ -678,10 +694,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        type="number"
                                                        min={1}
                                                        max={12}
-                                                       value={getHour12(formData.startDateTime)}
+                                                       value={getHour12(formData.startingDateTime)}
                                                        onChange={(e) =>
                                                             updateTime(
-                                                                 "startDateTime",
+                                                                 "startingDateTime",
                                                                  e.target.value,
                                                                  undefined,
                                                                  undefined
@@ -696,10 +712,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        min={0}
                                                        max={59}
                                                        step={1}
-                                                       value={getMinute(formData.startDateTime)}
+                                                       value={getMinute(formData.startingDateTime)}
                                                        onChange={(e) =>
                                                             updateTime(
-                                                                 "startDateTime",
+                                                                 "startingDateTime",
                                                                  undefined,
                                                                  e.target.value,
                                                                  undefined
@@ -709,10 +725,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        placeholder="00"
                                                   />
                                                   <Select
-                                                       value={getPeriod(formData.startDateTime)}
+                                                       value={getPeriod(formData.startingDateTime)}
                                                        onValueChange={(value) =>
                                                             updateTime(
-                                                                 "startDateTime",
+                                                                 "startingDateTime",
                                                                  undefined,
                                                                  undefined,
                                                                  value as "AM" | "PM"
@@ -743,7 +759,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                             className="w-full justify-between font-normal"
                                                             id="end-date"
                                                        >
-                                                            {getDateDisplay(formData.endDateTime)}
+                                                            {getDateDisplay(
+                                                                 formData.endingDateTime
+                                                            )}
                                                             <ChevronDownIcon className="h-4 w-4" />
                                                        </Button>
                                                   </PopoverTrigger>
@@ -753,10 +771,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                   >
                                                        <Calendar
                                                             mode="single"
-                                                            selected={formData.endDateTime}
+                                                            selected={formData.endingDateTime}
                                                             onSelect={(selectedDate) =>
                                                                  handleDateSelect(
-                                                                      "endDateTime",
+                                                                      "endingDateTime",
                                                                       selectedDate
                                                                  )
                                                             }
@@ -770,10 +788,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        type="number"
                                                        min={1}
                                                        max={12}
-                                                       value={getHour12(formData.endDateTime)}
+                                                       value={getHour12(formData.endingDateTime)}
                                                        onChange={(e) =>
                                                             updateTime(
-                                                                 "endDateTime",
+                                                                 "endingDateTime",
                                                                  e.target.value,
                                                                  undefined,
                                                                  undefined
@@ -788,10 +806,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        min={0}
                                                        max={59}
                                                        step={1}
-                                                       value={getMinute(formData.endDateTime)}
+                                                       value={getMinute(formData.endingDateTime)}
                                                        onChange={(e) =>
                                                             updateTime(
-                                                                 "endDateTime",
+                                                                 "endingDateTime",
                                                                  undefined,
                                                                  e.target.value,
                                                                  undefined
@@ -801,10 +819,10 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        placeholder="00"
                                                   />
                                                   <Select
-                                                       value={getPeriod(formData.endDateTime)}
+                                                       value={getPeriod(formData.endingDateTime)}
                                                        onValueChange={(value) =>
                                                             updateTime(
-                                                                 "endDateTime",
+                                                                 "endingDateTime",
                                                                  undefined,
                                                                  undefined,
                                                                  value as "AM" | "PM"
@@ -824,48 +842,116 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    </div>
                               </div>
 
-                              <div className="space-y-2">
-                                   <Label htmlFor="eventLocationId">Location</Label>
-                                   <Select
-                                        value={formData.eventLocationId}
-                                        onValueChange={(value) =>
-                                             handleInputChange("eventLocationId", value)
-                                        }
-                                        disabled={loadingLocations}
-                                   >
-                                        <SelectTrigger>
-                                             <SelectValue
-                                                  placeholder={
-                                                       loadingLocations
-                                                            ? "Loading locations..."
-                                                            : "Select a location"
-                                                  }
-                                             />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                             <SelectGroup>
-                                                  <SelectLabel className="mb-3" />
-                                                  {locations.map((loc) => (
-                                                       <SelectItem
-                                                            key={loc.locationId}
-                                                            value={loc.locationId}
+                              <div className="grid grid-cols-2 gap-4 w-full">
+                                   <div className="space-y-2">
+                                        <Label htmlFor="registrationLocationId">
+                                             Registration Location
+                                        </Label>
+                                        <Select
+                                             value={formData.registrationLocationId}
+                                             onValueChange={(value) =>
+                                                  handleInputChange("registrationLocationId", value)
+                                             }
+                                             disabled={loadingLocations}
+                                        >
+                                             <SelectTrigger className="w-65">
+                                                  <SelectValue
+                                                       placeholder={
+                                                            loadingLocations
+                                                                 ? "Loading locations..."
+                                                                 : "Select registration location"
+                                                       }
+                                                  />
+                                             </SelectTrigger>
+                                             <SelectContent>
+                                                  <SelectGroup>
+                                                       <SelectLabel className="mb-3">
+                                                            Registration Venues
+                                                       </SelectLabel>
+                                                       {locations
+                                                            .filter(
+                                                                 (loc) =>
+                                                                      loc.locationPurposeType ===
+                                                                      "REGISTRATION_AREA"
+                                                            )
+                                                            .map((loc) => (
+                                                                 <SelectItem
+                                                                      key={loc.locationId}
+                                                                      value={loc.locationId}
+                                                                 >
+                                                                      {loc.locationName}
+                                                                 </SelectItem>
+                                                            ))}
+                                                  </SelectGroup>
+                                                  <SelectGroup>
+                                                       <SelectLabel className="mb-3" />
+                                                       <div
+                                                            className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
+                                                            onClick={() =>
+                                                                 setCreateNewLocation(true)
+                                                            }
                                                        >
-                                                            {loc.locationName}
-                                                       </SelectItem>
-                                                  ))}
-                                             </SelectGroup>
-                                             <SelectGroup>
-                                                  <SelectLabel className="mb-3" />
-                                                  <div
-                                                       className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
-                                                       onClick={() => setCreateNewLocation(true)}
-                                                  >
-                                                       <Plus className="w-4 h-4" />
-                                                       <span>Create New Venue </span>
-                                                  </div>
-                                             </SelectGroup>
-                                        </SelectContent>
-                                   </Select>
+                                                            <Plus className="w-4 h-4" />
+                                                            <span>Create New Venue </span>
+                                                       </div>
+                                                  </SelectGroup>
+                                             </SelectContent>
+                                        </Select>
+                                   </div>
+
+                                   <div className="space-y-2">
+                                        <Label htmlFor="venueLocationId">Event Location</Label>
+                                        <Select
+                                             value={formData.venueLocationId}
+                                             onValueChange={(value) =>
+                                                  handleInputChange("venueLocationId", value)
+                                             }
+                                             disabled={loadingLocations}
+                                        >
+                                             <SelectTrigger className="w-65">
+                                                  <SelectValue
+                                                       placeholder={
+                                                            loadingLocations
+                                                                 ? "Loading locations..."
+                                                                 : "Select event location"
+                                                       }
+                                                  />
+                                             </SelectTrigger>
+                                             <SelectContent>
+                                                  <SelectGroup>
+                                                       <SelectLabel className="mb-3">
+                                                            Event Venues
+                                                       </SelectLabel>
+                                                       {locations
+                                                            .filter(
+                                                                 (loc) =>
+                                                                      loc.locationPurposeType ===
+                                                                      "EVENT_VENUE"
+                                                            )
+                                                            .map((loc) => (
+                                                                 <SelectItem
+                                                                      key={loc.locationId}
+                                                                      value={loc.locationId}
+                                                                 >
+                                                                      {loc.locationName}
+                                                                 </SelectItem>
+                                                            ))}
+                                                  </SelectGroup>
+                                                  <SelectGroup>
+                                                       <SelectLabel className="mb-3" />
+                                                       <div
+                                                            className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
+                                                            onClick={() =>
+                                                                 setCreateNewLocation(true)
+                                                            }
+                                                       >
+                                                            <Plus className="w-4 h-4" />
+                                                            <span>Create New Venue </span>
+                                                       </div>
+                                                  </SelectGroup>
+                                             </SelectContent>
+                                        </Select>
+                                   </div>
                               </div>
                               <CreateLocationDialog
                                    open={createNewLocation}
@@ -876,257 +962,324 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
                               <div className="space-y-4 flex flex-col">
                                    <Label>Eligible Attendees</Label>
-                                   <Popover open={open} onOpenChange={setOpen}>
-                                        <PopoverTrigger asChild>
-                                             <Button
-                                                  variant="outline"
-                                                  className="w-[200px] justify-between"
-                                             >
-                                                  {eligibility.allStudents
-                                                       ? "All Students"
-                                                       : "Select Attendees"}
-                                             </Button>
-                                        </PopoverTrigger>
-
-                                        <PopoverContent className="p-0 w-[300px]">
-                                             <Command>
-                                                  <CommandInput
-                                                       placeholder="Search..."
-                                                       value={searchQuery}
-                                                       onValueChange={(value) =>
-                                                            setSearchQuery(value)
-                                                       }
-                                                  />
-
-                                                  <CommandList className="max-h-64 overflow-y-auto space-y-4 p-2">
-                                                       <div className="flex items-center space-x-2">
-                                                            <Checkbox
-                                                                 id="allStudents"
-                                                                 checked={eligibility.allStudents}
-                                                                 onCheckedChange={
-                                                                      handleAllStudentsToggle
-                                                                 }
-                                                            />
-                                                            <Label
-                                                                 htmlFor="allStudents"
-                                                                 className="text-sm font-medium"
-                                                            >
-                                                                 All Students
-                                                            </Label>
-                                                       </div>
-                                                       {!eligibility.allStudents && (
-                                                            <>
-                                                                 <div className="space-y-2">
-                                                                      {loadingHierarchy ? (
-                                                                           <p className="text-sm text-muted-foreground">
-                                                                                Loading clusters...
-                                                                           </p>
-                                                                      ) : (
-                                                                           <>
-                                                                                <Label className="text-sm font-medium">
-                                                                                     Clusters
-                                                                                </Label>
-                                                                                {filterItems(
-                                                                                     clusters,
-                                                                                     {
-                                                                                          key: "clusterName",
-                                                                                     }
-                                                                                ).map((cluster) => (
-                                                                                     <div
-                                                                                          key={
-                                                                                               cluster.clusterId
-                                                                                          }
-                                                                                          className="flex items-center space-x-2"
-                                                                                     >
-                                                                                          <Checkbox
-                                                                                               id={`cluster-${cluster.clusterId}`}
-                                                                                               checked={eligibility.selectedClusters.includes(
-                                                                                                    cluster.clusterId
-                                                                                               )}
-                                                                                               onCheckedChange={(
-                                                                                                    checked
-                                                                                               ) =>
-                                                                                                    handleClusterSelect(
-                                                                                                         cluster.clusterId,
-                                                                                                         !!checked
-                                                                                                    )
-                                                                                               }
-                                                                                          />
-                                                                                          <Label
-                                                                                               htmlFor={`cluster-${cluster.clusterId}`}
-                                                                                               className="text-sm"
-                                                                                          >
-                                                                                               {
-                                                                                                    cluster.clusterName
-                                                                                               }
-                                                                                          </Label>
-                                                                                     </div>
-                                                                                ))}
-                                                                                {filterItems(
-                                                                                     clusters,
-                                                                                     {
-                                                                                          key: "clusterName",
-                                                                                     }
-                                                                                ).length === 0 && (
-                                                                                     <CommandEmpty>
-                                                                                          No
-                                                                                          clusters
-                                                                                          found.
-                                                                                     </CommandEmpty>
-                                                                                )}
-                                                                           </>
-                                                                      )}
-                                                                 </div>
-
-                                                                 <div className="space-y-2">
-                                                                      {loadingHierarchy ? (
-                                                                           <p className="text-sm text-muted-foreground">
-                                                                                Loading Courses...
-                                                                           </p>
-                                                                      ) : (
-                                                                           <>
-                                                                                <Label className="text-sm font-medium">
-                                                                                     Courses
-                                                                                </Label>
-                                                                                {filterItems(
-                                                                                     courses,
-                                                                                     {
-                                                                                          key: "courseName",
-                                                                                     }
-                                                                                ).map((course) => (
-                                                                                     <div
-                                                                                          key={
-                                                                                               course.id
-                                                                                          }
-                                                                                          className="flex items-center space-x-2"
-                                                                                     >
-                                                                                          <Checkbox
-                                                                                               id={`course-${course.id}`}
-                                                                                               checked={eligibility.selectedCourses.includes(
-                                                                                                    course.id
-                                                                                               )}
-                                                                                               onCheckedChange={(
-                                                                                                    checked
-                                                                                               ) =>
-                                                                                                    handleCourseSelect(
-                                                                                                         course.id,
-                                                                                                         !!checked
-                                                                                                    )
-                                                                                               }
-                                                                                          />
-                                                                                          <Label
-                                                                                               htmlFor={`course-${course.id}`}
-                                                                                               className="text-sm"
-                                                                                          >
-                                                                                               {
-                                                                                                    course.courseName
-                                                                                               }
-                                                                                          </Label>
-                                                                                     </div>
-                                                                                ))}
-                                                                                {filterItems(
-                                                                                     courses,
-                                                                                     {
-                                                                                          key: "courseName",
-                                                                                     }
-                                                                                ).length === 0 && (
-                                                                                     <CommandEmpty>
-                                                                                          No courses
-                                                                                          found.
-                                                                                     </CommandEmpty>
-                                                                                )}
-                                                                           </>
-                                                                      )}
-                                                                 </div>
-
-                                                                 <div className="space-y-2">
-                                                                      {loadingHierarchy ? (
-                                                                           <p className="text-sm text-muted-foreground">
-                                                                                Loading Courses...
-                                                                           </p>
-                                                                      ) : (
-                                                                           <>
-                                                                                <Label className="text-sm font-medium">
-                                                                                     Sections
-                                                                                </Label>
-                                                                                {filterItems(
-                                                                                     sections,
-                                                                                     {
-                                                                                          key: "sectionName",
-                                                                                     }
-                                                                                ).map((section) => (
-                                                                                     <div
-                                                                                          key={
-                                                                                               section.id
-                                                                                          }
-                                                                                          className="flex items-center space-x-2"
-                                                                                     >
-                                                                                          <Checkbox
-                                                                                               id={`section-${section.id}`}
-                                                                                               checked={eligibility.selectedSections.includes(
-                                                                                                    section.id
-                                                                                               )}
-                                                                                               onCheckedChange={(
-                                                                                                    checked
-                                                                                               ) =>
-                                                                                                    handleSectionSelect(
-                                                                                                         section.id,
-                                                                                                         !!checked
-                                                                                                    )
-                                                                                               }
-                                                                                          />
-                                                                                          <Label
-                                                                                               htmlFor={`section-${section.id}`}
-                                                                                               className="text-sm"
-                                                                                          >
-                                                                                               {
-                                                                                                    section.sectionName
-                                                                                               }
-                                                                                          </Label>
-                                                                                     </div>
-                                                                                ))}
-                                                                                {filterItems(
-                                                                                     sections,
-                                                                                     {
-                                                                                          key: "sectionName",
-                                                                                     }
-                                                                                ).length === 0 && (
-                                                                                     <CommandEmpty>
-                                                                                          No section
-                                                                                          found.
-                                                                                     </CommandEmpty>
-                                                                                )}
-                                                                           </>
-                                                                      )}
-                                                                 </div>
-                                                            </>
-                                                       )}
-                                                  </CommandList>
-                                             </Command>
-                                        </PopoverContent>
-                                   </Popover>
-                              </div>
-                              <div className="space-y-2">
-                                   <Label>Registration Settings</Label>
+                                   {/* <Input 
+                                     placeholder="Search clusters, courses, and sections..."
+                                     value={searchQuery}
+                                     onChange={(e) => setSearchQuery(e.target.value)}
+                                     className="mt-2"
+                                   /> */}
                                    <div className="flex items-center space-x-2">
                                         <Checkbox
-                                             id="facialVerificationEnabled"
-                                             checked={formData.facialVerificationEnabled}
-                                             onCheckedChange={(checked) =>
-                                                  handleInputChange(
-                                                       "facialVerificationEnabled",
-                                                       !!checked
-                                                  )
-                                             }
+                                             id="allStudents"
+                                             checked={eligibility.allStudents}
+                                             onCheckedChange={handleAllStudentsToggle}
                                         />
                                         <Label
-                                             htmlFor="facialVerificationEnabled"
+                                             htmlFor="allStudents"
                                              className="text-sm font-medium"
                                         >
-                                             Require Facial Verification for Registration
+                                             All Students
                                         </Label>
                                    </div>
+
+                                   {!eligibility.allStudents && (
+                                        <Tabs defaultValue="clusters">
+                                             <TabsList className="grid grid-cols-3 w-full">
+                                                  <TabsTrigger value="clusters">
+                                                       Clusters
+                                                  </TabsTrigger>
+                                                  <TabsTrigger value="courses">Courses</TabsTrigger>
+                                                  <TabsTrigger value="sections">
+                                                       Sections
+                                                  </TabsTrigger>
+                                             </TabsList>
+
+                                             <TabsContent value="clusters" className="mt-4">
+                                                  <ScrollArea className="h-30 pr-4">
+                                                       {loadingHierarchy ? (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 Loading clusters...
+                                                            </p>
+                                                       ) : filterItems(clusters, {
+                                                              key: "clusterName",
+                                                         }).length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                 {filterItems(clusters, {
+                                                                      key: "clusterName",
+                                                                 }).map((cluster) => (
+                                                                      <div
+                                                                           key={cluster.clusterId}
+                                                                           className="flex items-center space-x-2"
+                                                                      >
+                                                                           <Checkbox
+                                                                                id={`cluster-${cluster.clusterId}`}
+                                                                                checked={eligibility.selectedClusters.includes(
+                                                                                     cluster.clusterId
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleClusterSelect(
+                                                                                          cluster.clusterId,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`cluster-${cluster.clusterId}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {
+                                                                                     cluster.clusterName
+                                                                                }
+                                                                           </Label>
+                                                                      </div>
+                                                                 ))}
+                                                            </div>
+                                                       ) : (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 No clusters found.
+                                                            </p>
+                                                       )}
+                                                  </ScrollArea>
+                                             </TabsContent>
+
+                                             <TabsContent value="courses" className="mt-4">
+                                                  <ScrollArea className="h-30 pr-4">
+                                                       {loadingHierarchy ? (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 Loading courses...
+                                                            </p>
+                                                       ) : filterItems(courses, {
+                                                              key: "courseName",
+                                                         }).length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                 {filterItems(courses, {
+                                                                      key: "courseName",
+                                                                 }).map((course) => (
+                                                                      <div
+                                                                           key={course.id}
+                                                                           className="flex items-center space-x-2"
+                                                                      >
+                                                                           <Checkbox
+                                                                                id={`course-${course.id}`}
+                                                                                checked={eligibility.selectedCourses.includes(
+                                                                                     course.id
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleCourseSelect(
+                                                                                          course.id,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`course-${course.id}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {course.courseName}
+                                                                           </Label>
+                                                                      </div>
+                                                                 ))}
+                                                            </div>
+                                                       ) : (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 No courses found.
+                                                            </p>
+                                                       )}
+                                                  </ScrollArea>
+                                             </TabsContent>
+
+                                             <TabsContent value="sections" className="mt-4">
+                                                  <ScrollArea className="h-30 pr-4">
+                                                       {loadingHierarchy ? (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 Loading sections...
+                                                            </p>
+                                                       ) : filterItems(sections, {
+                                                              key: "sectionName",
+                                                         }).length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                 {filterItems(sections, {
+                                                                      key: "sectionName",
+                                                                 }).map((section) => (
+                                                                      <div
+                                                                           key={section.id}
+                                                                           className="flex items-center space-x-2"
+                                                                      >
+                                                                           <Checkbox
+                                                                                id={`section-${section.id}`}
+                                                                                checked={eligibility.selectedSections.includes(
+                                                                                     section.id
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                     checked
+                                                                                ) =>
+                                                                                     handleSectionSelect(
+                                                                                          section.id,
+                                                                                          !!checked
+                                                                                     )
+                                                                                }
+                                                                           />
+                                                                           <Label
+                                                                                htmlFor={`section-${section.id}`}
+                                                                                className="text-sm"
+                                                                           >
+                                                                                {
+                                                                                     section.sectionName
+                                                                                }
+                                                                           </Label>
+                                                                      </div>
+                                                                 ))}
+                                                            </div>
+                                                       ) : (
+                                                            <p className="text-sm text-muted-foreground">
+                                                                 No sections found.
+                                                            </p>
+                                                       )}
+                                                  </ScrollArea>
+                                             </TabsContent>
+                                        </Tabs>
+                                   )}
                               </div>
+                              <Card className="relative w-full p-4">
+                                   <Tooltip>
+                                        <TooltipTrigger asChild>
+                                             <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="icon"
+                                                  className="absolute right-4 top-4"
+                                             >
+                                                  <HelpCircle className="h-3 w-3" />
+                                             </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" align="center" sideOffset={8}>
+                                             <p className="text-sm">
+                                                  <strong>What are these checkboxes for?</strong>
+                                                  {/* This
+                                                  button runs the academic year activation scheduler
+                                                  immediately, without waiting for the nightly cron
+                                                  job.
+                                                  <br /> */}
+                                                  <br />
+                                                  <br />
+                                                  <strong>Facial Verification:</strong>
+                                                  <ul className="list-disc list-inside mt-1 text-xs">
+                                                       <li>
+                                                            This require the student to authenticate
+                                                            their identity through facial
+                                                            recognition.
+                                                       </li>
+                                                       <li>
+                                                            They will be marked as
+                                                            &apos;Absent&apos; to the event until
+                                                            their facial is confirmed.
+                                                       </li>
+                                                       <br />
+                                                  </ul>
+                                                  <strong>Attendance Monitoring:</strong>
+                                                  <ul className="list-disc list-inside mt-1 text-xs">
+                                                       <li>
+                                                            This monitors the student&apos;s
+                                                            location while the event is
+                                                            &apos;Ongoing&apos; when they leave the{" "}
+                                                            <br /> venue it may affect their
+                                                            attendance.
+                                                       </li>
+                                                       <li>
+                                                            <strong>Note:</strong> This require the
+                                                            students an internet connection
+                                                            throughout the whole event. <br />
+                                                            If internet connection failed, students
+                                                            will marked as &apos;Absent&apos;
+                                                       </li>
+                                                       <br />
+                                                  </ul>
+                                                  <strong>Location Validation:</strong>
+                                                  <ul className="list-disc list-inside mt-1 text-xs">
+                                                       <li>
+                                                            This requires the student to register on
+                                                            both venues.
+                                                       </li>
+                                                       <li>
+                                                            They will only marked as
+                                                            &apos;Present&apos; when they
+                                                            succesfully registered on both venues.
+                                                       </li>
+                                                  </ul>
+                                             </p>
+                                        </TooltipContent>
+                                   </Tooltip>
+                                   <Label className="text-base">Other Settings</Label>
+                                   <div className="space-y-2 pl-2 pb-2">
+                                        <Label>Facial Verification</Label>
+                                        <div className="flex items-center space-x-2">
+                                             <Checkbox
+                                                  id="facialVerificationEnabled"
+                                                  checked={formData.facialVerificationEnabled}
+                                                  onCheckedChange={(checked) =>
+                                                       handleInputChange(
+                                                            "facialVerificationEnabled",
+                                                            !!checked
+                                                       )
+                                                  }
+                                             />
+                                             <Label
+                                                  htmlFor="facialVerificationEnabled"
+                                                  className="text-sm font-medium"
+                                             >
+                                                  Require Facial Verification for Registration
+                                             </Label>
+                                        </div>
+                                   </div>
+                                   <div className="space-y-2 pl-2 pb-2">
+                                        <Label>Attendance Monitoring</Label>
+                                        <div className="flex items-center space-x-2">
+                                             <Checkbox
+                                                  id="attendanceLocationMonitoringEnabled"
+                                                  checked={
+                                                       formData.attendanceLocationMonitoringEnabled
+                                                  }
+                                                  onCheckedChange={(checked) =>
+                                                       handleInputChange(
+                                                            "attendanceLocationMonitoringEnabled",
+                                                            !!checked
+                                                       )
+                                                  }
+                                             />
+                                             <Label
+                                                  htmlFor="attendanceLocationMonitoringEnabled"
+                                                  className="text-sm font-medium"
+                                             >
+                                                  Require Location Monitoring while Event is Ongoing
+                                             </Label>
+                                        </div>
+                                   </div>
+                                   <div className="space-y-2 pl-2 pb-2">
+                                        <Label>Location Validation</Label>
+                                        <div className="flex items-center space-x-2">
+                                             <Checkbox
+                                                  id="strictLocationValidation"
+                                                  checked={formData.strictLocationValidation}
+                                                  onCheckedChange={(checked) =>
+                                                       handleInputChange(
+                                                            "strictLocationValidation",
+                                                            !!checked
+                                                       )
+                                                  }
+                                             />
+                                             <Label
+                                                  htmlFor="strictLocationValidation"
+                                                  className="text-sm font-medium"
+                                             >
+                                                  Require Location Validation for Both Locations
+                                             </Label>
+                                        </div>
+                                   </div>
+                              </Card>
                               <DialogFooter className="flex justify-end space-x-2 pt-4">
                                    <Button
                                         type="button"
