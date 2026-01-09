@@ -47,7 +47,7 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
                await createCluster({ clusterName })
                toast.success(
                     <span className="text-green-600">
-                         Cluster '{clusterName}' created successfully.
+                         Cluster {`'${clusterName}'`} created successfully.
                     </span>
                )
 
