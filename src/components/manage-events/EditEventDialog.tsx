@@ -517,9 +517,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           return items.filter(opts.predicate)
      }
 
-     const originalRegistrationDate = new Date(event.timeInRegistrationStartDateTime)
-     const originalStartDate = new Date(event.startDateTime)
-     const originalEndDate = new Date(event.endDateTime)
+     const originalRegistrationDate = new Date(event.registrationDateTime)
+     const originalStartDate = new Date(event.startingDateTime)
+     const originalEndDate = new Date(event.endingDateTime)
 
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
@@ -529,6 +529,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           try {
                let eligibleStudents: EligibilityCriteria | undefined
 
+               // Only clean and set eligibility if changed or not all students
                if (eligibility.isDirty || !eligibility.allStudents) {
                     const cleaned = cleanEligibility(
                          eligibility.selectedClusters,
@@ -549,53 +550,75 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                }
 
                // Prepare updated event data
-               const updatedData: Partial<EventSession> = {
-                    eventName: formData.eventName,
-                    description: formData.description || undefined,
-                    eventLocationId: formData.eventLocationId || undefined,
-                    registrationDateTime: format(
+               const updatedData: Partial<EventSession> = {}
+
+               // Set each field only if changed or has value
+               if (formData.eventName !== event.eventName)
+                    updatedData.eventName = formData.eventName
+               if ((formData.description || "") !== (event.description || ""))
+                    updatedData.description = formData.description || undefined
+
+               if (
+                    formData.registrationDateTime.getTime() !==
+                    new Date(event.registrationDateTime).getTime()
+               )
+                    updatedData.registrationDateTime = format(
                          formData.registrationDateTime,
                          "yyyy-MM-dd hh:mm:ss a"
-                    ),
-                    startingDateTime: format(formData.startingDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    endingDateTime: format(formData.endingDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    eligibleStudents: formData.eligibleStudents || undefined,
-                    registrationLocationId: formData.registrationLocationId || undefined,
-                    venueLocationId: formData.venueLocationId || undefined,
-                    ...(eligibleStudents && { eligibleStudents }),
-               }
+                    )
 
-               // Update registration start if changed
                if (
-                    formData.timeInRegistrationStartDateTime.getTime() !==
-                    originalRegistrationDate.getTime()
-               ) {
-                    updatedData.timeInRegistrationStartDateTime = format(
-                         formData.timeInRegistrationStartDateTime,
+                    formData.startingDateTime.getTime() !==
+                    new Date(event.startingDateTime).getTime()
+               )
+                    updatedData.startingDateTime = format(
+                         formData.startingDateTime,
                          "yyyy-MM-dd hh:mm:ss a"
                     )
-               }
 
-               // Update start time if changed
-               if (formData.startDateTime.getTime() !== originalStartDate.getTime()) {
-                    updatedData.startDateTime = format(
-                         formData.startDateTime,
+               if (formData.endingDateTime.getTime() !== new Date(event.endingDateTime).getTime())
+                    updatedData.endingDateTime = format(
+                         formData.endingDateTime,
                          "yyyy-MM-dd hh:mm:ss a"
                     )
-               }
 
-               // Update end time if changed
-               if (formData.endDateTime.getTime() !== originalEndDate.getTime()) {
-                    updatedData.endDateTime = format(formData.endDateTime, "yyyy-MM-dd hh:mm:ss a")
-               }
+               if (formData.registrationLocationId !== event.registrationLocationId)
+                    updatedData.registrationLocationId =
+                         formData.registrationLocationId || undefined
+
+               if (formData.venueLocationId !== event.venueLocationId)
+                    updatedData.venueLocationId = formData.venueLocationId || undefined
+
+               if (formData.venueLocationId !== event.venueLocationId)
+                    updatedData.venueLocationId = formData.venueLocationId || undefined
+
+               if (eligibleStudents) updatedData.eligibleStudents = eligibleStudents
+
+               if (formData.facialVerificationEnabled !== event.facialVerificationEnabled)
+                    updatedData.facialVerificationEnabled = formData.facialVerificationEnabled
+
+               if (
+                    formData.attendanceLocationMonitoringEnabled !==
+                    event.attendanceLocationMonitoringEnabled
+               )
+                    updatedData.attendanceLocationMonitoringEnabled =
+                         formData.attendanceLocationMonitoringEnabled
+
+               if (formData.strictLocationValidation !== event.strictLocationValidation)
+                    updatedData.strictLocationValidation = formData.strictLocationValidation
 
                await updateEvent(event.eventId, updatedData)
-               toast.success("Successfully updated the event.")
+               toast.success("Successfully updated the event.", {
+                    className: "text-green-600",
+               })
                onUpdate()
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
-               toast.error("Failed to update the event. Please verify time and location")
+               toast.error(
+                    "Failed to update the event. Please verify time and location" +
+                         (error instanceof Error ? `: ${error.message}` : "")
+               )
           } finally {
                setIsSubmitting(false)
           }
