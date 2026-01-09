@@ -580,8 +580,8 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
 
                await updateEvent(event.eventId, updatedData)
                toast.success("Successfully updated the event.", {
-               className: "text-green-600",
-          })
+                    className: "text-green-600",
+               })
                onUpdate()
           } catch (error) {
                console.error("Update failed:", error)
@@ -1466,4 +1466,3 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           </>
      )
 }
-
