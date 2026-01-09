@@ -108,7 +108,9 @@ export const triggerAcademicYearActivation = async (): Promise<{
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "An unexpected error occurred"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -130,7 +132,9 @@ export const getActiveAcademicYear = async (): Promise<AcademicYear> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch active academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -152,7 +156,9 @@ export const getAllAcademicYears = async (): Promise<AcademicYear[]> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch academic years"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -174,7 +180,9 @@ export const getAcademicYearById = async (id: string): Promise<AcademicYear> => 
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -204,7 +212,9 @@ export const createAcademicYear = async (
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to create academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -234,7 +244,9 @@ export const updateAcademicYear = async (
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to update academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -257,7 +269,9 @@ export const deleteAcademicYear = async (id: string): Promise<void> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to delete academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -284,7 +298,9 @@ export const activateAcademicYear = async (id: string): Promise<AcademicYear> =>
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to activate academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -311,7 +327,9 @@ export const deactivateAcademicYear = async (id: string): Promise<AcademicYear> 
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to deactivate academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -336,7 +354,9 @@ export const getCurrentSemester = async (): Promise<number | null> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch current semester"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -361,7 +381,9 @@ export const getCurrentSemesterName = async (): Promise<string | null> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch current semester name"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -383,7 +405,9 @@ export const getSemesterStatus = async (): Promise<SemesterStatus> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch semester status"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }

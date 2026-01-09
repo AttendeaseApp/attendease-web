@@ -15,7 +15,23 @@ import { CourseTable } from "@/components/academic-management/tables/CourseTable
 import { SectionTable } from "@/components/academic-management/tables/SectionTable"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Button } from "@/components/ui/button"
+import {
+     Dialog,
+     DialogContent,
+     DialogDescription,
+     DialogFooter,
+     DialogHeader,
+     DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+     Select,
+     SelectContent,
+     SelectItem,
+     SelectTrigger,
+     SelectValue,
+} from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { Course } from "@/interface/academic/course/CourseInterface"
@@ -38,7 +54,7 @@ import {
      getAllCourses,
      getAllSections,
 } from "@/services/api/academic/cluster-and-course-sessions"
-import { Plus, RefreshCw, Search } from "lucide-react"
+import { Plus, RefreshCw, Search, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -60,7 +76,9 @@ export default function ManageClustersPage() {
      const [selectedSection, setSelectedSection] = useState<Section | null>(null)
 
      const [isCreateClusterOpen, setIsCreateClusterOpen] = useState(false)
+     const [isChooseClusterOpen, setIsChooseClusterOpen] = useState(false)
      const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false)
+     const [isChooseCourseOpen, setIsChooseCourseOpen] = useState(false)
      const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false)
      const [isEditClusterOpen, setIsEditClusterOpen] = useState(false)
      const [isEditCourseOpen, setIsEditCourseOpen] = useState(false)
@@ -75,6 +93,9 @@ export default function ManageClustersPage() {
      const [selectedAcademicYear, setSelectedAcademicYear] = useState<AcademicYear | null>(null)
      const [isCreateAcademicYearOpen, setIsCreateAcademicYearOpen] = useState(false)
      const [isEditAcademicYearOpen, setIsEditAcademicYearOpen] = useState(false)
+
+     const [tempClusterId, setTempClusterId] = useState("")
+     const [tempCourseId, setTempCourseId] = useState("")
 
      const loadClusters = async () => {
           setLoadingClusters(true)
@@ -129,7 +150,7 @@ export default function ManageClustersPage() {
                const data = await getActiveAcademicYear()
                setActiveAcademicYear(data)
           } catch (err) {
-               console.warn("No active academic year")
+               console.warn(err)
                setActiveAcademicYear(null)
           }
      }
@@ -238,7 +259,61 @@ export default function ManageClustersPage() {
           loadAcademicYears()
           loadActiveAcademicYear()
           loadSemesterStatus()
-          toast.success("All data refreshed")
+          toast.success("SUCCESS", {
+               description: "All data refreshed",
+          })
+     }
+
+     const handleCreateCourseClick = () => {
+          if (clusters.length === 0) {
+               toast.warning("WARNING", {
+                    description: "Please create a cluster first",
+               })
+               return
+          }
+          setIsChooseClusterOpen(true)
+     }
+
+     const handleClusterSelected = () => {
+          const cluster = clusters.find((c) => c.clusterId === tempClusterId)
+          if (!cluster) return
+
+          setSelectedCluster(cluster)
+          setIsChooseClusterOpen(false)
+          setIsCreateCourseOpen(true)
+     }
+
+     const handleCreateCourseSuccess = () => {
+          setIsCreateCourseOpen(false)
+          setSelectedCluster(null)
+          setTempClusterId("")
+          loadCourses()
+     }
+
+     const handleCreateSectionClick = () => {
+          if (courses.length === 0) {
+               toast.warning("WARNING", {
+                    description: "Please create a course first",
+               })
+               return
+          }
+          setIsChooseCourseOpen(true)
+     }
+
+     const handleCourseSelected = () => {
+          const course = courses.find((c) => c.id === tempCourseId)
+          if (!course) return
+
+          setSelectedCourse(course)
+          setIsChooseCourseOpen(false)
+          setIsCreateSectionOpen(true)
+     }
+
+     const handleCreateSectionSuccess = () => {
+          setIsCreateSectionOpen(false)
+          setSelectedCourse(null)
+          setTempCourseId("")
+          loadSections()
      }
 
      return (
@@ -259,7 +334,7 @@ export default function ManageClustersPage() {
                          </Button>
                     </div>
 
-                    {activeAcademicYear && <AcademicYearCard academicYear={activeAcademicYear} />}
+                    <AcademicYearCard academicYear={activeAcademicYear} />
 
                     <Tabs defaultValue="academic-years" className="flex flex-col gap-4">
                          <TabsList className="grid w-full grid-cols-4">
@@ -288,7 +363,7 @@ export default function ManageClustersPage() {
                                              size="sm"
                                              onClick={loadAcademicYears}
                                         >
-                                             Refresh
+                                             <RefreshCw className="h-4 w-4" />
                                         </Button>
                                         <Button
                                              size="sm"
@@ -313,7 +388,6 @@ export default function ManageClustersPage() {
                               />
                          </TabsContent>
 
-                         {/*clusters tab */}
                          <TabsContent value="clusters" className="space-y-4">
                               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                    <div className="relative flex-1">
@@ -327,7 +401,7 @@ export default function ManageClustersPage() {
                                    </div>
                                    <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={loadClusters}>
-                                             Refresh
+                                             <RefreshCw className="h-4 w-4" />
                                         </Button>
                                         <Button
                                              size="sm"
@@ -350,7 +424,6 @@ export default function ManageClustersPage() {
                               />
                          </TabsContent>
 
-                         {/*courses tab*/}
                          <TabsContent value="courses" className="space-y-4">
                               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                    <div className="relative flex-1">
@@ -364,19 +437,9 @@ export default function ManageClustersPage() {
                                    </div>
                                    <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={loadCourses}>
-                                             Refresh
+                                             <RefreshCw className="h-4 w-4" />
                                         </Button>
-                                        <Button
-                                             size="sm"
-                                             onClick={() => {
-                                                  if (clusters.length === 0) {
-                                                       toast.error("Please create a cluster first")
-                                                       return
-                                                  }
-                                                  setSelectedCluster(clusters[0])
-                                                  setIsCreateCourseOpen(true)
-                                             }}
-                                        >
+                                        <Button size="sm" onClick={handleCreateCourseClick}>
                                              <Plus className="mr-2 h-4 w-4" />
                                              Create Course
                                         </Button>
@@ -394,7 +457,6 @@ export default function ManageClustersPage() {
                               />
                          </TabsContent>
 
-                         {/*section tab*/}
                          <TabsContent value="sections" className="space-y-4">
                               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                    <div className="relative flex-1">
@@ -408,19 +470,9 @@ export default function ManageClustersPage() {
                                    </div>
                                    <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={loadSections}>
-                                             Refresh
+                                             <RefreshCw className="h-4 w-4" />
                                         </Button>
-                                        <Button
-                                             size="sm"
-                                             onClick={() => {
-                                                  if (courses.length === 0) {
-                                                       toast.error("Please create a course first")
-                                                       return
-                                                  }
-                                                  setSelectedCourse(courses[0])
-                                                  setIsCreateSectionOpen(true)
-                                             }}
-                                        >
+                                        <Button size="sm" onClick={handleCreateSectionClick}>
                                              <Plus className="mr-2 h-4 w-4" />
                                              Create Section
                                         </Button>
@@ -465,90 +517,233 @@ export default function ManageClustersPage() {
                                    loadAcademicYears()
                                    loadActiveAcademicYear()
                                    loadSemesterStatus()
-                                   // Success toast handled by service
                               }}
                          />
                     )}
 
-                    {/* Cluster/Course/Section Dialogs */}
+                    {/* Cluster Dialogs */}
                     <CreateClusterDialog
                          isOpen={isCreateClusterOpen}
                          onClose={() => setIsCreateClusterOpen(false)}
                          onCreate={() => {
                               setIsCreateClusterOpen(false)
                               loadClusters()
-                              toast.success("Cluster created successfully")
                          }}
                     />
 
-                    {selectedCluster && (
-                         <>
-                              <CreateCourseDialog
-                                   cluster={selectedCluster}
-                                   courses={courses}
-                                   isOpen={isCreateCourseOpen}
-                                   onClose={() => {
-                                        setIsCreateCourseOpen(false)
-                                        setSelectedCluster(null)
-                                   }}
-                                   onCreate={() => {
-                                        setIsCreateCourseOpen(false)
-                                        loadCourses()
-                                        toast.success("Course created successfully")
-                                   }}
-                              />
-
-                              <UpdateClusterDialog
-                                   clusters={selectedCluster}
-                                   isOpen={isEditClusterOpen}
-                                   onClose={() => setIsEditClusterOpen(false)}
-                                   onUpdate={() => {
-                                        setIsEditClusterOpen(false)
-                                        loadClusters()
-                                        toast.success("Cluster updated successfully")
-                                   }}
-                              />
-                         </>
+                    {selectedCluster && isEditClusterOpen && (
+                         <UpdateClusterDialog
+                              clusters={selectedCluster}
+                              isOpen={isEditClusterOpen}
+                              onClose={() => {
+                                   setIsEditClusterOpen(false)
+                                   setSelectedCluster(null)
+                              }}
+                              onUpdate={() => {
+                                   setIsEditClusterOpen(false)
+                                   setSelectedCluster(null)
+                                   loadClusters()
+                              }}
+                         />
                     )}
 
-                    {selectedCourse && (
-                         <>
-                              <CreateSectionDialog
-                                   course={selectedCourse}
-                                   isOpen={isCreateSectionOpen}
-                                   onClose={() => {
-                                        setIsCreateSectionOpen(false)
-                                        setSelectedCourse(null)
-                                   }}
-                                   onCreate={() => {
-                                        setIsCreateSectionOpen(false)
-                                        loadSections()
-                                        toast.success("Section created successfully")
-                                   }}
-                              />
+                    {/* Choose Cluster Dialog (before creating course) */}
+                    <Dialog
+                         open={isChooseClusterOpen}
+                         onOpenChange={(open) => {
+                              setIsChooseClusterOpen(open)
+                              if (!open) {
+                                   setTempClusterId("")
+                              }
+                         }}
+                    >
+                         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                   <DialogTitle>Choose Cluster for the New Course</DialogTitle>
+                                   <DialogDescription>
+                                        Select which cluster this course belongs to.
+                                   </DialogDescription>
+                              </DialogHeader>
 
-                              <UpdateCourseDialog
-                                   cluster={selectedCourse.cluster!}
-                                   courses={selectedCourse}
-                                   isOpen={isEditCourseOpen}
-                                   onClose={() => setIsEditCourseOpen(false)}
-                                   onUpdate={() => {
-                                        setIsEditCourseOpen(false)
-                                        loadCourses()
-                                        toast.success("Course updated successfully")
-                                   }}
-                              />
-                         </>
+                              <div className="space-y-2">
+                                   <Label htmlFor="clusterName">Cluster Name</Label>
+                                   <Select
+                                        value={tempClusterId}
+                                        disabled={loadingClusters}
+                                        onValueChange={setTempClusterId}
+                                   >
+                                        <SelectTrigger>
+                                             <SelectValue
+                                                  placeholder={
+                                                       loadingClusters
+                                                            ? "Loading clusters..."
+                                                            : "Select a cluster"
+                                                  }
+                                             />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             {clusters.map((cluster) => (
+                                                  <SelectItem
+                                                       key={cluster.clusterId}
+                                                       value={cluster.clusterId}
+                                                  >
+                                                       {cluster.clusterName}
+                                                  </SelectItem>
+                                             ))}
+                                        </SelectContent>
+                                   </Select>
+                              </div>
+
+                              <DialogFooter className="flex justify-end space-x-2 pt-4">
+                                   <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                             setIsChooseClusterOpen(false)
+                                             setTempClusterId("")
+                                        }}
+                                   >
+                                        <X className="mr-2 h-4 w-4" />
+                                        Cancel
+                                   </Button>
+                                   <Button
+                                        type="button"
+                                        disabled={!tempClusterId}
+                                        onClick={handleClusterSelected}
+                                   >
+                                        Next
+                                   </Button>
+                              </DialogFooter>
+                         </DialogContent>
+                    </Dialog>
+
+                    {/* Create Course Dialog */}
+                    {selectedCluster && isCreateCourseOpen && (
+                         <CreateCourseDialog
+                              cluster={selectedCluster}
+                              courses={courses}
+                              isOpen={isCreateCourseOpen}
+                              onClose={() => {
+                                   setIsCreateCourseOpen(false)
+                                   setSelectedCluster(null)
+                                   setTempClusterId("")
+                              }}
+                              onCreate={handleCreateCourseSuccess}
+                         />
                     )}
 
-                    {selectedSection && (
+                    {/* Update Course Dialog */}
+                    {selectedCourse && isEditCourseOpen && selectedCourse.cluster && (
+                         <UpdateCourseDialog
+                              cluster={selectedCourse.cluster}
+                              courses={selectedCourse}
+                              isOpen={isEditCourseOpen}
+                              onClose={() => {
+                                   setIsEditCourseOpen(false)
+                                   setSelectedCourse(null)
+                              }}
+                              onUpdate={() => {
+                                   setIsEditCourseOpen(false)
+                                   setSelectedCourse(null)
+                                   loadCourses()
+                              }}
+                         />
+                    )}
+
+                    {/* Choose Course Dialog (before creating section) */}
+                    <Dialog
+                         open={isChooseCourseOpen}
+                         onOpenChange={(open) => {
+                              setIsChooseCourseOpen(open)
+                              if (!open) {
+                                   setTempCourseId("")
+                              }
+                         }}
+                    >
+                         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                   <DialogTitle>Choose Course for the New Section</DialogTitle>
+                                   <DialogDescription>
+                                        Select which course this section belongs to.
+                                   </DialogDescription>
+                              </DialogHeader>
+
+                              <div className="space-y-2">
+                                   <Label htmlFor="courseName">Course</Label>
+                                   <Select
+                                        value={tempCourseId}
+                                        disabled={loadingCourses}
+                                        onValueChange={setTempCourseId}
+                                   >
+                                        <SelectTrigger>
+                                             <SelectValue
+                                                  placeholder={
+                                                       loadingCourses
+                                                            ? "Loading courses..."
+                                                            : "Select a course"
+                                                  }
+                                             />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             {courses.map((course) => (
+                                                  <SelectItem key={course.id} value={course.id}>
+                                                       {course.courseName}
+                                                  </SelectItem>
+                                             ))}
+                                        </SelectContent>
+                                   </Select>
+                              </div>
+
+                              <DialogFooter className="flex justify-end space-x-2 pt-4">
+                                   <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                             setIsChooseCourseOpen(false)
+                                             setTempCourseId("")
+                                        }}
+                                   >
+                                        <X className="mr-2 h-4 w-4" />
+                                        Cancel
+                                   </Button>
+                                   <Button
+                                        type="button"
+                                        disabled={!tempCourseId}
+                                        onClick={handleCourseSelected}
+                                   >
+                                        Next
+                                   </Button>
+                              </DialogFooter>
+                         </DialogContent>
+                    </Dialog>
+
+                    {/* Create Section Dialog */}
+                    {selectedCourse && isCreateSectionOpen && (
+                         <CreateSectionDialog
+                              course={selectedCourse}
+                              isOpen={isCreateSectionOpen}
+                              onClose={() => {
+                                   setIsCreateSectionOpen(false)
+                                   setSelectedCourse(null)
+                                   setTempCourseId("")
+                              }}
+                              onCreate={handleCreateSectionSuccess}
+                         />
+                    )}
+
+                    {/* Update Section Dialog */}
+                    {selectedSection && isEditSectionOpen && selectedSection.course && (
                          <UpdateSectionDialog
-                              course={selectedSection.course!}
+                              course={selectedSection.course}
                               section={selectedSection}
                               isOpen={isEditSectionOpen}
-                              onClose={() => setIsEditSectionOpen(false)}
+                              onClose={() => {
+                                   setIsEditSectionOpen(false)
+                                   setSelectedSection(null)
+                              }}
                               onUpdate={() => {
                                    setIsEditSectionOpen(false)
+                                   setSelectedSection(null)
                                    loadSections()
                               }}
                          />

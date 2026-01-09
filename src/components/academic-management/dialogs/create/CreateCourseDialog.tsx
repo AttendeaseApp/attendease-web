@@ -15,7 +15,6 @@ import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { createCourse } from "@/services/api/academic/cluster-and-course-sessions"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
 interface CreateCourseDialogProps {
      cluster: Cluster
@@ -31,8 +30,6 @@ export function CreateCourseDialog({
      isOpen,
      onClose,
      onCreate,
-     onError,
-     courses,
 }: CreateCourseDialogProps) {
      const [formData, setFormData] = useState({
           courseName: "",
@@ -54,15 +51,6 @@ export function CreateCourseDialog({
      const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault()
           setError("")
-
-          const duplicate = courses.some(
-               (c) => c.courseName.toLowerCase().trim() === formData.courseName.toLowerCase().trim()
-          )
-
-          if (duplicate) {
-               toast.error("Course name already exists.")
-               return
-          }
           setIsSubmitting(true)
           try {
                const newCourseData = {
@@ -72,12 +60,6 @@ export function CreateCourseDialog({
                await createCourse(cluster.clusterId, newCourseData)
                onCreate()
                onClose()
-          } catch (err) {
-               const message = `${err instanceof Error ? err.message : String(err)}, Failed to create course.`
-               setError(message)
-               toast.error(message)
-               // console.error("Create failed:", err)
-               // if (onError) onError(message)
           } finally {
                setIsSubmitting(false)
           }
@@ -119,7 +101,7 @@ export function CreateCourseDialog({
                                    disabled={isSubmitting}
                               >
                                    <X className="mr-2 h-4 w-4" />
-                                   Cancel
+                                   Close
                               </Button>
                               <Button
                                    type="submit"

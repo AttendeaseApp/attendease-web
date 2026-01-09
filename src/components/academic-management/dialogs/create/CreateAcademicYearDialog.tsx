@@ -167,7 +167,7 @@ export function CreateAcademicYearDialog({
 
                          <DialogFooter>
                               <Button type="button" variant="outline" onClick={handleClose}>
-                                   Cancel
+                                   Close
                               </Button>
                               <Button type="submit" disabled={loading}>
                                    {loading ? "Creating..." : "Create Academic Year"}

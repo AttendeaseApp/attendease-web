@@ -84,25 +84,15 @@ export const getAllClusters = async (): Promise<Cluster[]> => {
  * Create a new cluster
  */
 export const createCluster = async (newClusterData: Partial<Cluster>): Promise<Cluster> => {
-     try {
-          const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.CREATE_CLUSTER, {
-               method: "POST",
-               headers: { "Content-Type": "application/json" },
-               body: JSON.stringify(newClusterData),
-          })
-
-          if (!res.ok) {
-               await handleApiError(res, "Failed to create cluster")
-          }
-
-          const result = await res.json()
-          toast.success(`Cluster "${result.clusterName}" created successfully`)
-          return result
-     } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : "Failed to create cluster"
-          toast.error(errorMessage)
-          throw error
+     const res = await authFetch(CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.CREATE_CLUSTER, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newClusterData),
+     })
+     if (!res.ok) {
+          await handleApiError(res, "Failed to create cluster")
      }
+     return await res.json()
 }
 
 /**
@@ -127,11 +117,15 @@ export const updateCluster = async (
           }
 
           const result = await res.json()
-          toast.success(`Cluster "${result.clusterName}" updated successfully`)
+          toast.success("SUCCESS", {
+               description: `Cluster "${result.clusterName}" updated successfully`,
+          })
           return result
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to update cluster"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -152,10 +146,14 @@ export const deleteCluster = async (id: string): Promise<void> => {
                await handleApiError(res, "Failed to delete cluster")
           }
 
-          toast.success("Cluster deleted successfully")
+          toast.success("SUCCESS", {
+               description: "Successfully deleted cluster",
+          })
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to delete cluster"
-          toast.error(errorMessage)
+          toast.warning("WARNING", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -201,11 +199,15 @@ export const createCourse = async (
           }
 
           const result = await res.json()
-          toast.success(`Course "${result.courseName}" created successfully`)
+          toast.success("SUCCESS", {
+               description: `Course "${result.courseName}" created successfully`,
+          })
           return result
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to create course"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -232,11 +234,15 @@ export const updateCourse = async (
           }
 
           const result = await res.json()
-          toast.success(`Course "${result.courseName}" updated successfully`)
+          toast.success("SUCCESS", {
+               description: `Course "${result.courseName}" updated successfully`,
+          })
           return result
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to update course"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -256,11 +262,14 @@ export const deleteCourse = async (id: string): Promise<void> => {
           if (!res.ok) {
                await handleApiError(res, "Failed to delete course")
           }
-
-          toast.success("Course deleted successfully")
+          toast.success("SUCCESS", {
+               description: "Course deleted successfully",
+          })
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to delete course"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -327,11 +336,10 @@ export const createSection = async (
           }
 
           const result = await res.json()
-          toast.success(`Section "${result.sectionName}" created successfully`)
           return result
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to create section"
-          toast.error(errorMessage)
+          console.error(errorMessage)
           throw error
      }
 }
@@ -356,19 +364,21 @@ export const bulkCreateSections = async (
           const result: BulkSectionResult = await res.json()
 
           if (result.errorCount > 0 && result.successCount === 0) {
-               toast.error(`Failed to create all sections (${result.errorCount} errors)`)
+               toast.error("ERROR", {
+                    description:
+                         `Failed to create all sections (${result.errorCount} errors)` + result,
+               })
           } else if (result.errorCount > 0 && result.successCount > 0) {
-               toast.warning(
-                    `Partially successful: ${result.successCount} created, ${result.errorCount} failed`
-               )
-          } else {
-               toast.success(`Successfully created ${result.successCount} section(s)`)
+               toast.warning("WARNING", {
+                    description: `Partially successful: ${result.successCount} created, ${result.errorCount} failed`,
+               })
           }
-
           return result
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to create sections"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -401,7 +411,9 @@ export const updateSection = async (
           }
 
           const result = await res.json()
-          toast.success(`Section "${result.sectionName}" updated successfully`)
+          toast.success("SUCCESS", {
+               description: `Section "${result.sectionName}" updated successfully`,
+          })
           return result
      } catch (error) {
           if (error instanceof Error && error.message === "NOT_MODIFIED") {
@@ -409,6 +421,9 @@ export const updateSection = async (
           }
           const errorMessage = error instanceof Error ? error.message : "Failed to update section"
           toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -429,11 +444,9 @@ export const deleteSection = async (sectionId: string): Promise<void> => {
           if (!res.ok) {
                await handleApiError(res, "Failed to delete section")
           }
-
-          toast.success("Section deleted successfully")
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to delete section"
-          toast.error(errorMessage)
+          console.error(errorMessage)
           throw error
      }
 }
@@ -456,11 +469,11 @@ export const activateSection = async (sectionId: string): Promise<Section> => {
           }
 
           const result = await res.json()
-          toast.success(`Section "${result.sectionName}" activated successfully`)
+          console.log(`Section "${result.sectionName}" activated successfully`)
           return result
      } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to activate section"
-          toast.error(errorMessage)
+          console.error(errorMessage)
           throw error
      }
 }

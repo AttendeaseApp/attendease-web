@@ -42,15 +42,15 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           e.preventDefault()
           setIsSubmitting(true)
-
           try {
-               await createCluster({ clusterName })
-               toast.success(`Cluster '${clusterName}' created successfully.`)
+               const result = await createCluster({ clusterName })
+               toast.success("SUCCESS", {
+                    description: `Cluster "${result.clusterName}" created successfully`,
+               })
                onCreate()
                onClose()
           } catch (err: unknown) {
                let message = "Failed to create cluster."
-
                const backendErr = err as BackendError
                if (
                     backendErr.response?.data?.message &&
@@ -61,7 +61,9 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
                     message = err.message
                }
                console.error("Create cluster failed:", err)
-               toast.error(message)
+               toast.warning("WARNING", {
+                    description: message,
+               })
           } finally {
                setIsSubmitting(false)
           }
@@ -100,7 +102,7 @@ export function CreateClusterDialog({ isOpen, onClose, onCreate }: CreateCluster
                                    disabled={isSubmitting}
                               >
                                    <X className="mr-2 h-4 w-4" />
-                                   Cancel
+                                   Close
                               </Button>
                               <Button type="submit" disabled={isSubmitting || !clusterName.trim()}>
                                    <Plus className="mr-2 h-4 w-4" />
