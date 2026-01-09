@@ -28,15 +28,19 @@ export interface EligibilityCriteria {
 export interface EventSession {
      eventId: string
      eventName: string
-     eventLocation?: EventLocation | null
-     eventLocationId?: string | null
      description?: string | null
+     registrationLocationId?: string | null
+     registrationLocationName: string
+     venueLocationId?: string | null
+     venueLocationName: string
      eligibleStudents?: EligibilityCriteria
-     timeInRegistrationStartDateTime: string
-     startDateTime: string
-     endDateTime: string
+     registrationDateTime: string
+     startingDateTime: string
+     endingDateTime: string
      eventStatus: EventStatus
      facialVerificationEnabled?: boolean
+     attendanceLocationMonitoringEnabled?: boolean
+     strictLocationValidation?: boolean
      createdByUserId?: string | null
      createdAt?: string | null
      updatedAt?: string | null
