@@ -78,12 +78,13 @@ export default function CreateLocationDialog({
 
      const handleCreate = async () => {
           if (!locationName.trim()) {
-               toast.error("Location name is required.")
+               toast.error(<span className="text-red-600">Location name is required.</span>)
+
                return
           }
 
           if (!locationPurpose.trim()) {
-               toast.error("Location Purpose is required.")
+               toast.error(<span className="text-red-600">Location Purpose is required.</span>)
                return
           }
 
@@ -92,12 +93,12 @@ export default function CreateLocationDialog({
           )
 
           if (exists) {
-               toast.error("This location name already exists.")
+               toast.error(<span className="text-red-600">This location name already exists.</span>)
                return
           }
 
           if (!polygon.length) {
-               toast.error("Please draw a polygon on the map.")
+               toast.error(<span className="text-red-600">Please draw a polygon on the map.</span>)
                return
           }
 
@@ -120,6 +121,7 @@ export default function CreateLocationDialog({
                onClose()
           } catch (err) {
                toast.error("Failed to create location.")
+               toast.error(<span className="text-red-600">Failed to create location.</span>)
                console.error(err)
           } finally {
                setLoading(false)

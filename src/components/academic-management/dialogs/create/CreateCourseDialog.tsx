@@ -60,7 +60,8 @@ export function CreateCourseDialog({
           )
 
           if (duplicate) {
-               toast.error("Course name already exists.")
+               toast.error(<span className="text-red-600">Course name already exists.</span>)
+
                return
           }
           setIsSubmitting(true)

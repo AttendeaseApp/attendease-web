@@ -100,7 +100,7 @@ export default function EditStudentDetailsDialog({
 
      const handleSubmit = async () => {
           if (form.password && form.password !== form.confirmPassword) {
-               toast.error("Passwords do not match")
+               toast.error(<span className="text-red-600">Password does not match.</span>)
                return
           }
 
@@ -115,14 +115,15 @@ export default function EditStudentDetailsDialog({
                }
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               toast.success("Successfully updated student.", {
-                    className: "text-green-600",
-               })
+               toast.error(
+                    <span className="text-red-600">Successfully updated student account.</span>
+               )
                onOpenChange(false)
           } catch (err) {
                const message =
                     err instanceof Error && err.message ? err.message : "Failed to update student"
                toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
           } finally {
                setLoading(false)
           }

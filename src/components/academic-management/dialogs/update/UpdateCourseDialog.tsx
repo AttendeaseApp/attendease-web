@@ -66,9 +66,7 @@ export function UpdateCourseDialog({
                }
                console.log("Sending update payload:", updateCourseData)
                await updateCourse(courses.id, updateCourseData)
-               toast.success("Course updated successfully", {
-                    className: "text-green-600",
-               })
+               toast.success(<span className="text-green-600">Course updated successfuly</span>)
                onUpdate()
                onClose()
           } catch (err) {
@@ -77,6 +75,7 @@ export function UpdateCourseDialog({
                setError(message)
                console.error("Update failed:", err)
                toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
           } finally {
                setIsSubmitting(false)
           }

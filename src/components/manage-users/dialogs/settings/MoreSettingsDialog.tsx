@@ -41,7 +41,7 @@ export default function MoreSettingsDialog({
                     err instanceof Error && err.message
                          ? err.message
                          : "Failed to delete all students"
-               toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
           } finally {
                setLoading(false)
           }

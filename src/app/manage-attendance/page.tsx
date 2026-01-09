@@ -32,7 +32,7 @@ export default function AttendanceRecordsManagementPage() {
      })
      useEffect(() => {
           if (error) {
-               toast.error(error.message)
+               toast.error(<span className="text-red-600">{error.message}</span>)
           }
      }, [error])
      return (

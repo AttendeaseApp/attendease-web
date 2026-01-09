@@ -71,12 +71,12 @@ export default function OsaEditMyProfilePage() {
                     email: form.email,
                }
                await updateUser(form.userId, body)
-               toast.success("Successfully updated profile.")
+               toast.success(<span className="text-green-600">Sucessfully updated profile</span>)
                router.push("/account")
           } catch (err) {
                const message =
                     err instanceof Error && err.message ? err.message : "Failed to update user"
-               toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
           } finally {
                setLoading(false)
           }

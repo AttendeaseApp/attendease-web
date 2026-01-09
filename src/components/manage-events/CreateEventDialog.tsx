@@ -427,16 +427,14 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                }
                console.log("Sending create payload:", newEventData)
                await createEvent(newEventData)
-               toast.success("Successfully created the event.", {
-                    className: "text-green-600",
-               })
+               toast.success(<span className="text-green-600">Successfully created the event</span>)
                onClose()
                onCreate()
           } catch (err) {
                console.error("Create failed:", err)
                const message = err instanceof Error ? err.message : "Failed to create event."
                setError(message)
-               toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
           } finally {
                setIsSubmitting(false)
           }

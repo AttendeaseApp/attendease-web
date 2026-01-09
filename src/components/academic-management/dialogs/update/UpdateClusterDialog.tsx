@@ -62,9 +62,7 @@ export function UpdateClusterDialog({
                }
                console.log("Sending update payload:", updateClusterData)
                await updateCluster(clusters.clusterId, updateClusterData)
-               toast.success("Cluster updated successfully", {
-                    className: "text-green-600",
-               })
+               toast.success(<span className="text-green-600">Cluster updated successfuly</span>)
                onUpdate()
                onClose()
           } catch (err) {
@@ -74,6 +72,7 @@ export function UpdateClusterDialog({
                setError(message)
                console.error("Update failed:", err)
                toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
           } finally {
                setIsSubmitting(false)
           }

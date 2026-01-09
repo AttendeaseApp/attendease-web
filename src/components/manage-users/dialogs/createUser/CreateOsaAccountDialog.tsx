@@ -48,7 +48,7 @@ export default function CreateOsaAccountDialog({
 
      const handleSubmit = async () => {
           if (form.password !== form.confirmPassword) {
-               toast.error("Passwords do not match")
+               toast.error(<span className="text-red-600">Password does not match.</span>)
                return
           }
 
@@ -57,7 +57,9 @@ export default function CreateOsaAccountDialog({
                const { confirmPassword: _, ...payload } = form
 
                await createOSAAccount(payload)
-               toast.success("OSA account created successfully")
+               toast.success(
+                    <span className="text-green-600">OSA account successfully created.</span>
+               )
 
                setForm({
                     firstName: "",
@@ -72,7 +74,7 @@ export default function CreateOsaAccountDialog({
                onAdd?.()
           } catch (err: unknown) {
                const message = err instanceof Error ? err.message : "Failed to create OSA account"
-               toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
                console.error(message)
           } finally {
                setLoading(false)

@@ -57,9 +57,7 @@ export function UpdateAcademicYearDialog({
 
           try {
                await updateAcademicYear(academicYear.id, formData)
-               toast.success("Section updated successfully", {
-                    className: "text-green-600",
-               })
+               toast.success(<span className="text-green-600">Section updated successfully</span>)
                onUpdate()
                onClose()
           } catch (err) {

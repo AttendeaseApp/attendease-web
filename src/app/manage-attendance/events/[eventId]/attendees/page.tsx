@@ -33,7 +33,7 @@ export default function EventAttendeesPage() {
      const { handleUpdate, submitting } = useUpdateAttendance(eventId, refetch)
      useEffect(() => {
           if (error) {
-               toast.error(error.message)
+               toast.error(<span className="text-red-600">{error.message}</span>)
           }
      }, [error])
      const handleOpenDialog = (attendee: AttendeesResponse) => {

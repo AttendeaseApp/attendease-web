@@ -73,7 +73,7 @@ export default function CreateStudentAccountDialog({
 
      const handleSubmit = async () => {
           if (form.password !== form.confirmPassword) {
-               toast.error("Passwords do not match")
+               toast.error(<span className="text-red-600">Password does not match.</span>)
                return
           }
 
@@ -86,7 +86,7 @@ export default function CreateStudentAccountDialog({
                !form.email ||
                !form.password
           ) {
-               toast.warning("Please fill in all fields")
+               toast.warning(<span className="text-orange-600">Please fill in all fields.</span>)
                return
           }
 
@@ -95,9 +95,9 @@ export default function CreateStudentAccountDialog({
                const { confirmPassword: _, ...payload } = form
 
                await createStudentAccount(payload)
-               toast.success("Student account created successfully!", {
-                    className: "text-green-600",
-               })
+               toast.success(
+                    <span className="text-green-600">Student account created successfully.</span>
+               )
 
                setForm({
                     firstName: "",
@@ -114,7 +114,7 @@ export default function CreateStudentAccountDialog({
           } catch (err: unknown) {
                const message =
                     err instanceof Error ? err.message : "Failed to create student account"
-               toast.error(message)
+               toast.error(<span className="text-red-600">{message}</span>)
                console.error(message)
           } finally {
                setLoading(false)

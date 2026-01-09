@@ -69,9 +69,7 @@ export function CreateSectionDialog({
 
           try {
                await bulkCreateSections(course.id, sections)
-               toast.success("Sections created successfully", {
-                    className: "text-green-600",
-               })
+               toast.success(<span className="text-green-600">Sections created successfully</span>)
                onCreate()
                onClose()
           } catch (err) {

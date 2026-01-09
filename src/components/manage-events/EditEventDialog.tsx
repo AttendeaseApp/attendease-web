@@ -484,9 +484,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           try {
                setIsSubmitting(true)
                await cancelEvent(event.eventId)
-               toast.success("Event cancelled", {
-                    className: "text-green-600",
-               })
+               toast.success(<span className="text-green-600">Event cancelled</span>)
                onUpdate()
           } catch (error) {
                toast.error("Failed to cancel event" + error)
@@ -559,14 +557,16 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                }
 
                await updateEvent(event.eventId, updatedData)
-               toast.success("Successfully updated the event.", {
-                    className: "text-green-600",
-               })
+               toast.success(<span className="text-green-600">Successfully updated the event</span>)
                onUpdate()
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
-               toast.error("Failed to update the event. Please verify time and location" + error)
+               toast.error(
+                    <span className="text-red-600">
+                         {"Failed to update the event. Please verify time and location. " + error}
+                    </span>
+               )
           } finally {
                setIsSubmitting(false)
           }

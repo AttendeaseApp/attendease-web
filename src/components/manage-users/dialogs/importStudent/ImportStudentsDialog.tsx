@@ -37,9 +37,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                     })
                }
 
-               toast.info(message, {
-                    className: "text-black-600",
-               })
+               toast.info(<span className="text-black">{message}</span>)
 
                setSelectedFile(null)
                onOpenChange(false)
@@ -48,7 +46,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                     err instanceof Error && err.message
                          ? err.message
                          : "Error occurred on uploading file"
-               toast.error(`Error: ${message}`)
+               toast.error(<span className="text-red-600">{`Error: ${message}`}</span>)
           } finally {
                setLoading(false)
           }
