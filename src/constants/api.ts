@@ -65,12 +65,16 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
      RETRIEVE_ALL_USERS: `${API_BASE}/api/user/management`,
      IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/user/management/import`,
      RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/user/management/students`,
+     RETRIEVE_ACTIVE_STUDENTS: `${API_BASE}/api/user/management/students/active`,
+     RETRIEVE_INACTIVE_STUDENTS: `${API_BASE}/api/user/management/students/inactive`,
 
      EDIT_USER_DETAILS: (userId: string) => `${API_BASE}/api/user/information/management/${userId}`,
 
      ADD_OSA_ACCOUNT: `${API_BASE}/api/auth/osa/register`,
      ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
      DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/user/information/management/students/remove-all`,
+     BULK_ACTIVATE_STUDENTS: `${API_BASE}/api/user/management/students/activate`,
+     BULK_DEACTIVATE_STUDENTS: `${API_BASE}/api/user/management/students/deactivate`,
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {

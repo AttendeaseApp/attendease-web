@@ -72,7 +72,12 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                     <TableHeader className="bg-gray-100">
                          <TableRow>
                               <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
-                              <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
+                              <TableHead className="font-semibold text-gray-900">
+                                   REGISTRATION VENUE
+                              </TableHead>
+                              <TableHead className="font-semibold text-gray-900">
+                                   EVENT VENUE
+                              </TableHead>
                               <TableHead className="font-semibold text-gray-900">
                                    ELIGIBLE STUDENTS
                               </TableHead>
@@ -94,7 +99,7 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                     <TableBody>
                          {loading ? (
                               <TableRow>
-                                   <TableCell colSpan={6} className="text-center py-8">
+                                   <TableCell colSpan={9} className="text-center py-8">
                                         Loading events...
                                    </TableCell>
                               </TableRow>
@@ -111,21 +116,22 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                                              {event.eventName}
                                         </TableCell>
                                         <TableCell className="font-medium">
-                                             {event.eventLocation?.locationName ?? "No location"}
+                                             {event.registrationLocationName ?? "No location"}
+                                        </TableCell>
+                                        <TableCell className="font-medium">
+                                             {event.venueLocationName ?? "No location"}
                                         </TableCell>
                                         <TableCell className="font-medium">
                                              {formatEligibility(event.eligibleStudents)}
                                         </TableCell>
                                         <TableCell>
-                                             {new Date(
-                                                  event.timeInRegistrationStartDateTime
-                                             ).toLocaleString()}
+                                             {new Date(event.registrationDateTime).toLocaleString()}
                                         </TableCell>
                                         <TableCell>
-                                             {new Date(event.startDateTime).toLocaleString()}
+                                             {new Date(event.startingDateTime).toLocaleString()}
                                         </TableCell>
                                         <TableCell>
-                                             {new Date(event.endDateTime).toLocaleString()}
+                                             {new Date(event.endingDateTime).toLocaleString()}
                                         </TableCell>
                                         <TableCell>
                                              <span

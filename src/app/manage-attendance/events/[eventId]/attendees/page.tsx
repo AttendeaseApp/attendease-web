@@ -93,20 +93,25 @@ export default function EventAttendeesPage() {
                                         {event.description || "N/A"}
                                    </div>
                                    <div>
-                                        <strong>Venue:</strong>
+                                        <strong>Registration Venue:</strong>
                                         <br />
-                                        {event.eventLocation?.locationName || "N/A"}
+                                        {event.registrationLocationName || "N/A"}
+                                   </div>
+                                   <div>
+                                        <strong>Event Venue:</strong>
+                                        <br />
+                                        {event.venueLocationName || "N/A"}
                                    </div>
                                    <div>
                                         <strong>Registration:</strong>
                                         <br />
-                                        {event.timeInRegistrationStartDateTime || "N/A"}
+                                        {event.registrationDateTime || "N/A"}
                                    </div>
                                    <div>
-                                        <strong>Start:</strong> {event.startDateTime || "N/A"}
+                                        <strong>Start:</strong> {event.startingDateTime || "N/A"}
                                    </div>
                                    <div>
-                                        <strong>End:</strong> {event.endDateTime || "N/A"}
+                                        <strong>End:</strong> {event.endingDateTime || "N/A"}
                                    </div>
                                    <div className="flex justify-end md:col-span-2">
                                         <Button
