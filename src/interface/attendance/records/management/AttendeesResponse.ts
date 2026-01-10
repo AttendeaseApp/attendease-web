@@ -19,8 +19,9 @@ export interface AttendeesResponse {
      updatedAt: string
      studentId?: string
      studentNumber?: string
-     section?: string
-     course?: string
+     sectionName?: string
+     courseName?: string
+     clusterName?: string
 }
 
 export interface EventAttendeesResponse {

@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Trash2 } from "lucide-react"
+import { Search, Trash2, MoreVertical } from "lucide-react"
 import Link from "next/link"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { AllAttendanceRecordsTable } from "@/components/manage-attendance/AllAttendanceRecordsTable"
-import { useAllAttendanceRecords } from "@/hooks/attendance-records-management/useAllAttendanceRecords"
-import { useDeleteAttendanceRecord } from "@/hooks/attendance-records-management/useDeleteAttendanceRecord"
-import { useDeleteAllAttendanceRecords } from "@/hooks/attendance-records-management/useDeleteAllAttendanceRecords"
+import { useAllAttendanceRecords } from "@/services/api/attendance/records/management/useAllAttendanceRecords"
+import { useDeleteAttendanceRecord } from "@/services/api/attendance/records/management/useDeleteAttendanceRecord"
+import { useDeleteAllAttendanceRecords } from "@/services/api/attendance/records/management/useDeleteAllAttendanceRecords"
 import {
      AlertDialog,
      AlertDialogAction,
@@ -18,8 +18,13 @@ import {
      AlertDialogFooter,
      AlertDialogHeader,
      AlertDialogTitle,
-     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+     DropdownMenu,
+     DropdownMenuContent,
+     DropdownMenuItem,
+     DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 import {
      Breadcrumb,
@@ -125,48 +130,6 @@ export default function AllAttendanceRecordsManagementPage() {
                               View, search, and manage all attendance records across events.
                          </p>
                     </div>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                         <div className="flex-1" />
-                         <AlertDialog
-                              open={showDeleteAllDialog}
-                              onOpenChange={setShowDeleteAllDialog}
-                         >
-                              <AlertDialogTrigger asChild>
-                                   <div>
-                                        <Button
-                                             variant="destructive"
-                                             size="sm"
-                                             disabled={deleteAllPending || loading}
-                                             className="transition-transform duration-200"
-                                        >
-                                             <Trash2 className="w-4 h-4 mr-2" />
-                                             Delete All Records
-                                        </Button>
-                                   </div>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                   <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                             Are you absolutely sure?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                             This action cannot be undone. This will permanently
-                                             delete all attendance records and remove them from our
-                                             servers.
-                                        </AlertDialogDescription>
-                                   </AlertDialogHeader>
-                                   <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                             onClick={confirmDeleteAll}
-                                             disabled={deleteAllPending}
-                                        >
-                                             {deleteAllPending ? "Deleting..." : "Delete All"}
-                                        </AlertDialogAction>
-                                   </AlertDialogFooter>
-                              </AlertDialogContent>
-                         </AlertDialog>
-                    </div>
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
                          <div className="relative flex-1">
                               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -179,7 +142,7 @@ export default function AllAttendanceRecordsManagementPage() {
                                    />
                               </div>
                          </div>
-                         <div>
+                         <div className="flex gap-2">
                               <Button
                                    variant="outline"
                                    size="sm"
@@ -189,6 +152,23 @@ export default function AllAttendanceRecordsManagementPage() {
                               >
                                    Refresh
                               </Button>
+                              <DropdownMenu>
+                                   <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" size="sm">
+                                             <MoreVertical className="w-4 h-4" />
+                                        </Button>
+                                   </DropdownMenuTrigger>
+                                   <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                             className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                                             onClick={() => setShowDeleteAllDialog(true)}
+                                             disabled={deleteAllPending || loading}
+                                        >
+                                             <Trash2 className="w-4 h-4 mr-2" />
+                                             Delete All Records
+                                        </DropdownMenuItem>
+                                   </DropdownMenuContent>
+                              </DropdownMenu>
                          </div>
                     </div>
                     <div>
@@ -215,6 +195,26 @@ export default function AllAttendanceRecordsManagementPage() {
                                         disabled={deletePending}
                                    >
                                         {deletePending ? "Deleting..." : "Delete Record"}
+                                   </AlertDialogAction>
+                              </AlertDialogFooter>
+                         </AlertDialogContent>
+                    </AlertDialog>
+                    <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+                         <AlertDialogContent>
+                              <AlertDialogHeader>
+                                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                   <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete
+                                        all attendance records and remove them from our servers.
+                                   </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                   <AlertDialogAction
+                                        onClick={confirmDeleteAll}
+                                        disabled={deleteAllPending}
+                                   >
+                                        {deleteAllPending ? "Deleting..." : "Delete All"}
                                    </AlertDialogAction>
                               </AlertDialogFooter>
                          </AlertDialogContent>

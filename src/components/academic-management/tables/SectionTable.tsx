@@ -43,7 +43,7 @@ import {
      TableRow,
 } from "@/components/ui/table"
 import { Section } from "@/interface/academic/section/SectionInterface"
-import { activateSection, deleteSection } from "@/services/api/academic/cluster-and-course-sessions"
+import { activateSection, deleteSection } from "@/services/api/academic/section-management-service"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { MoreHorizontal, Pencil, Power, Trash } from "lucide-react"
 import { toast } from "sonner"
@@ -101,7 +101,7 @@ export function SectionTable({ sections, loading, onEdit, onRefresh }: SectionPr
 
           try {
                await deleteSection(deleteTarget.id)
-               toast.success("Success", {
+               toast.success("SUCCESS", {
                     description: `Section "${deleteTarget.sectionName}" has been deleted successfully!`,
                })
                setTimeout(() => {
@@ -111,11 +111,11 @@ export function SectionTable({ sections, loading, onEdit, onRefresh }: SectionPr
           } catch (error: unknown) {
                if (error instanceof Error) {
                     const errorMsg = error.message || "Failed to delete section."
-                    toast.error("Error", {
+                    toast.error("ERROR", {
                          description: errorMsg,
                     })
                } else {
-                    toast.error("Error", {
+                    toast.error("ERROR", {
                          description: "An unknown error occurred.",
                     })
                }

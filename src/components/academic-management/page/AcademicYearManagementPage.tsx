@@ -19,7 +19,7 @@ import {
      deactivateAcademicYear,
      deleteAcademicYear,
      AcademicYear,
-} from "@/services/api/academic/academic-year"
+} from "@/services/api/academic/academic-year-management-service"
 import { AcademicYearTable } from "../tables/AcademicYearTable"
 import { CreateAcademicYearDialog } from "../dialogs/create/CreateAcademicYearDialog"
 import { UpdateAcademicYearDialog } from "../dialogs/update/UpdateAcademicYearDialog"
