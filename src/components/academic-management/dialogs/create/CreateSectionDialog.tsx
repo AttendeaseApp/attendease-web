@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Course } from "@/interface/academic/course/CourseInterface"
-import { bulkCreateSections } from "@/services/api/academic/cluster-and-course-sessions"
+import { bulkCreateSections } from "@/services/api/academic/section-management-service"
 import { Plus, X, Trash2 } from "lucide-react"
 import { FormEvent, useEffect, useState } from "react"
 

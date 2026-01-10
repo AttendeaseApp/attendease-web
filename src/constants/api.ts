@@ -1,105 +1,121 @@
-export const API_BASE = "http://rcattendease.online"
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
+
+if (!API_BASE) {
+  throw new Error("NEXT_PUBLIC_API_BASE is not defined");
+}
+
 /**
  * constant login endpoint
  */
-export const LOGIN = `${API_BASE}/api/auth/osa/login`
+export const LOGIN = `${API_BASE}/api/osa/auth/login`
 
 /**
  * All event management related API endpoints.
  */
 export const EVENT_MANAGEMENT_API_ENDPOINTS = {
-     GET_ALL_EVENTS: `${API_BASE}/api/events`,
-     CREATE_EVENT: `${API_BASE}/api/events`,
-     UPDATE_EVENT: (id: string) => `${API_BASE}/api/events/${id}`,
-     CANCEL_EVENT: (id: string) => `${API_BASE}/api/events/${id}/cancel`,
-     DELETE_EVENT: (id: string) => `${API_BASE}/api/events/${id}`,
+     CREATE_EVENT:                            `${API_BASE}/api/osa/event/management/create`,
+     GET_EVENT_BY_ID: (id: string) =>         `${API_BASE}/api/osa/event/management/${id}`,
+     GET_EVENT_BY_STATUS: (status: string) => `${API_BASE}/api/osa/event/management/status/${status}`,
+     GET_ALL_EVENTS:                          `${API_BASE}/api/osa/event/management/all-events`,
+     CANCEL_EVENT: (id: string) =>            `${API_BASE}/api/osa/event/management/${id}/cancel`,
+     UPDATE_EVENT: (id: string) =>            `${API_BASE}/api/osa/event/management/${id}/update`,
+     DELETE_EVENT: (id: string) =>            `${API_BASE}/api/osa/event/management/${id}/delete`,
 }
 
 /**
  * All cluster and course management related API endpoints.
  */
-export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
-     TRIGGER_ACADEMIC_SCHEDULER: `${API_BASE}/api/scheduler/trigger-academic-year-activation`,
-     GET_ACTIVE_ACADEMIC_YEAR: `${API_BASE}/api/academic-years/active`,
-     CREATE_ACADEMIC_YEAR: `${API_BASE}/api/academic-years`,
-     GET_ALL_ACADEMIC_YEARS: `${API_BASE}/api/academic-years`,
-     ACTIVATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}/activate`,
-     DELETE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}`,
-     GET_ACADEMIC_YEAR_BY_ID: (id: string) => `${API_BASE}/api/academic-years/${id}`,
-     UPDATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}`,
-     DEACTIVATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}/deactivate`,
-     GET_CURRENT_SEMESTER: `${API_BASE}/api/academic-years/current-semester`,
-     GET_CURRENT_SEMESTER_NAME: `${API_BASE}/api/academic-years/current-semester-name`,
-     GET_SEMESTER_STATUS: `${API_BASE}/api/academic-years/semester-status`,
-     GET_ALL_COURSES: `${API_BASE}/api/courses`,
-     GET_ALL_CLUSTERS: `${API_BASE}/api/clusters`,
-     DELETE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
-     CREATE_COURSE: (id: string) => `${API_BASE}/api/courses?clusterId=${id}`,
-     DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
-     CREATE_CLUSTER: `${API_BASE}/api/clusters`,
-     GET_ALL_SECTIONS: `${API_BASE}/api/sections`,
-     CREATE_SECTION: (id: string) => `${API_BASE}/api/sections/courses/${id}`,
-     DELETE_SECTION: (id: string) => `${API_BASE}/api/sections/${id}`,
-     GET_SECTIONS_BY_COURSE: (courseId: string) => `${API_BASE}/api/sections/courses/${courseId}`,
-     UPDATE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
-     CREATE_SECTIONS_BULK: (courseId: string) =>
-          `${API_BASE}/api/sections/bulk?courseId=${courseId}`,
-     UPDATE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
-     UPDATE_SECTION: (id: string) => `${API_BASE}/api/sections/${id}`,
+export const SECTION_MANAGEMENT_ENDPOINTS = {
+     CREATE_SECTION: (id: string) =>               `${API_BASE}/api/osa/section/management/courses/${id}`,
+     CREATE_SECTIONS_BULK: (courseId: string) =>   `${API_BASE}/api/osa/section/management/bulk?courseId=${courseId}`,
+     GET_ALL_SECTIONS:                             `${API_BASE}/api/osa/section/management`,
+     GET_SECTIONS_BY_COURSE: (courseId: string) => `${API_BASE}/api/osa/section/management/courses/${courseId}`,
+     UPDATE_SECTION: (id: string) =>               `${API_BASE}/api/osa/section/management/${id}`,
+     DELETE_SECTION: (id: string) =>               `${API_BASE}/api/osa/section/management/${id}`,
+}
+
+export const ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS = {
+     TRIGGER_ACADEMIC_SCHEDULER:                `${API_BASE}/api/osa/academic-year/scheduler/trigger-academic-year-activation`,
+     GET_ACTIVE_ACADEMIC_YEAR:                  `${API_BASE}/api/osa/academic-year/management/active`,
+     CREATE_ACADEMIC_YEAR:                      `${API_BASE}/api/osa/academic-year/management`,
+     GET_ALL_ACADEMIC_YEARS:                    `${API_BASE}/api/osa/academic-year/management`,
+     ACTIVATE_ACADEMIC_YEAR: (id: string) =>    `${API_BASE}/api/osa/academic-year/management/${id}/activate`,
+     DELETE_ACADEMIC_YEAR: (id: string) =>      `${API_BASE}/api/osa/academic-year/management/${id}`,
+     GET_ACADEMIC_YEAR_BY_ID: (id: string) =>   `${API_BASE}/api/osa/academic-year/management/${id}`,
+     UPDATE_ACADEMIC_YEAR: (id: string) =>      `${API_BASE}/api/osa/academic-year/management/${id}`,
+     DEACTIVATE_ACADEMIC_YEAR: (id: string) =>  `${API_BASE}/api/osa/academic-year/management/${id}/deactivate`,
+     GET_CURRENT_SEMESTER:                      `${API_BASE}/api/osa/academic-year/management/current-semester`,
+     GET_CURRENT_SEMESTER_NAME:                 `${API_BASE}/api/osa/academic-year/management/current-semester-name`,
+     GET_SEMESTER_STATUS: `                      ${API_BASE}/api/osa/academic-year/management/semester-status`,
+}
+
+export const CLUSTER_MANAGEMENT_SERVICE_ENDPOINTS = {
+     CREATE_CLUSTER:                 `${API_BASE}/api/osa/cluster/management`,
+     GET_ALL_CLUSTERS:               `${API_BASE}/api/osa/cluster/management`,
+     UPDATE_CLUSTER: (id: string) => `${API_BASE}/api/osa/cluster/management/${id}`,
+     DELETE_CLUSTER: (id: string) => `${API_BASE}/api/osa/cluster/management/${id}`,
+}
+
+export const COURSE_MANAGEMENT_SERVICE_ENDPOINTS = {
+     CREATE_COURSE: (id: string) => `${API_BASE}/api/osa/course/management?clusterId=${id}`,
+     GET_ALL_COURSES:               `${API_BASE}/api/osa/course/management`,
+     UPDATE_COURSE: (id: string) => `${API_BASE}/api/osa/course/management/${id}`,
+     DELETE_COURSE: (id: string) => `${API_BASE}/api/osa/course/management/${id}`,
 }
 
 /**
  * All location management related API endpoints.
  */
 export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
-     GET_ALL_LOCATIONS: `${API_BASE}/api/locations`,
-     CREATE_LOCATION: `${API_BASE}/api/locations`,
-     DELETE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
-     UPDATE_LOCATION: (id: string) => `${API_BASE}/api/locations/${id}`,
+     CREATE_LOCATION:                 `${API_BASE}/api/osa/location/management/create`,
+     GET_ALL_LOCATIONS:               `${API_BASE}/api/osa/location/management/all`,
+     UPDATE_LOCATION: (id: string) => `${API_BASE}/api/osa/location/management/${id}/update`,
+     DELETE_LOCATION: (id: string) => `${API_BASE}/api/osa/location/management/${id}/delete`,
 }
 
 /**
  * All user management related API endpoints.
  */
 export const USER_MANAGEMENT_API_ENDPOINTS = {
-     RETRIEVE_ALL_USERS: `${API_BASE}/api/user/management`,
-     IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/user/management/import`,
-     RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/user/management/students`,
-     RETRIEVE_ACTIVE_STUDENTS: `${API_BASE}/api/user/management/students/active`,
-     RETRIEVE_INACTIVE_STUDENTS: `${API_BASE}/api/user/management/students/inactive`,
+    RETRIEVE_ALL_USERS:          `${API_BASE}/api/osa/user/account/management/all-users`,
+    RETRIEVE_ACTIVE_STUDENTS:    `${API_BASE}/api/osa/user/account/management/students/active`,
+    RETRIEVE_INACTIVE_STUDENTS:  `${API_BASE}/api/osa/user/account/management/students/inactive`,
+    BULK_ACTIVATE_STUDENTS:      `${API_BASE}/api/osa/user/account/management/students/activate`,
+    BULK_DEACTIVATE_STUDENTS:    `${API_BASE}/api/osa/user/account/management/students/deactivate`,
+    IMPORT_STUDENT_ACCOUNTS:     `${API_BASE}/api/osa/user/account/management/import-students`,
+    RETRIEVE_ALL_STUDENTS:       `${API_BASE}/api/osa/user/account/management/all-students`,
+    DELETE_BY_USER_ID: (userId: string) => `${API_BASE}/api/osa/user/account/management/${userId}/delete-user`,
+    DELETE_STUDENTS_BY_THEIR_SECTION_NAME: (sectionName: string) => `${API_BASE}/api/osa/user/account/management/section/${sectionName}`,
+}
 
-     EDIT_USER_DETAILS: (userId: string) => `${API_BASE}/api/user/information/management/${userId}`,
+export const ACCOUNT_REGISTRATION_ENDPOINTS = {
+     ADD_OSA_ACCOUNT:     `${API_BASE}/api/osa/account/register`,
+     ADD_STUDENT_ACCOUNT: `${API_BASE}/api/osa/account/student/management/register`,
+}
 
-     ADD_OSA_ACCOUNT: `${API_BASE}/api/auth/osa/register`,
-     ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
-     DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/user/information/management/students/remove-all`,
-     BULK_ACTIVATE_STUDENTS: `${API_BASE}/api/user/management/students/activate`,
-     BULK_DEACTIVATE_STUDENTS: `${API_BASE}/api/user/management/students/deactivate`,
+export const USER_INFORMATION_MANAGEMENT_ENDPOINTS = {
+    UPDATE_USER_DETAILS: (userId: string) =>       `${API_BASE}/api/osa/user/information/management/${userId}`,
+    BULK_UPDATE_STUDENTS_SECTIONS:                 `${API_BASE}/api/osa/user/information/management/student/section/bulk`,
+    DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/osa/user/information/management/students/remove-all`,
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {
-     GET_ALL_EVENTS_FOR_MONITORING: `${API_BASE}/api/events/monitoring/all`,
-     GET_REGISTERED_ATTENDEES: (id: string) =>
-          `${API_BASE}/api/events/monitoring/attendees/registered/${id}`,
+     GET_ALL_EVENTS_FOR_MONITORING:            `${API_BASE}/api/osa/event/monitoring/all-events`,
+     GET_REGISTERED_ATTENDEES: (id: string) => `${API_BASE}/api/osa/event/monitoring/attendees/registered/${id}`,
 }
 
 export const OSA_PROFILE_ENDPOINT = {
-     GET_OSA_PROFILE: `${API_BASE}/api/profile/user-osa/me`,
-     OSA_CHANGE_PASSWORD: `${API_BASE}/api/profile/account/password/update`,
+     GET_OSA_PROFILE:      `${API_BASE}/api/osa/profile/user-osa/me`,
+     OSA_CHANGE_PASSWORD:  `${API_BASE}/api/osa/profile/account/password/update`,
 }
 
 export const ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS = {
-     GET_FINALIZED_EVENT_SUMMARY: `${API_BASE}/api/attendance/records/event/finalized`,
-     GET_ATTENDEES_BY_EVENT_ID: (id: string) =>
-          `${API_BASE}/api/attendance/records/attendees/event/${id}`,
-     GET_EVENT_BY_ID: (id: string) => `${API_BASE}/api/attendance/records/event/${id}`,
-     GET_ATTENDANCE_RECORDS_BY_STUDENT_ID: (id: string) =>
-          `${API_BASE}/api/attendance/records/student/${id}`,
-     UPDATE_STUDENT_ATTENDANCE_STATUS_BY_STUDENT_AND_EVENT_ID: (
-          studentId: string,
-          eventId: string
-     ) => `${API_BASE}/api/attendance/records/${studentId}/event/${eventId}`,
-     GET_ALL_ATTENDANCE_RECORDS: `${API_BASE}/api/attendance/records`,
-     DELETE_ATTENDANCE_RECORD_BY_ID: (id: string) => `${API_BASE}/api/attendance/records/${id}`,
-     DELETE_ALL_ATTENDANCE_RECORDS: `${API_BASE}/api/attendance/records`,
+     GET_ALL_ATTENDANCE_RECORDS:                             `${API_BASE}/api/osa/attendance-records/management/all`,
+     GET_FINALIZED_EVENT_SUMMARY:                            `${API_BASE}/api/osa/attendance-records/management/finalized/summary`,
+     GET_ATTENDEES_BY_EVENT_ID: (id: string) =>              `${API_BASE}/api/osa/attendance-records/management/event/${id}/attendees`,
+     GET_ATTENDANCE_RECORDS_BY_STUDENT_ID: (id: string) =>   `${API_BASE}/api/osa/attendance-records/management/student/${id}/records`,
+     UPDATE_STUDENT_ATTENDANCE_STATUS_BY_STUDENT_AND_EVENT_ID:
+        (studentId: string,eventId: string) =>               `${API_BASE}/api/osa/attendance-records/management/${studentId}/event/${eventId}/update-status`,
+     DELETE_ATTENDANCE_RECORD_BY_ID: (id: string) =>         `${API_BASE}/api/osa/attendance-records/management/${id}/delete`,
+     DELETE_ALL_ATTENDANCE_RECORDS:                          `${API_BASE}/api/osa/attendance-records/management/delete/all`,
 }
