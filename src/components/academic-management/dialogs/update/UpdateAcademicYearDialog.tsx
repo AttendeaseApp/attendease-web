@@ -181,7 +181,7 @@ export function UpdateAcademicYearDialog({
                                    onClick={onClose}
                                    disabled={loading}
                               >
-                                   Cancel
+                                   Close
                               </Button>
                               <Button type="submit" disabled={loading}>
                                    {loading ? "Updating..." : "Update Academic Year"}

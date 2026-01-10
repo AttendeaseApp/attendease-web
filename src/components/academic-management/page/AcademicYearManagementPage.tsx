@@ -43,7 +43,6 @@ export default function AcademicYearManagementPage() {
                const data = await getAllAcademicYears()
                setAcademicYears(data)
           } catch (error) {
-               // Error toast already shown by service
                console.error("Failed to fetch academic years:", error)
           } finally {
                setLoading(false)
@@ -54,7 +53,6 @@ export default function AcademicYearManagementPage() {
           fetchAcademicYears()
      }, [])
 
-     // Handlers
      const handleEdit = (academicYear: AcademicYear) => {
           setSelectedAcademicYear(academicYear)
           setUpdateDialogOpen(true)

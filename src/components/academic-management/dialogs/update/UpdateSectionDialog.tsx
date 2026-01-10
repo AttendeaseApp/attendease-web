@@ -16,7 +16,6 @@ import { Section } from "@/interface/academic/section/SectionInterface"
 import { updateSection } from "@/services/api/academic/cluster-and-course-sessions"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
 interface UpdateSectionDialogProps {
      course: Course
@@ -80,21 +79,14 @@ export function UpdateSectionDialog({
                     yearLevel: formData.yearLevel,
                     semester: formData.semester,
                }
-
-               console.log("Updating section:", payload)
-
                await updateSection(section.id, payload)
-
-               toast.success("Section updated successfully")
                onUpdate()
                onClose()
           } catch (err) {
                let message = "Failed to update section"
-
                if (err instanceof Error) {
                     message = err.message
                }
-
                setError(message)
                onError?.(message)
           } finally {
@@ -173,7 +165,7 @@ export function UpdateSectionDialog({
                                    disabled={isSubmitting}
                               >
                                    <X className="mr-2 h-4 w-4" />
-                                   Cancel
+                                   Close
                               </Button>
                               <Button
                                    type="submit"

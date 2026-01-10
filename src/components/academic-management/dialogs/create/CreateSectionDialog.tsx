@@ -14,8 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Course } from "@/interface/academic/course/CourseInterface"
 import { bulkCreateSections } from "@/services/api/academic/cluster-and-course-sessions"
 import { Plus, X, Trash2 } from "lucide-react"
-import { ChangeEvent, FormEvent, useEffect, useState } from "react"
-import { toast } from "sonner"
+import { FormEvent, useEffect, useState } from "react"
 
 interface CreateSectionDialogProps {
      course: Course
@@ -69,11 +68,8 @@ export function CreateSectionDialog({
 
           try {
                await bulkCreateSections(course.id, sections)
-               toast.success("Sections created successfully")
                onCreate()
                onClose()
-          } catch (err) {
-               toast.error("Failed to create sections")
           } finally {
                setIsSubmitting(false)
           }
@@ -176,7 +172,7 @@ export function CreateSectionDialog({
                                    disabled={isSubmitting}
                               >
                                    <X className="mr-2 h-4 w-4" />
-                                   Cancel
+                                   Close
                               </Button>
                               <Button type="submit" disabled={isSubmitting}>
                                    {isSubmitting ? "Creating..." : "Create Sections"}

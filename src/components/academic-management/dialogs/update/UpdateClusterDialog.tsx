@@ -70,7 +70,9 @@ export function UpdateClusterDialog({
                     " Failed to update cluster."
                setError(message)
                console.error("Update failed:", err)
-               toast.error(message)
+               toast.error("ERROR", {
+                    description: message,
+               })
           } finally {
                setIsSubmitting(false)
           }
@@ -117,7 +119,7 @@ export function UpdateClusterDialog({
                                    disabled={isSubmitting}
                               >
                                    <X className="mr-2 h-4 w-4" />
-                                   Cancel
+                                   Close
                               </Button>
                               <Button
                                    type="submit"
