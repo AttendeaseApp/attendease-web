@@ -86,13 +86,14 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
 }
 
 export const ACCOUNT_REGISTRATION_ENDPOINTS = {
-     ADD_OSA_ACCOUNT: `${API_BASE}/api/osa/account/register`,
+     ADD_OSA_ACCOUNT:     `${API_BASE}/api/osa/account/register`,
      ADD_STUDENT_ACCOUNT: `${API_BASE}/api/osa/account/student/management/register`,
 }
 
 export const USER_INFORMATION_MANAGEMENT_ENDPOINTS = {
-    DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/user/information/management/students/remove-all`,
-    EDIT_USER_DETAILS: (userId: string) => `${API_BASE}/api/user/information/management/${userId}`,
+    UPDATE_USER_DETAILS: (userId: string) =>       `${API_BASE}/api/osa/user/information/management/${userId}`,
+    BULK_UPDATE_STUDENTS_SECTIONS:                 `${API_BASE}/api/osa/user/information/management/student/section/bulk`,
+    DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/osa/user/information/management/students/remove-all`,
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {

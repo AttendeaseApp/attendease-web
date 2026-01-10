@@ -6,11 +6,14 @@ export async function updateUser(
      userId: string,
      payload: Omit<UpdateUserDetailsInterface, "userId">
 ): Promise<UpdateUserDetailsInterface> {
-     const res = await authFetch(USER_INFORMATION_MANAGEMENT_ENDPOINTS.EDIT_USER_DETAILS(userId), {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-     })
+     const res = await authFetch(
+          USER_INFORMATION_MANAGEMENT_ENDPOINTS.UPDATE_USER_DETAILS(userId),
+          {
+               method: "PATCH",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify(payload),
+          }
+     )
 
      if (!res.ok) {
           const errorData = await res.json().catch(() => null)
