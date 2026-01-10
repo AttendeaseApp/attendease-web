@@ -24,7 +24,7 @@ import {
      getAllUsers,
 } from "@/services/api/user/management/user-management-services"
 import { ChevronDown, Search } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { bulkActivateStudents } from "@/services/api/user/management/bulk-activate-students-service"
 import { bulkDeactivateStudents } from "@/services/api/user/management/bulk-deactivate-students-service"
 import { StudentStatusFilter } from "@/interface/users/account/status/AccountStatus"
@@ -92,7 +92,7 @@ export default function RetrieveAllUsers() {
           }
      }
 
-     const loadStudents = async () => {
+     const loadStudents = useCallback(async () => {
           setLoading(true)
           try {
                let data: UserStudentResponse[] = []
@@ -114,11 +114,11 @@ export default function RetrieveAllUsers() {
           } finally {
                setLoading(false)
           }
-     }
+     }, [statusFilter])
 
      useEffect(() => {
           loadStudents()
-     }, [statusFilter])
+     }, [statusFilter, loadStudents])
 
      useEffect(() => {
           const uniqueSections = Array.from(

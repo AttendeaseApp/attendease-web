@@ -1,4 +1,4 @@
-import { USER_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
+import { USER_INFORMATION_MANAGEMENT_ENDPOINTS } from "@/constants/api"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
 import { authFetch } from "./auth-fetch"
 
@@ -6,7 +6,7 @@ export async function updateUser(
      userId: string,
      payload: Omit<UpdateUserDetailsInterface, "userId">
 ): Promise<UpdateUserDetailsInterface> {
-     const res = await authFetch(USER_MANAGEMENT_API_ENDPOINTS.EDIT_USER_DETAILS(userId), {
+     const res = await authFetch(USER_INFORMATION_MANAGEMENT_ENDPOINTS.EDIT_USER_DETAILS(userId), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

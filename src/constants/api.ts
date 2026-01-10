@@ -74,19 +74,25 @@ export const LOCATION_MANAGEMENT_API_ENDPOINTS = {
  * All user management related API endpoints.
  */
 export const USER_MANAGEMENT_API_ENDPOINTS = {
-     RETRIEVE_ALL_USERS: `${API_BASE}/api/user/management`,
-     IMPORT_STUDENT_ACCOUNTS: `${API_BASE}/api/user/management/import`,
-     RETRIEVE_ALL_STUDENTS: `${API_BASE}/api/user/management/students`,
-     RETRIEVE_ACTIVE_STUDENTS: `${API_BASE}/api/user/management/students/active`,
-     RETRIEVE_INACTIVE_STUDENTS: `${API_BASE}/api/user/management/students/inactive`,
+    RETRIEVE_ALL_USERS:          `${API_BASE}/api/osa/user/account/management/all-users`,
+    RETRIEVE_ACTIVE_STUDENTS:    `${API_BASE}/api/osa/user/account/management/students/active`,
+    RETRIEVE_INACTIVE_STUDENTS:  `${API_BASE}/api/osa/user/account/management/students/inactive`,
+    BULK_ACTIVATE_STUDENTS:      `${API_BASE}/api/osa/user/account/management/students/activate`,
+    BULK_DEACTIVATE_STUDENTS:    `${API_BASE}/api/osa/user/account/management/students/deactivate`,
+    IMPORT_STUDENT_ACCOUNTS:     `${API_BASE}/api/osa/user/account/management/import-students`,
+    RETRIEVE_ALL_STUDENTS:       `${API_BASE}/api/osa/user/account/management/all-students`,
+    DELETE_BY_USER_ID: (userId: string) => `${API_BASE}/api/osa/user/account/management/${userId}/delete-user`,
+    DELETE_STUDENTS_BY_THEIR_SECTION_NAME: (sectionName: string) => `${API_BASE}/api/osa/user/account/management/section/${sectionName}`,
+}
 
-     EDIT_USER_DETAILS: (userId: string) => `${API_BASE}/api/user/information/management/${userId}`,
-
+export const ACCOUNT_REGISTRATION_ENDPOINTS = {
      ADD_OSA_ACCOUNT: `${API_BASE}/api/osa/account/register`,
-     ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
-     DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/user/information/management/students/remove-all`,
-     BULK_ACTIVATE_STUDENTS: `${API_BASE}/api/user/management/students/activate`,
-     BULK_DEACTIVATE_STUDENTS: `${API_BASE}/api/user/management/students/deactivate`,
+     ADD_STUDENT_ACCOUNT: `${API_BASE}/api/osa/account/student/management/register`,
+}
+
+export const USER_INFORMATION_MANAGEMENT_ENDPOINTS = {
+    DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/user/information/management/students/remove-all`,
+    EDIT_USER_DETAILS: (userId: string) => `${API_BASE}/api/user/information/management/${userId}`,
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {

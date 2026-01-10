@@ -70,7 +70,7 @@ export default function EditUserDetailsDialog({
           }
           setLoading(true)
           try {
-               const { userId, password, confirmPassword, ...rest } = form
+               const { userId, password, ...rest } = form
                const body: Omit<UpdateUserDetailsInterface, "userId"> & { password?: string } = {
                     ...rest,
                     studentNumber: undefined,
