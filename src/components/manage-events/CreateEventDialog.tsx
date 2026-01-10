@@ -1157,11 +1157,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         <TooltipContent side="bottom" align="center" sideOffset={8}>
                                              <p className="text-sm">
                                                   <strong>What are these checkboxes for?</strong>
-                                                  {/* This
-                                                  button runs the academic year activation scheduler
-                                                  immediately, without waiting for the nightly cron
-                                                  job.
-                                                  <br /> */}
                                                   <br />
                                                   <br />
                                                   <strong>Facial Verification:</strong>

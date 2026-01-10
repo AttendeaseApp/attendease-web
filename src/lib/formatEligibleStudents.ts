@@ -4,11 +4,11 @@ export const formatEligibility = (criteria: EligibilityCriteria | null | undefin
      if (!criteria) return "Open to All"
      if (criteria.allStudents) return "All Students"
      const parts: string[] = []
-     if (criteria.cluster?.length) {
-          parts.push(`${criteria.cluster.length} Cluster${criteria.cluster.length > 1 ? "s" : ""}`)
+     if (criteria.clusters?.length) {
+          parts.push(`${criteria.clusters.length} Cluster${criteria.clusters.length > 1 ? "s" : ""}`)
      }
-     if (criteria.course?.length) {
-          parts.push(`${criteria.course.length} Course${criteria.course.length > 1 ? "s" : ""}`)
+     if (criteria.courses?.length) {
+          parts.push(`${criteria.courses.length} Course${criteria.courses.length > 1 ? "s" : ""}`)
      }
      if (criteria.sections?.length) {
           parts.push(

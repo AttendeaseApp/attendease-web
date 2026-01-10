@@ -17,8 +17,8 @@ export enum EventStatus {
  */
 export interface EligibilityCriteria {
      allStudents: boolean
-     cluster?: string[]
-     course?: string[]
+     clusters?: string[]
+     courses?: string[]
      sections?: string[]
 }
 
