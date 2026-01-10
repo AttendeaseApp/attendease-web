@@ -21,14 +21,12 @@ export const EVENT_MANAGEMENT_API_ENDPOINTS = {
  * All cluster and course management related API endpoints.
  */
 export const SECTION_MANAGEMENT_ENDPOINTS = {
-     CREATE_SECTION: (id: string) => `${API_BASE}/api/osa/section/management/courses/${id}`,
-     CREATE_SECTIONS_BULK: (courseId: string) =>
-          `${API_BASE}/api/osa/section/management/bulk?courseId=${courseId}`,
-     GET_ALL_SECTIONS: `${API_BASE}/api/osa/section/management`,
-     GET_SECTIONS_BY_COURSE: (courseId: string) =>
-          `${API_BASE}/api/osa/section/management/courses/${courseId}`,
-     UPDATE_SECTION: (id: string) => `${API_BASE}/api/osa/section/management/${id}`,
-     DELETE_SECTION: (id: string) => `${API_BASE}/api/osa/section/management/${id}`,
+     CREATE_SECTION: (id: string) =>               `${API_BASE}/api/osa/section/management/courses/${id}`,
+     CREATE_SECTIONS_BULK: (courseId: string) =>   `${API_BASE}/api/osa/section/management/bulk?courseId=${courseId}`,
+     GET_ALL_SECTIONS:                             `${API_BASE}/api/osa/section/management`,
+     GET_SECTIONS_BY_COURSE: (courseId: string) => `${API_BASE}/api/osa/section/management/courses/${courseId}`,
+     UPDATE_SECTION: (id: string) =>               `${API_BASE}/api/osa/section/management/${id}`,
+     DELETE_SECTION: (id: string) =>               `${API_BASE}/api/osa/section/management/${id}`,
 }
 
 export const ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS = {
@@ -97,14 +95,13 @@ export const USER_INFORMATION_MANAGEMENT_ENDPOINTS = {
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {
-     GET_ALL_EVENTS_FOR_MONITORING: `${API_BASE}/api/events/monitoring/all`,
-     GET_REGISTERED_ATTENDEES: (id: string) =>
-          `${API_BASE}/api/events/monitoring/attendees/registered/${id}`,
+     GET_ALL_EVENTS_FOR_MONITORING:            `${API_BASE}/api/osa/event/monitoring/all-events`,
+     GET_REGISTERED_ATTENDEES: (id: string) => `${API_BASE}/api/osa/event/monitoring/attendees/registered/${id}`,
 }
 
 export const OSA_PROFILE_ENDPOINT = {
-     GET_OSA_PROFILE: `${API_BASE}/api/profile/user-osa/me`,
-     OSA_CHANGE_PASSWORD: `${API_BASE}/api/profile/account/password/update`,
+     GET_OSA_PROFILE:      `${API_BASE}/api/osa/profile/user-osa/me`,
+     OSA_CHANGE_PASSWORD:  `${API_BASE}/api/osa/profile/account/password/update`,
 }
 
 export const ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS = {
