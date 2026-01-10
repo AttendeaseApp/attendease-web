@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { EventSession } from "@/interface/event/event-interface"
-import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "../../constants/api"
+import { EVENT_MANAGEMENT_API_ENDPOINTS } from "../../constants/api"
 import { authFetch } from "@/services/auth-fetch"
 
 export function useEventById(eventId: string): {
@@ -17,7 +17,7 @@ export function useEventById(eventId: string): {
 
           const fetchEvent = async () => {
                try {
-                    const url = ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS.GET_EVENT_BY_ID(eventId)
+                    const url = EVENT_MANAGEMENT_API_ENDPOINTS.GET_EVENT_BY_ID(eventId)
                     const response = await authFetch(url, { method: "GET" })
 
                     if (!response.ok) {
