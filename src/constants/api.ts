@@ -1,4 +1,4 @@
-export const API_BASE = "http://rcattendease.online"
+export const API_BASE = "http://192.168.1.7:8082"
 /**
  * constant login endpoint
  */
@@ -18,34 +18,46 @@ export const EVENT_MANAGEMENT_API_ENDPOINTS = {
 /**
  * All cluster and course management related API endpoints.
  */
-export const CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS = {
-     TRIGGER_ACADEMIC_SCHEDULER: `${API_BASE}/api/scheduler/trigger-academic-year-activation`,
-     GET_ACTIVE_ACADEMIC_YEAR: `${API_BASE}/api/academic-years/active`,
-     CREATE_ACADEMIC_YEAR: `${API_BASE}/api/academic-years`,
-     GET_ALL_ACADEMIC_YEARS: `${API_BASE}/api/academic-years`,
-     ACTIVATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}/activate`,
-     DELETE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}`,
-     GET_ACADEMIC_YEAR_BY_ID: (id: string) => `${API_BASE}/api/academic-years/${id}`,
-     UPDATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}`,
-     DEACTIVATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/academic-years/${id}/deactivate`,
-     GET_CURRENT_SEMESTER: `${API_BASE}/api/academic-years/current-semester`,
-     GET_CURRENT_SEMESTER_NAME: `${API_BASE}/api/academic-years/current-semester-name`,
-     GET_SEMESTER_STATUS: `${API_BASE}/api/academic-years/semester-status`,
-     GET_ALL_COURSES: `${API_BASE}/api/courses`,
-     GET_ALL_CLUSTERS: `${API_BASE}/api/clusters`,
-     DELETE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
-     CREATE_COURSE: (id: string) => `${API_BASE}/api/courses?clusterId=${id}`,
-     DELETE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
-     CREATE_CLUSTER: `${API_BASE}/api/clusters`,
-     GET_ALL_SECTIONS: `${API_BASE}/api/sections`,
-     CREATE_SECTION: (id: string) => `${API_BASE}/api/sections/courses/${id}`,
-     DELETE_SECTION: (id: string) => `${API_BASE}/api/sections/${id}`,
-     GET_SECTIONS_BY_COURSE: (courseId: string) => `${API_BASE}/api/sections/courses/${courseId}`,
-     UPDATE_CLUSTER: (id: string) => `${API_BASE}/api/clusters/${id}`,
+export const SECTION_MANAGEMENT_ENDPOINTS = {
+     CREATE_SECTION: (id: string) => `${API_BASE}/api/osa/section/management/courses/${id}`,
      CREATE_SECTIONS_BULK: (courseId: string) =>
-          `${API_BASE}/api/sections/bulk?courseId=${courseId}`,
-     UPDATE_COURSE: (id: string) => `${API_BASE}/api/courses/${id}`,
-     UPDATE_SECTION: (id: string) => `${API_BASE}/api/sections/${id}`,
+          `${API_BASE}/api/osa/section/management/bulk?courseId=${courseId}`,
+     GET_ALL_SECTIONS: `${API_BASE}/api/osa/section/management`,
+     GET_SECTIONS_BY_COURSE: (courseId: string) =>
+          `${API_BASE}/api/osa/section/management/courses/${courseId}`,
+     UPDATE_SECTION: (id: string) => `${API_BASE}/api/osa/section/management/${id}`,
+     DELETE_SECTION: (id: string) => `${API_BASE}/api/osa/section/management/${id}`,
+}
+
+export const ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS = {
+     TRIGGER_ACADEMIC_SCHEDULER: `${API_BASE}/api/osa/academic-year/scheduler/trigger-academic-year-activation`,
+     GET_ACTIVE_ACADEMIC_YEAR: `${API_BASE}/api/osa/academic-year/management/active`,
+     CREATE_ACADEMIC_YEAR: `${API_BASE}/api/osa/academic-year/management`,
+     GET_ALL_ACADEMIC_YEARS: `${API_BASE}/api/osa/academic-year/management`,
+     ACTIVATE_ACADEMIC_YEAR: (id: string) =>
+          `${API_BASE}/api/osa/academic-year/management/${id}/activate`,
+     DELETE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/osa/academic-year/management/${id}`,
+     GET_ACADEMIC_YEAR_BY_ID: (id: string) => `${API_BASE}/api/osa/academic-year/management/${id}`,
+     UPDATE_ACADEMIC_YEAR: (id: string) => `${API_BASE}/api/osa/academic-year/management/${id}`,
+     DEACTIVATE_ACADEMIC_YEAR: (id: string) =>
+          `${API_BASE}/api/osa/academic-year/management/${id}/deactivate`,
+     GET_CURRENT_SEMESTER: `${API_BASE}/api/osa/academic-year/management/current-semester`,
+     GET_CURRENT_SEMESTER_NAME: `${API_BASE}/api/osa/academic-year/management/current-semester-name`,
+     GET_SEMESTER_STATUS: `${API_BASE}/api/osa/academic-year/management/semester-status`,
+}
+
+export const CLUSTER_MANAGEMENT_SERVICE_ENDPOINTS = {
+     CREATE_CLUSTER: `${API_BASE}/api/osa/cluster/management`,
+     GET_ALL_CLUSTERS: `${API_BASE}/api/osa/cluster/management`,
+     UPDATE_CLUSTER: (id: string) => `${API_BASE}/api/osa/cluster/management/${id}`,
+     DELETE_CLUSTER: (id: string) => `${API_BASE}/api/osa/cluster/management/${id}`,
+}
+
+export const COURSE_MANAGEMENT_SERVICE_ENDPOINTS = {
+     CREATE_COURSE: (id: string) => `${API_BASE}/api/osa/course/management?clusterId=${id}`,
+     GET_ALL_COURSES: `${API_BASE}/api/osa/course/management`,
+     UPDATE_COURSE: (id: string) => `${API_BASE}/api/osa/course/management/${id}`,
+     DELETE_COURSE: (id: string) => `${API_BASE}/api/osa/course/management/${id}`,
 }
 
 /**

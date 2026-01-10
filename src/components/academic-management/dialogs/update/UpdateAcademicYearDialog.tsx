@@ -13,7 +13,7 @@ import {
      AcademicYear,
      updateAcademicYear,
      UpdateAcademicYearRequest,
-} from "@/services/api/academic/academic-year"
+} from "@/services/api/academic/academic-year-management-service"
 import { useEffect, useState } from "react"
 
 interface UpdateAcademicYearDialogProps {

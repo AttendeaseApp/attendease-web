@@ -45,15 +45,10 @@ import {
      getAllAcademicYears,
      getSemesterStatus,
      SemesterStatus,
-} from "@/services/api/academic/academic-year"
-import {
-     deleteCluster,
-     deleteCourse,
-     deleteSection,
-     getAllClusters,
-     getAllCourses,
-     getAllSections,
-} from "@/services/api/academic/cluster-and-course-sessions"
+} from "@/services/api/academic/academic-year-management-service"
+import { deleteSection, getAllSections } from "@/services/api/academic/section-management-service"
+import { deleteCourse, getAllCourses } from "@/services/api/academic/course-management-service"
+import { deleteCluster, getAllClusters } from "@/services/api/academic/cluster-management-service"
 import { Plus, RefreshCw, Search, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
