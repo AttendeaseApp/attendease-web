@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { EventSession } from "@/interface/event/event-interface"
-import { EVENT_MANAGEMENT_API_ENDPOINTS } from "../../constants/api"
+import { EVENT_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { authFetch } from "@/services/auth-fetch"
 
 export function useEventById(eventId: string): {

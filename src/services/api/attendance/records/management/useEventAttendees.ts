@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { EventAttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
-import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "../../constants/api"
+import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "@/constants/api"
 import { authFetch } from "@/services/auth-fetch"
 
 export function useEventAttendees(eventId: string): {
@@ -13,10 +13,12 @@ export function useEventAttendees(eventId: string): {
      const [loading, setLoading] = useState(true)
      const [error, setError] = useState<Error | null>(null)
 
-     const refetch = async () => {
+     const refetch = useCallback(async () => {
           if (!eventId) return
+
           setLoading(true)
           setError(null)
+
           try {
                const url = ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS.GET_ATTENDEES_BY_EVENT_ID(eventId)
                const response = await authFetch(url, { method: "GET" })
@@ -34,11 +36,11 @@ export function useEventAttendees(eventId: string): {
           } finally {
                setLoading(false)
           }
-     }
+     }, [eventId])
 
      useEffect(() => {
           refetch()
-     }, [eventId])
+     }, [refetch])
 
      return { data, loading, error, refetch }
 }
