@@ -54,7 +54,6 @@ export default function UpdateLocationDialog({
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
-     
 
      useEffect(() => {
           if (!open) {
@@ -90,10 +89,10 @@ export default function UpdateLocationDialog({
                setLoading(true)
                await updateLocation(location.locationId, payload)
                onSuccess()
-                  toast.success("SUCCESS", {
+               toast.success("SUCCESS", {
                     description: `Location updated successfully`,
                })
-                 onClose()
+               onClose()
           } catch (err) {
                toast.error("Failed: " + (err instanceof Error ? err.message : "Unknown error"))
                console.error(err)
@@ -235,7 +234,6 @@ export default function UpdateLocationDialog({
                          </Button>
                     </DialogFooter>
                </DialogContent_>
-          
           </Dialog>
      )
 }

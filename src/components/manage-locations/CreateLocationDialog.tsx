@@ -51,7 +51,7 @@ export default function CreateLocationDialog({
      const [polygon, setPolygon] = useState<number[][]>([])
      const [loading, setLoading] = useState(false)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
- 
+
      useEffect(() => {
           if (!open) {
                setLocationName("")
@@ -100,7 +100,7 @@ export default function CreateLocationDialog({
                setLoading(true)
                const newLocation = await createLocation(payload)
                onSuccess(newLocation)
-                   toast.success("SUCCESS", {
+               toast.success("SUCCESS", {
                     description: `Location created successfully`,
                })
                onClose()
@@ -129,7 +129,7 @@ export default function CreateLocationDialog({
      const onDeleted = () => {
           setPolygon([])
      }
-   
+
      return (
           <Dialog open={open} onOpenChange={onClose}>
                <DialogContent_ className="max-w-7xl max-h-[90vh] overflow-auto">
@@ -235,7 +235,6 @@ export default function CreateLocationDialog({
                          </Button>
                     </DialogFooter>
                </DialogContent_>
-             
           </Dialog>
      )
 }
