@@ -8,12 +8,12 @@ export const LOGIN = `${API_BASE}/api/osa/auth/login`
  * All event management related API endpoints.
  */
 export const EVENT_MANAGEMENT_API_ENDPOINTS = {
-     GET_ALL_EVENTS: `${API_BASE}/api/events`,
-     CREATE_EVENT: `${API_BASE}/api/events`,
-     UPDATE_EVENT: (id: string) => `${API_BASE}/api/events/${id}`,
-     CANCEL_EVENT: (id: string) => `${API_BASE}/api/events/${id}/cancel`,
-     DELETE_EVENT: (id: string) => `${API_BASE}/api/events/${id}`,
-}
+     CREATE_EVENT:                 `${API_BASE}/api/osa/event/management/create`,
+     GET_ALL_EVENTS:               `${API_BASE}/api/osa/event/management/all-events`,
+     UPDATE_EVENT: (id: string) => `${API_BASE}/api/osa/event/management/${id}/update`,
+     CANCEL_EVENT: (id: string) => `${API_BASE}/api/osa/event/management/${id}/cancel`,
+     DELETE_EVENT: (id: string) => `${API_BASE}/api/osa/event/management/${id}/delete`,
+}   
 
 /**
  * All cluster and course management related API endpoints.
@@ -82,7 +82,7 @@ export const USER_MANAGEMENT_API_ENDPOINTS = {
 
      EDIT_USER_DETAILS: (userId: string) => `${API_BASE}/api/user/information/management/${userId}`,
 
-     ADD_OSA_ACCOUNT: `${API_BASE}/api/auth/osa/register`,
+     ADD_OSA_ACCOUNT: `${API_BASE}/api/osa/account/register`,
      ADD_STUDENT_ACCOUNT: `${API_BASE}/api/auth/student/register`,
      DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/user/information/management/students/remove-all`,
      BULK_ACTIVATE_STUDENTS: `${API_BASE}/api/user/management/students/activate`,
