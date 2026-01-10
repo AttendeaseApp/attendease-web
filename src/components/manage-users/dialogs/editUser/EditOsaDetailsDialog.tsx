@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
-import { updateUser } from "@/services/edit-user-details"
+import { updateUser } from "@/services/api/user/management/information/edit-user-details"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 

@@ -1,11 +1,11 @@
-import { authFetch } from "../../../auth-fetch"
+import { authFetch } from "../../../../auth-fetch"
 import {
      API_BASE,
      OSA_PROFILE_ENDPOINT,
      USER_MANAGEMENT_API_ENDPOINTS,
      ACCOUNT_REGISTRATION_ENDPOINTS,
      USER_INFORMATION_MANAGEMENT_ENDPOINTS,
-} from "../../../../constants/api"
+} from "../../../../../constants/api"
 import { UserStudentResponse } from "@/interface/UserStudent"
 import { Section } from "@/interface/academic/section/SectionInterface"
 import { OsaRegistrationInterface } from "@/interface/management/registration/OsaRegistrationInterface"

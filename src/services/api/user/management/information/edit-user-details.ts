@@ -1,6 +1,6 @@
 import { USER_INFORMATION_MANAGEMENT_ENDPOINTS } from "@/constants/api"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
-import { authFetch } from "./auth-fetch"
+import { authFetch } from "../../../../auth-fetch"
 
 export async function updateUser(
      userId: string,

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { deleteAllStudentsAndBiometrics } from "@/services/api/user/management/user-management-services"
+import { deleteAllStudentsAndBiometrics } from "@/services/api/user/management/account/user-management-services"
 import * as React from "react"
 import { toast } from "sonner"
 
