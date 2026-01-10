@@ -2,7 +2,7 @@ export const API_BASE = "http://192.168.1.7:8082"
 /**
  * constant login endpoint
  */
-export const LOGIN = `${API_BASE}/api/auth/osa/login`
+export const LOGIN = `${API_BASE}/api/osa/auth/login`
 
 /**
  * All event management related API endpoints.
