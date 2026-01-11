@@ -577,8 +577,8 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                }
 
                await updateEvent(event.eventId, updatedData)
-               toast.success("Successfully updated the event.", {
-                    className: "text-green-600",
+               toast.success("SUCCESS", {
+                    description: `Event updated successfully`,
                })
                onUpdate()
           } catch (error) {
@@ -1441,6 +1441,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                    <Button
                                         type="submit"
                                         disabled={isSubmitting || loadingHierarchy || !hasChanges}
+                                        onClick={handleSubmit}
                                    >
                                         <Save className="mr-2 h-4 w-4" />
                                         {isSubmitting ? "Saving..." : "Save Changes"}

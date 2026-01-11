@@ -85,7 +85,9 @@ export default function ManageEventsPage() {
           setIsEditOpen(false)
           setSelectedEvent(null)
           loadEvents()
-          toast.success("Event updated successfully!")
+          toast.success("SUCCESS", {
+               description: `Event updated successfully`,
+          })
      }
 
      const handleCreateOpen = () => setIsCreateOpen(true)
@@ -93,14 +95,18 @@ export default function ManageEventsPage() {
      const handleCreateSuccess = () => {
           setIsCreateOpen(false)
           loadEvents()
-          toast.success("Event created successfully!")
+          toast.success("SUCCESS", {
+               description: `Event created successfully`,
+          })
      }
 
      const handleDelete = async (event: EventSession) => {
           try {
                await deleteEvent(event.eventId)
                setEvents((prev) => prev.filter((e) => e.eventId !== event.eventId))
-               toast.success("Event deleted successfully!")
+               toast.success("SUCCESS", {
+                    description: `Event deleted successfully`,
+               })
           } catch (error) {
                console.error("Delete failed:", error)
                toast.error("Failed to delete event." + error)
