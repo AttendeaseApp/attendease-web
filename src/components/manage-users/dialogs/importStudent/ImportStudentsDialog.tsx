@@ -6,6 +6,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
 import { useState } from "react"
 import { toast } from "sonner"
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogContent,
+} from "@/components/ui/alert-dialog"
 
 interface ImportStudentsDialogProps {
      open: boolean
@@ -15,6 +24,14 @@ interface ImportStudentsDialogProps {
 export default function ImportStudentsDialog({ open, onOpenChange }: ImportStudentsDialogProps) {
      const [selectedFile, setSelectedFile] = useState<File | null>(null)
      const [loading, setLoading] = useState(false)
+
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+
+     const [errorMessage, setErrorMessage] = useState("")
+     const showError = (message: string) => {
+          setErrorMessage(message)
+          setStatusDialogOpen(true)
+     }
 
      const handleUpload = async () => {
           if (!selectedFile) return
@@ -46,7 +63,8 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                     err instanceof Error && err.message
                          ? err.message
                          : "Error occurred on uploading file"
-               toast.error(`Error: ${message}`)
+               // toast.error(`Error: ${message}`)
+               showError(message)
           } finally {
                setLoading(false)
           }
@@ -86,6 +104,23 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                               </div>
                          </form>
                     </DialogContent>
+                    <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                         <AlertDialogContent className="sm:max-w-md">
+                              <AlertDialogHeader>
+                                   <AlertDialogTitle className="text-red-600">
+                                        Import Result
+                                   </AlertDialogTitle>
+                                   <AlertDialogDescription className="text-sm text-muted-foreground whitespace-pre-wrap break-words max-h-60 overflow-y-auto">
+                                        {errorMessage}
+                                   </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                   <AlertDialogAction onClick={() => setStatusDialogOpen(false)}>
+                                        OK
+                                   </AlertDialogAction>
+                              </AlertDialogFooter>
+                         </AlertDialogContent>
+                    </AlertDialog>
                </Dialog>
           </>
      )
