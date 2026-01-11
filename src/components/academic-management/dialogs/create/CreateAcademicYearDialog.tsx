@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import {
      createAcademicYear,
      CreateAcademicYearRequest,
-} from "@/services/api/academic/academic-year"
+} from "@/services/api/academic/academic-year-management-service"
 
 interface CreateAcademicYearDialogProps {
      isOpen: boolean
@@ -167,7 +167,7 @@ export function CreateAcademicYearDialog({
 
                          <DialogFooter>
                               <Button type="button" variant="outline" onClick={handleClose}>
-                                   Cancel
+                                   Close
                               </Button>
                               <Button type="submit" disabled={loading}>
                                    {loading ? "Creating..." : "Create Academic Year"}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { AttendanceRecords } from "@/interface/attendance/records/AttendanceRecords"
-import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "../../constants/api"
+import { ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS } from "@/constants/api"
 import { authFetch } from "@/services/auth-fetch"
 
 export function useAllAttendanceRecords(): {

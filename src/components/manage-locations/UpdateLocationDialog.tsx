@@ -11,15 +11,7 @@ import {
      DialogDescription,
      DialogFooter,
 } from "@/components/ui/dialog"
-import {
-     AlertDialog,
-     AlertDialogAction,
-     AlertDialogDescription,
-     AlertDialogFooter,
-     AlertDialogHeader,
-     AlertDialogTitle,
-     AlertDialogContent,
-} from "@/components/ui/alert-dialog"
+
 import { updateLocation } from "@/services/locations-service"
 import { EventLocation, EventLocationRequest } from "@/interface/location-interface"
 import { toast } from "sonner"
@@ -62,11 +54,6 @@ export default function UpdateLocationDialog({
      const [statusDialogOpen, setStatusDialogOpen] = useState(false)
      const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
      const [createMessage, setCreateMessage] = useState("")
-     const showStatus = (status: "success" | "error", message: string) => {
-          setCreateStatus(status)
-          setCreateMessage(message)
-          setStatusDialogOpen(true)
-     }
 
      useEffect(() => {
           if (!open) {
@@ -102,7 +89,10 @@ export default function UpdateLocationDialog({
                setLoading(true)
                await updateLocation(location.locationId, payload)
                onSuccess()
-               showStatus("success", "Successfully updated location")
+               toast.success("SUCCESS", {
+                    description: `Location updated successfully`,
+               })
+               onClose()
           } catch (err) {
                toast.error("Failed: " + (err instanceof Error ? err.message : "Unknown error"))
                console.error(err)
@@ -244,21 +234,6 @@ export default function UpdateLocationDialog({
                          </Button>
                     </DialogFooter>
                </DialogContent_>
-               <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
-                    <AlertDialogContent className="sm:max-w-md">
-                         <AlertDialogHeader>
-                              <AlertDialogTitle className={titleColor}>{title}</AlertDialogTitle>
-                              <AlertDialogDescription className="text-sm text-muted-foreground">
-                                   {createMessage}
-                              </AlertDialogDescription>
-                         </AlertDialogHeader>
-                         <AlertDialogFooter>
-                              <AlertDialogAction onClick={closeStatusAndParent}>
-                                   OK
-                              </AlertDialogAction>
-                         </AlertDialogFooter>
-                    </AlertDialogContent>
-               </AlertDialog>
           </Dialog>
      )
 }

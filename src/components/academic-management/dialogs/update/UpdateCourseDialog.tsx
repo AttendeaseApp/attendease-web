@@ -13,10 +13,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Cluster } from "@/interface/academic/cluster/ClusterInterface"
 import { Course } from "@/interface/academic/course/CourseInterface"
-import { updateCourse } from "@/services/api/academic/cluster-and-course-sessions"
+import { updateCourse } from "@/services/api/academic/course-management-service"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
 interface UpdateCourseDialogProps {
      cluster: Cluster
@@ -68,12 +67,6 @@ export function UpdateCourseDialog({
                await updateCourse(courses.id, updateCourseData)
                onUpdate()
                onClose()
-          } catch (err) {
-               const message =
-                    (err instanceof Error ? err.message : String(err)) + " Failed to update course."
-               setError(message)
-               console.error("Update failed:", err)
-               toast.error(message)
           } finally {
                setIsSubmitting(false)
           }
@@ -118,7 +111,7 @@ export function UpdateCourseDialog({
                                    disabled={isSubmitting}
                               >
                                    <X className="mr-2 h-4 w-4" />
-                                   Cancel
+                                   Close
                               </Button>
                               <Button
                                    type="submit"

@@ -7,7 +7,7 @@ import { Search } from "lucide-react"
 import Link from "next/link"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { AttendanceRecordsTable } from "@/components/manage-attendance/AttendanceRecordsTable"
-import { useFinalizedEvents } from "@/hooks/attendance-records-management/useFinalizedEvent"
+import { useFinalizedEvents } from "@/services/api/attendance/records/management/useFinalizedEvent"
 import { toast } from "sonner"
 
 export default function AttendanceRecordsManagementPage() {
@@ -18,10 +18,11 @@ export default function AttendanceRecordsManagementPage() {
           const searchWords = lowerSearch.split(" ").filter((w) => w)
           const fields = [
                event.eventName,
-               event.locationName,
-               new Date(event.timeInRegistrationStartDateTime).toLocaleString(),
-               new Date(event.startDateTime).toLocaleString(),
-               new Date(event.endDateTime).toLocaleString(),
+               event.registrationLocationName,
+               event.venueLocationName,
+               new Date(event.registrationDateTime).toLocaleString(),
+               new Date(event.startingDateTime).toLocaleString(),
+               new Date(event.endingDateTime).toLocaleString(),
                event.totalPresent?.toString(),
                event.totalAbsent?.toString(),
                event.totalLate?.toString(),

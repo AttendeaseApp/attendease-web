@@ -43,8 +43,8 @@ export const AttendeesCard: React.FC<AttendeesCardProps> = ({ attendeesData }) =
                                              <TableCell>
                                                   {a.firstName} {a.lastName}
                                              </TableCell>
-                                             <TableCell>{a.section}</TableCell>
-                                             <TableCell>{a.course}</TableCell>
+                                             <TableCell>{a.sectionName}</TableCell>
+                                             <TableCell>{a.courseName}</TableCell>
                                              <TableCell>{a.attendanceStatus}</TableCell>
                                              <TableCell>{a.timeIn}</TableCell>
                                         </TableRow>
