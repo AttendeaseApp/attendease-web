@@ -12,7 +12,7 @@ import {
      DialogDescription,
      DialogFooter,
 } from "@/components/ui/dialog"
-
+import { X } from "lucide-react"
 import { createLocation } from "@/services/locations-service"
 import { EventLocation, EventLocationRequest } from "@/interface/location-interface"
 import { toast } from "sonner"
@@ -24,6 +24,7 @@ interface CreateLocationModalProps {
      onClose: () => void
      onSuccess: (newLocation: EventLocation) => void
      existingLocations: { locationName: string }[]
+     defaultLocationPurpose?: "EVENT_VENUE" | "REGISTRATION_AREA"
 }
 
 /**
@@ -43,10 +44,11 @@ export default function CreateLocationDialog({
      onClose,
      onSuccess,
      existingLocations,
+     defaultLocationPurpose,
 }: CreateLocationModalProps) {
      const [locationName, setLocationName] = useState("")
      const [locationType, setLocationType] = useState("INDOOR")
-     const [locationPurpose, setLocationPurpose] = useState("EVENT_VENUE")
+     const [locationPurpose, setLocationPurpose] = useState<"EVENT_VENUE" | "REGISTRATION_AREA">("EVENT_VENUE")
      const [description, setDescription] = useState("")
      const [polygon, setPolygon] = useState<number[][]>([])
      const [loading, setLoading] = useState(false)
@@ -54,11 +56,12 @@ export default function CreateLocationDialog({
 
      useEffect(() => {
           if (!open) {
+               setLocationPurpose(defaultLocationPurpose ?? "EVENT_VENUE")
                setLocationName("")
                setDescription("")
                setPolygon([])
           }
-     }, [open])
+     }, [open, defaultLocationPurpose])
 
      const handleCreate = async () => {
           if (!locationName.trim()) {
@@ -164,7 +167,10 @@ export default function CreateLocationDialog({
                                    <select
                                         className="border rounded-md px-3 py-2"
                                         value={locationPurpose}
-                                        onChange={(e) => setLocationPurpose(e.target.value)}
+                                        onChange={(e) => 
+                                             setLocationPurpose(
+                                                  e.target.value as "EVENT_VENUE" | "REGISTRATION_AREA"
+                                             )}
                                    >
                                         <option value="EVENT_VENUE">Event Venue</option>
                                         <option value="REGISTRATION_AREA">Registration Area</option>
@@ -228,7 +234,8 @@ export default function CreateLocationDialog({
 
                     <DialogFooter>
                          <Button variant="outline" onClick={onClose}>
-                              Cancel
+                              <X className="mr-2 h-4 w-4" />
+                              Close
                          </Button>
                          <Button onClick={handleCreate} disabled={loading}>
                               {loading ? "Creating..." : "Create Location"}

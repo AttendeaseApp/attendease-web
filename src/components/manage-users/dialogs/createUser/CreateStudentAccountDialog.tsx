@@ -21,6 +21,7 @@ import {
 import { Check } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { X } from "lucide-react"
 
 interface AddStudentAccountDialogProps {
      open: boolean
@@ -316,7 +317,8 @@ export default function CreateStudentAccountDialog({
                                         onOpenChange(false)
                                    }}
                               >
-                                   Cancel
+                                   <X className="mr-2 h-4 w-4" />
+                                   Close
                               </Button>
 
                               <Button onClick={handleSubmit} disabled={loading}>

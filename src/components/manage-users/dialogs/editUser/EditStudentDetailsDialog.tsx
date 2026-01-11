@@ -19,6 +19,7 @@ import { updateUser } from "@/services/api/user/management/information/edit-user
 import { Check } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { X } from "lucide-react"
 
 interface EditStudentDetailsDialogProps {
      open: boolean
@@ -276,7 +277,8 @@ export default function EditStudentDetailsDialog({
                               </div>
                               <div className="flex justify-end gap-2">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
-                                        Cancel
+                                        <X className="mr-2 h-4 w-4" />
+                                        Close
                                    </Button>
                                    <Button
                                         onClick={handleSubmit}

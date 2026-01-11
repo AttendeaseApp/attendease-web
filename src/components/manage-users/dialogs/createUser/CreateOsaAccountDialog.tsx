@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { createOSAAccount } from "@/services/api/user/management/account/user-management-services"
 import { useState } from "react"
 import { toast } from "sonner"
+import { X } from "lucide-react"
 
 interface AddOSAAccountDialogProps {
      open: boolean
@@ -192,7 +193,8 @@ export default function CreateOsaAccountDialog({
                                         onOpenChange(false)
                                    }}
                               >
-                                   Cancel
+                                   <X className="mr-2 h-4 w-4" />
+                                   Close
                               </Button>
 
                               <Button onClick={handleSubmit} disabled={loading}>

@@ -120,6 +120,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           return items.filter(opts.predicate)
      }
      const [createNewLocation, setCreateNewLocation] = useState(false)
+     const [newLocationPurpose, setNewLocationPurpose] = useState<"EVENT_VENUE" | "REGISTRATION_AREA">()
 
      const getCoursesUnderCluster = (clId: string) => {
           return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
@@ -140,14 +141,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      }
 
      const cleanEligibility = (selClusters: string[], selCourses: string[], selSecs: string[]) => {
-          let newCourses = [...selCourses]
           const newSecs = [...selSecs]
-          let newClusters = [...selClusters]
-          newCourses = newCourses.filter((coId) => {
+          const newCourses = selCourses.filter((coId) => {
                const coSecs = getSectionsUnderCourse(coId)
                return coSecs.length === 0 || coSecs.every((seId) => selSecs.includes(seId))
           })
-          newClusters = newClusters.filter((clId) => {
+          const newClusters = selClusters.filter((clId) => {
                const clCourses = getCoursesUnderCluster(clId)
                return clCourses.length === 0 || clCourses.every((coId) => newCourses.includes(coId))
           })
@@ -381,8 +380,21 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           e.preventDefault()
           setError("")
 
+          const cleaned = cleanEligibility(
+                    eligibility.selectedClusters,
+                    eligibility.selectedCourses,
+                    eligibility.selectedSections
+               )
+
+          const isAllStudents =
+               eligibility.allStudents ||
+               (cleaned.selectedClusters.length === 0 &&
+                    cleaned.selectedCourses.length === 0 &&
+                    cleaned.selectedSections.length === 0
+               )
+
           if (
-               !eligibility.allStudents &&
+               !isAllStudents &&
                eligibility.selectedClusters.length === 0 &&
                eligibility.selectedCourses.length === 0 &&
                eligibility.selectedSections.length === 0
@@ -393,15 +405,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
           setIsSubmitting(true)
           try {
-               const cleaned = cleanEligibility(
-                    eligibility.selectedClusters,
-                    eligibility.selectedCourses,
-                    eligibility.selectedSections
-               )
-
                const newEventData = {
-                    eventName: formData.eventName,
-                    description: formData.description || undefined,
+                    eventName: formData.eventName.trim(),
+                    description: formData.description.trim() || undefined,
                     registrationDateTime: format(
                          formData.registrationDateTime,
                          "yyyy-MM-dd hh:mm:ss a"
@@ -410,13 +416,13 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     endingDateTime: format(formData.endingDateTime, "yyyy-MM-dd hh:mm:ss a"),
                     registrationLocationId: formData.registrationLocationId,
                     venueLocationId: formData.venueLocationId,
-                    eligibleStudents: eligibility.allStudents
+                    eligibleStudents: isAllStudents
                          ? { allStudents: true }
                          : {
                                 allStudents: false,
-                                clusters: cleaned.selectedClusters,
-                                courses: cleaned.selectedCourses,
-                                sections: cleaned.selectedSections,
+                                clusters: eligibility.selectedClusters,
+                                courses: eligibility.selectedCourses,
+                                sections: eligibility.selectedSections,
                            },
                     facialVerificationEnabled: !!formData.facialVerificationEnabled,
                     attendanceLocationMonitoringEnabled:
@@ -883,12 +889,13 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        <SelectLabel className="mb-3" />
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
-                                                            onClick={() =>
+                                                            onClick={() => {
+                                                                 setNewLocationPurpose("REGISTRATION_AREA")
                                                                  setCreateNewLocation(true)
-                                                            }
+                                                            }}
                                                        >
                                                             <Plus className="w-4 h-4" />
-                                                            <span>Create New Venue </span>
+                                                            <span>Create New Registration Venue </span>
                                                        </div>
                                                   </SelectGroup>
                                              </SelectContent>
@@ -937,12 +944,13 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        <SelectLabel className="mb-3" />
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
-                                                            onClick={() =>
+                                                            onClick={() => {
+                                                                 setNewLocationPurpose("EVENT_VENUE")
                                                                  setCreateNewLocation(true)
-                                                            }
+                                                            }}
                                                        >
                                                             <Plus className="w-4 h-4" />
-                                                            <span>Create New Venue </span>
+                                                            <span>Create New Event Venue </span>
                                                        </div>
                                                   </SelectGroup>
                                              </SelectContent>
@@ -950,10 +958,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    </div>
                               </div>
                               <CreateLocationDialog
+                                   key={newLocationPurpose}
                                    open={createNewLocation}
                                    onClose={closeDialog}
                                    onSuccess={handleCreateVenue}
                                    existingLocations={locations}
+                                   defaultLocationPurpose={newLocationPurpose}
                               />
 
                               <div className="space-y-4 flex flex-col">
@@ -1279,7 +1289,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         disabled={isSubmitting}
                                    >
                                         <X className="mr-2 h-4 w-4" />
-                                        Cancel
+                                        Close
                                    </Button>
                                    <Button
                                         type="submit"

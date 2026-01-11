@@ -11,7 +11,7 @@ import {
      DialogDescription,
      DialogFooter,
 } from "@/components/ui/dialog"
-
+import { X } from "lucide-react"
 import { updateLocation } from "@/services/locations-service"
 import { EventLocation, EventLocationRequest } from "@/interface/location-interface"
 import { toast } from "sonner"
@@ -226,7 +226,8 @@ export default function UpdateLocationDialog({
                     </div>
                     <DialogFooter>
                          <Button variant="outline" onClick={onClose}>
-                              Cancel
+                              <X className="mr-2 h-4 w-4" />
+                              Close
                          </Button>
                          <Button onClick={handleUpdate} disabled={loading}>
                               {" "}

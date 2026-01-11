@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
 import { useState } from "react"
 import { toast } from "sonner"
+import { X } from "lucide-react"
 
 interface ImportStudentsDialogProps {
      open: boolean
@@ -73,7 +74,8 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
 
                               <div className="flex items-center justify-end pt-2 gap-1">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
-                                        Cancel
+                                        <X className="mr-2 h-4 w-4" />
+                                        Close
                                    </Button>
 
                                    <Button

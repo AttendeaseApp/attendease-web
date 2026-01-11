@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { useEffect, useState } from "react"
 import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
+import { X } from "lucide-react"
 
 interface UpdateAttendanceDialogProps {
      open: boolean
@@ -104,7 +105,8 @@ export function UpdateStudentAttendanceRecordDialog({
                                    variant="outline"
                                    onClick={() => onOpenChange(false)}
                               >
-                                   Cancel
+                                   <X className="mr-2 h-4 w-4" />
+                                   Close
                               </Button>
                               <Button type="submit" disabled={submitting}>
                                    {submitting ? "Saving..." : "Save Changes"}

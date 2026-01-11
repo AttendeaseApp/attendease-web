@@ -5,7 +5,7 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Undo2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { changePassword } from "@/services/OSA-change-password"
 import {
@@ -189,7 +189,8 @@ export default function OsaChangePasswordPage() {
                                         className="rounded-sm bg-white text-black border border-slate-300"
                                         onClick={GoBackToProfilePage}
                                    >
-                                        Cancel
+                                        <Undo2 className="mr-2 h-4 w-4" />
+                                        Back
                                    </Button>
 
                                    <Button

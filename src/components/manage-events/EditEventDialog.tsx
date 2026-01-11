@@ -234,15 +234,15 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     eventStatus: event.eventStatus,
                     registrationLocationId: event.registrationLocationId || "",
                     venueLocationId: event.venueLocationId || "",
-                    facialVerificationEnabled: event.facialVerificationEnabled,
-                    attendanceLocationMonitoringEnabled: event.attendanceLocationMonitoringEnabled,
-                    strictLocationValidation: event.strictLocationValidation,
+                    facialVerificationEnabled: !!event.facialVerificationEnabled,
+                    attendanceLocationMonitoringEnabled: !!event.attendanceLocationMonitoringEnabled,
+                    strictLocationValidation: !!event.strictLocationValidation,
                })
 
-               const tempElig = {
+                const tempElig = {
                     allStudents: event.eligibleStudents?.allStudents ?? true,
-                    selectedClusters: event.eligibleStudents?.cluster ?? [],
-                    selectedCourses: event.eligibleStudents?.course ?? [],
+                    selectedClusters: event.eligibleStudents?.clusters ?? [],
+                    selectedCourses: event.eligibleStudents?.courses ?? [],
                     selectedSections: event.eligibleStudents?.sections ?? [],
                }
 
@@ -1271,11 +1271,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         <TooltipContent side="bottom" align="center" sideOffset={8}>
                                              <p className="text-sm">
                                                   <strong>What are these checkboxes for?</strong>
-                                                  {/* This
-                                                                                button runs the academic year activation scheduler
-                                                                                immediately, without waiting for the nightly cron
-                                                                                job.
-                                                                                <br /> */}
                                                   <br />
                                                   <br />
                                                   <strong>Facial Verification:</strong>
@@ -1400,7 +1395,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         disabled={isSubmitting}
                                    >
                                         <X className="mr-2 h-4 w-4" />
-                                        Cancel
+                                        Close
                                    </Button>
                                    <Button
                                         type="button"
