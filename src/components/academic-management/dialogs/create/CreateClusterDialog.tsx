@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createCluster } from "@/services/api/academic/cluster-and-course-sessions"
+import { createCluster } from "@/services/api/academic/cluster-management-service"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"

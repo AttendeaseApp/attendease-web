@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import {
      createAcademicYear,
      CreateAcademicYearRequest,
-} from "@/services/api/academic/academic-year"
+} from "@/services/api/academic/academic-year-management-service"
 
 interface CreateAcademicYearDialogProps {
      isOpen: boolean

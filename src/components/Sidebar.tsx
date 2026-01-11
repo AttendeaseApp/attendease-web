@@ -16,14 +16,14 @@ import {
      SidebarMenu,
      SidebarMenuButton,
      SidebarMenuItem,
+     SidebarHeader,
+     SidebarTrigger,
+     useSidebar,
 } from "@/components/ui/sidebar"
+import { usePathname } from "next/navigation"
+import { useEffect } from "react"
 
 const menu = [
-     // {
-     //      title: "Dashboard",
-     //      url: "/dashboard",
-     //      icon: Home,
-     // },
      {
           title: "Monitor Events",
           url: "/monitor-events",
@@ -65,8 +65,21 @@ const others = [
 ]
 
 export function AppSidebar() {
+     const { setOpenMobile, isMobile } = useSidebar()
+     const pathname = usePathname()
+     useEffect(() => {
+          if (isMobile) {
+               setOpenMobile(false)
+          }
+     }, [pathname, isMobile, setOpenMobile])
+
      return (
-          <Sidebar>
+          <Sidebar collapsible="icon">
+               <SidebarHeader>
+                    <div>
+                         <SidebarTrigger />
+                    </div>
+               </SidebarHeader>
                <SidebarContent>
                     <SidebarGroup>
                          <SidebarGroupLabel>Menu</SidebarGroupLabel>
@@ -84,7 +97,8 @@ export function AppSidebar() {
                                    ))}
                               </SidebarMenu>
                          </SidebarGroupContent>
-
+                    </SidebarGroup>
+                    <SidebarGroup>
                          <SidebarGroupLabel>Others</SidebarGroupLabel>
                          <SidebarGroupContent>
                               <SidebarMenu>

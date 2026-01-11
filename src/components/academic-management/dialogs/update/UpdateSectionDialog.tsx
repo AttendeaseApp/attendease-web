@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Course } from "@/interface/academic/course/CourseInterface"
 import { Section } from "@/interface/academic/section/SectionInterface"
-import { updateSection } from "@/services/api/academic/cluster-and-course-sessions"
+import { updateSection } from "@/services/api/academic/section-management-service"
 import { Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
 

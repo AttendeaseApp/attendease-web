@@ -2,8 +2,8 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { AcademicYear } from "@/services/api/academic/academic-year"
-import { triggerAcademicYearActivation } from "@/services/api/academic/academic-year"
+import { AcademicYear } from "@/services/api/academic/academic-year-management-service"
+import { triggerAcademicYearActivation } from "@/services/api/academic/academic-year-management-service"
 import { toast } from "sonner"
 import { useState } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"

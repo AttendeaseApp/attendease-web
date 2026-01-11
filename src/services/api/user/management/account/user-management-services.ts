@@ -1,9 +1,11 @@
-import { authFetch } from "../../../auth-fetch"
+import { authFetch } from "../../../../auth-fetch"
 import {
      API_BASE,
      OSA_PROFILE_ENDPOINT,
      USER_MANAGEMENT_API_ENDPOINTS,
-} from "../../../../constants/api"
+     ACCOUNT_REGISTRATION_ENDPOINTS,
+     USER_INFORMATION_MANAGEMENT_ENDPOINTS,
+} from "../../../../../constants/api"
 import { UserStudentResponse } from "@/interface/UserStudent"
 import { Section } from "@/interface/academic/section/SectionInterface"
 import { OsaRegistrationInterface } from "@/interface/management/registration/OsaRegistrationInterface"
@@ -74,7 +76,7 @@ export const getOSAProfile = async (): Promise<UserStudentResponse> => {
  */
 export const createOSAAccount = async (payload: OsaRegistrationInterface) => {
      try {
-          const res = await authFetch(USER_MANAGEMENT_API_ENDPOINTS.ADD_OSA_ACCOUNT, {
+          const res = await authFetch(ACCOUNT_REGISTRATION_ENDPOINTS.ADD_OSA_ACCOUNT, {
                method: "POST",
                body: JSON.stringify(payload),
           })
@@ -111,7 +113,7 @@ export const createOSAAccount = async (payload: OsaRegistrationInterface) => {
  */
 export const createStudentAccount = async (payload: StudentRegistrationInterface) => {
      try {
-          const res = await authFetch(USER_MANAGEMENT_API_ENDPOINTS.ADD_STUDENT_ACCOUNT, {
+          const res = await authFetch(ACCOUNT_REGISTRATION_ENDPOINTS.ADD_STUDENT_ACCOUNT, {
                method: "POST",
                body: JSON.stringify(payload),
           })
@@ -217,7 +219,7 @@ export const deleteStudentAccountBySection = async (section: string) => {
 export const deleteAllStudentsAndBiometrics = async (): Promise<string> => {
      try {
           const res = await authFetch(
-               USER_MANAGEMENT_API_ENDPOINTS.DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS,
+               USER_INFORMATION_MANAGEMENT_ENDPOINTS.DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS,
                {
                     method: "DELETE",
                }

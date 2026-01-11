@@ -17,7 +17,7 @@ import { StudentRegistrationInterface } from "@/interface/management/registratio
 import {
      createStudentAccount,
      getSections,
-} from "@/services/api/user/management/user-management-services"
+} from "@/services/api/user/management/account/user-management-services"
 import { Check } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
