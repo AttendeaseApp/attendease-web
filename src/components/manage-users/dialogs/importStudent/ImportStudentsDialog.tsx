@@ -3,7 +3,7 @@
 import UploadDropPart from "@/components/manage-users/dialogs/importStudent/UploadDropPart"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
+import { uploadStudentCSV, importCSVResult, importCSVDetail } from "@/services/api/user/management/account/student-import-services"
 import { useState } from "react"
 import { toast } from "sonner"
 import {
@@ -38,37 +38,71 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
 
           try {
                setLoading(true)
-               const result = await uploadStudentCSV(selectedFile)
+               const result: importCSVResult = await uploadStudentCSV(selectedFile)
 
-               const jsonResult = typeof result === "string" ? JSON.parse(result) : result
+       let message = `Total Rows: ${result.summary.totalRows}\n`
+            message += `Successful: ${result.summary.successfulRows}\n`
+            message += `Failed: ${result.summary.failedRows}\n\n`
 
-               let message = jsonResult.message || "Upload completed."
-               if (
-                    jsonResult.details &&
-                    Array.isArray(jsonResult.details) &&
-                    jsonResult.details.length > 0
-               ) {
-                    message += "\n\nErrors per row:\n"
-                    jsonResult.details.forEach((item: { row: number; errors: string[] }) => {
-                         message += `Row ${item.row}: ${item.errors.join(", ")}\n`
-                    })
-               }
+  
+    if (result.summary.missingSections.length > 0) {
+        message += "\nMissing Sections:\n"
+        result.summary.missingSections.forEach(s => (message += `- ${s}\n`))
+    }
 
-               toast.info(message)
+  
+    if (result.summary.duplicateStudentNumbers.length > 0) {
+        message += "\nDuplicate Student Numbers:\n"
+        result.summary.duplicateStudentNumbers.forEach(s => (message += `- ${s}\n`))
+    }
 
+    
+    if (result.details.length > 0) {
+        message += "\nRow-specific Errors:\n"
+        result.details.forEach((item: importCSVDetail) => {
+            message += `Row ${item.row}: ${item.errors.join(", ")}\n`
+        })
+    }
+
+               // toast.info(message)
+                showError(message)
                setSelectedFile(null)
                onOpenChange(false)
+
           } catch (err) {
-               const message =
-                    err instanceof Error && err.message
-                         ? err.message
-                         : "Error occurred on uploading file"
-               // toast.error(`Error: ${message}`)
-               showError(message)
-          } finally {
-               setLoading(false)
-          }
-     }
+            if (err && typeof err === "object" && "summary" in err) {
+                const jsonErr = err as importCSVResult
+                let message = `Total Rows: ${jsonErr.summary.totalRows}\n`
+                message += `Successful: ${jsonErr.summary.successfulRows}\n`
+                message += `Failed: ${jsonErr.summary.failedRows}\n\n`
+
+                if (jsonErr.summary.missingSections.length) {
+                    message += "Missing Sections:\n"
+                    jsonErr.summary.missingSections.forEach(sec => (message += `- ${sec}\n`))
+                    message += "\n"
+                }
+
+                if (jsonErr.summary.duplicateStudentNumbers.length) {
+                    message += "Duplicate Student Numbers:\n"
+                    jsonErr.summary.duplicateStudentNumbers.forEach(s => (message += `- ${s}\n`))
+                    message += "\n"
+                }
+
+                if (jsonErr.details.length) {
+                    message += "Row-specific Errors:\n"
+                    jsonErr.details.forEach(d => (message += `Row ${d.row}: ${d.errors.join(", ")}\n`))
+                }
+
+                showError(message)
+            } else if (err instanceof Error) {
+                showError(err.message)
+            } else {
+                showError("An unexpected error occurred")
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
 
      return (
           <>
