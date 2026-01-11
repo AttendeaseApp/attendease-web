@@ -38,6 +38,8 @@ export interface EventSession {
      startingDateTime: string
      endingDateTime: string
      eventStatus: EventStatus
+     academicYearName: string
+     semesterName: string
      facialVerificationEnabled?: boolean
      attendanceLocationMonitoringEnabled?: boolean
      strictLocationValidation?: boolean

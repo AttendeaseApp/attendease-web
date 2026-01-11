@@ -17,7 +17,7 @@ import {
      TableRow,
 } from "@/components/ui/table"
 import { Power, PowerOff, Trash2, Edit, MoreHorizontal } from "lucide-react"
-import { AcademicYear } from "@/services/api/academic/academic-year"
+import { AcademicYear } from "@/services/api/academic/academic-year-management-service"
 
 interface AcademicYearTableProps {
      academicYears: AcademicYear[]

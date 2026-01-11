@@ -1,5 +1,5 @@
 import { authFetch } from "@/services/auth-fetch"
-import { CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
+import { ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS } from "@/constants/api"
 import { toast } from "sonner"
 
 export interface SemesterInfo {
@@ -92,7 +92,7 @@ export const triggerAcademicYearActivation = async (): Promise<{
 }> => {
      try {
           const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.TRIGGER_ACADEMIC_SCHEDULER,
+               ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.TRIGGER_ACADEMIC_SCHEDULER,
                {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -108,7 +108,9 @@ export const triggerAcademicYearActivation = async (): Promise<{
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "An unexpected error occurred"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -118,9 +120,7 @@ export const triggerAcademicYearActivation = async (): Promise<{
  */
 export const getActiveAcademicYear = async (): Promise<AcademicYear> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ACTIVE_ACADEMIC_YEAR
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.GET_ACTIVE_ACADEMIC_YEAR)
 
           if (!res.ok) {
                await handleApiError(res, "No active academic year found")
@@ -130,7 +130,9 @@ export const getActiveAcademicYear = async (): Promise<AcademicYear> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch active academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -140,9 +142,7 @@ export const getActiveAcademicYear = async (): Promise<AcademicYear> => {
  */
 export const getAllAcademicYears = async (): Promise<AcademicYear[]> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ALL_ACADEMIC_YEARS
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.GET_ALL_ACADEMIC_YEARS)
 
           if (!res.ok) {
                await handleApiError(res, "Failed to fetch academic years")
@@ -152,7 +152,9 @@ export const getAllAcademicYears = async (): Promise<AcademicYear[]> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch academic years"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -163,7 +165,7 @@ export const getAllAcademicYears = async (): Promise<AcademicYear[]> => {
 export const getAcademicYearById = async (id: string): Promise<AcademicYear> => {
      try {
           const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_ACADEMIC_YEAR_BY_ID(id)
+               ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.GET_ACADEMIC_YEAR_BY_ID(id)
           )
 
           if (!res.ok) {
@@ -174,7 +176,9 @@ export const getAcademicYearById = async (id: string): Promise<AcademicYear> => 
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -186,13 +190,10 @@ export const createAcademicYear = async (
      payload: CreateAcademicYearRequest
 ): Promise<AcademicYear> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.CREATE_ACADEMIC_YEAR,
-               {
-                    method: "POST",
-                    body: JSON.stringify(payload),
-               }
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.CREATE_ACADEMIC_YEAR, {
+               method: "POST",
+               body: JSON.stringify(payload),
+          })
 
           if (!res.ok) {
                await handleApiError(res, "Failed to create academic year")
@@ -204,7 +205,9 @@ export const createAcademicYear = async (
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to create academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -217,13 +220,10 @@ export const updateAcademicYear = async (
      payload: UpdateAcademicYearRequest
 ): Promise<AcademicYear> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.UPDATE_ACADEMIC_YEAR(id),
-               {
-                    method: "PUT",
-                    body: JSON.stringify(payload),
-               }
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.UPDATE_ACADEMIC_YEAR(id), {
+               method: "PUT",
+               body: JSON.stringify(payload),
+          })
 
           if (!res.ok) {
                await handleApiError(res, "Failed to update academic year")
@@ -234,7 +234,9 @@ export const updateAcademicYear = async (
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to update academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -244,12 +246,9 @@ export const updateAcademicYear = async (
  */
 export const deleteAcademicYear = async (id: string): Promise<void> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.DELETE_ACADEMIC_YEAR(id),
-               {
-                    method: "DELETE",
-               }
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.DELETE_ACADEMIC_YEAR(id), {
+               method: "DELETE",
+          })
 
           if (!res.ok) {
                await handleApiError(res, "Failed to delete academic year")
@@ -257,7 +256,9 @@ export const deleteAcademicYear = async (id: string): Promise<void> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to delete academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -268,7 +269,7 @@ export const deleteAcademicYear = async (id: string): Promise<void> => {
 export const activateAcademicYear = async (id: string): Promise<AcademicYear> => {
      try {
           const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.ACTIVATE_ACADEMIC_YEAR(id),
+               ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.ACTIVATE_ACADEMIC_YEAR(id),
                {
                     method: "PUT",
                }
@@ -284,7 +285,9 @@ export const activateAcademicYear = async (id: string): Promise<AcademicYear> =>
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to activate academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -295,7 +298,7 @@ export const activateAcademicYear = async (id: string): Promise<AcademicYear> =>
 export const deactivateAcademicYear = async (id: string): Promise<AcademicYear> => {
      try {
           const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.DEACTIVATE_ACADEMIC_YEAR(id),
+               ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.DEACTIVATE_ACADEMIC_YEAR(id),
                {
                     method: "PATCH",
                }
@@ -311,7 +314,9 @@ export const deactivateAcademicYear = async (id: string): Promise<AcademicYear> 
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to deactivate academic year"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -321,9 +326,7 @@ export const deactivateAcademicYear = async (id: string): Promise<AcademicYear> 
  */
 export const getCurrentSemester = async (): Promise<number | null> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_CURRENT_SEMESTER
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.GET_CURRENT_SEMESTER)
 
           if (res.status === 204) return null
 
@@ -336,7 +339,9 @@ export const getCurrentSemester = async (): Promise<number | null> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch current semester"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -346,9 +351,7 @@ export const getCurrentSemester = async (): Promise<number | null> => {
  */
 export const getCurrentSemesterName = async (): Promise<string | null> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_CURRENT_SEMESTER_NAME
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.GET_CURRENT_SEMESTER_NAME)
 
           if (res.status === 204) return null
 
@@ -361,7 +364,9 @@ export const getCurrentSemesterName = async (): Promise<string | null> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch current semester name"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }
@@ -371,9 +376,7 @@ export const getCurrentSemesterName = async (): Promise<string | null> => {
  */
 export const getSemesterStatus = async (): Promise<SemesterStatus> => {
      try {
-          const res = await authFetch(
-               CLUSTER_AND_COURSE_MANAGEMENT_API_ENDPOINTS.GET_SEMESTER_STATUS
-          )
+          const res = await authFetch(ACADEMIC_YEAR_MANAGEMENT_ENDPOINTS.GET_SEMESTER_STATUS)
 
           if (!res.ok) {
                await handleApiError(res, "Failed to fetch semester status")
@@ -383,7 +386,9 @@ export const getSemesterStatus = async (): Promise<SemesterStatus> => {
      } catch (error) {
           const errorMessage =
                error instanceof Error ? error.message : "Failed to fetch semester status"
-          toast.error(errorMessage)
+          toast.error("ERROR", {
+               description: errorMessage,
+          })
           throw error
      }
 }

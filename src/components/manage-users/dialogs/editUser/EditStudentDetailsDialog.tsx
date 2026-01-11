@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Section } from "@/interface/academic/section/SectionInterface"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
-import { getSections } from "@/services/api/user/management/user-management-services"
-import { updateUser } from "@/services/edit-user-details"
+import { getSections } from "@/services/api/user/management/account/user-management-services"
+import { updateUser } from "@/services/api/user/management/information/edit-user-details"
 import { Check } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -107,7 +107,7 @@ export default function EditStudentDetailsDialog({
           setLoading(true)
 
           try {
-               const { userId, sectionId, password, confirmPassword, ...rest } = form
+               const { userId, sectionId, password, ...rest } = form
                const body: Omit<UpdateUserDetailsInterface, "userId"> & { password?: string } = {
                     ...rest,
                     sectionId: sectionId === "" ? undefined : sectionId,

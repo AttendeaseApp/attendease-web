@@ -2,23 +2,25 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { format } from "date-fns"
-import { AcademicYear } from "@/services/api/academic/academic-year"
-import { triggerAcademicYearActivation } from "@/services/api/academic/academic-year"
+import { AcademicYear } from "@/services/api/academic/academic-year-management-service"
+import { triggerAcademicYearActivation } from "@/services/api/academic/academic-year-management-service"
 import { toast } from "sonner"
 import { useState } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 
 interface AcademicYearCardProps {
-     academicYear: AcademicYear
+     academicYear: AcademicYear | null
 }
 
 export const AcademicYearCard = ({ academicYear }: AcademicYearCardProps) => {
      const [isTriggering, setIsTriggering] = useState(false)
-     const canTrigger = ["UPCOMING", "IN_PROGRESS"].includes(academicYear.status)
+     const canTrigger = academicYear
+          ? ["UPCOMING", "IN_PROGRESS"].includes(academicYear.status)
+          : true
 
      const statusVariant = () => {
+          if (!academicYear) return "secondary"
           switch (academicYear.status) {
                case "IN_PROGRESS":
                     return "default"
@@ -38,16 +40,16 @@ export const AcademicYearCard = ({ academicYear }: AcademicYearCardProps) => {
           setIsTriggering(true)
           try {
                const response = await triggerAcademicYearActivation()
-               toast.success("Success", {
+               toast.success("SUCCESS", {
                     description: response.message,
                })
           } catch (error: unknown) {
                if (error instanceof Error) {
-                    toast.error("Error", {
+                    toast.error("ERROR", {
                          description: error.message || "Failed to trigger activation.",
                     })
                } else {
-                    toast.error("Error", {
+                    toast.error("ERROR", {
                          description: "An unknown error occurred.",
                     })
                }
@@ -61,21 +63,34 @@ export const AcademicYearCard = ({ academicYear }: AcademicYearCardProps) => {
                <div className="p-4 border rounded-lg shadow-sm bg-background">
                     <div className="flex items-center justify-between gap-4">
                          <div className="flex items-center gap-3 min-w-0 flex-1">
-                              <h2 className="text-lg font-semibold truncate">
-                                   {academicYear.academicYearName}
-                              </h2>
-                              <Badge variant={statusVariant()} className="shrink-0">
-                                   {academicYear.status?.replace(/_/g, " ") || "Unknown"}
-                              </Badge>
-                              {academicYear.currentSemester && (
-                                   <span className="hidden md:inline text-sm text-muted-foreground truncate">
-                                        {academicYear.currentSemester.name}
-                                   </span>
-                              )}
-                              {academicYear.progressPercentage != null && (
-                                   <span className="hidden lg:inline text-sm text-muted-foreground shrink-0">
-                                        {academicYear.progressPercentage}% completed
-                                   </span>
+                              {academicYear ? (
+                                   <>
+                                        <h2 className="text-lg font-semibold truncate">
+                                             {academicYear.academicYearName}
+                                        </h2>
+                                        <Badge variant={statusVariant()} className="shrink-0">
+                                             {academicYear.status?.replace(/_/g, " ") || "Unknown"}
+                                        </Badge>
+                                        {academicYear.currentSemester && (
+                                             <span className="hidden md:inline text-sm text-muted-foreground truncate">
+                                                  {academicYear.currentSemester.name}
+                                             </span>
+                                        )}
+                                        {academicYear.progressPercentage != null && (
+                                             <span className="hidden lg:inline text-sm text-muted-foreground shrink-0">
+                                                  {academicYear.progressPercentage}% completed
+                                             </span>
+                                        )}
+                                   </>
+                              ) : (
+                                   <>
+                                        <h2 className="text-lg font-semibold text-muted-foreground">
+                                             No Active Academic Year
+                                        </h2>
+                                        <Badge variant="secondary" className="shrink-0">
+                                             INACTIVE
+                                        </Badge>
+                                   </>
                               )}
                          </div>
                          <div className="flex items-center gap-2 shrink-0">

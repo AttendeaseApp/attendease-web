@@ -6,10 +6,11 @@ import { EventStatus } from "@/interface/event/event-interface"
 export interface FinalizedAttendanceRecordsResponse {
      eventId: string
      eventName: string
-     locationName: string
-     timeInRegistrationStartDateTime: string
-     startDateTime: string
-     endDateTime: string
+     registrationLocationName: string
+     venueLocationName: string
+     registrationDateTime: string
+     startingDateTime: string
+     endingDateTime: string
      eventStatus: EventStatus
      totalPresent: number
      totalAbsent: number

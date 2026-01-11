@@ -22,22 +22,25 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
 
      return (
           <Table>
-               <TableHeader className="bg-gray-100">
+               <TableHeader>
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
-                         <TableHead className="font-semibold text-gray-900">VENUE</TableHead>
+                         <TableHead className="font-semibold text-gray-900">Event</TableHead>
+                         <TableHead className="font-semibold text-gray-900">Venue</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              REGISTRATION (DATE-TIME)
+                              Registration Location
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              START (DATE-TIME)
+                              Registration (DATE-TIME)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              END (DATE-TIME)
+                              Started (DATE-TIME)
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">PRESENT</TableHead>
-                         <TableHead className="font-semibold text-gray-900">ABSENTEES</TableHead>
-                         <TableHead className="font-semibold text-gray-900">LATE</TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              Ended (DATE-TIME)
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">Present</TableHead>
+                         <TableHead className="font-semibold text-gray-900">Absentees</TableHead>
+                         <TableHead className="font-semibold text-gray-900">Late</TableHead>
                          <TableHead className="text-right font-semibold text-gray-900"></TableHead>
                     </TableRow>
                </TableHeader>
@@ -59,19 +62,14 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
                               <TableRow key={event.eventId}>
                                    <TableCell className="font-medium">{event.eventName}</TableCell>
                                    <TableCell className="font-medium">
-                                        {event.locationName ?? "No location"}
+                                        {event.venueLocationName ?? "No location"}
                                    </TableCell>
-                                   <TableCell>
-                                        {new Date(
-                                             event.timeInRegistrationStartDateTime
-                                        ).toLocaleString()}
+                                   <TableCell className="font-medium">
+                                        {event.registrationLocationName ?? "No location"}
                                    </TableCell>
-                                   <TableCell>
-                                        {new Date(event.startDateTime).toLocaleString()}
-                                   </TableCell>
-                                   <TableCell>
-                                        {new Date(event.endDateTime).toLocaleString()}
-                                   </TableCell>
+                                   <TableCell>{event.registrationDateTime}</TableCell>
+                                   <TableCell>{event.startingDateTime}</TableCell>
+                                   <TableCell>{event.endingDateTime}</TableCell>
                                    <TableCell>{event.totalPresent}</TableCell>
                                    <TableCell>{event.totalAbsent}</TableCell>
                                    <TableCell>{event.totalLate}</TableCell>

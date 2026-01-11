@@ -3,7 +3,7 @@
 import UploadDropPart from "@/components/manage-users/dialogs/importStudent/UploadDropPart"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { uploadStudentCSV } from "@/services/api/user/management/import/student-import-services"
+import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
 import { useState } from "react"
 import { toast } from "sonner"
 

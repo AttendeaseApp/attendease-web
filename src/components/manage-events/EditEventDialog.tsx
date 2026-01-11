@@ -35,11 +35,9 @@ import { Course } from "@/interface/academic/course/CourseInterface"
 import { Section } from "@/interface/academic/section/SectionInterface"
 import { EligibilityCriteria, EventSession, EventStatus } from "@/interface/event/event-interface"
 import { EventLocation } from "@/interface/location-interface"
-import {
-     getAllClusters,
-     getAllCourses,
-     getAllSections,
-} from "@/services/api/academic/cluster-and-course-sessions"
+import { getAllClusters } from "@/services/api/academic/cluster-management-service"
+import { getAllCourses } from "@/services/api/academic/course-management-service"
+import { getAllSections } from "@/services/api/academic/section-management-service"
 import { cancelEvent, updateEvent } from "@/services/event-sessions"
 import { getAllLocations } from "@/services/locations-service"
 import { format } from "date-fns"
@@ -1100,7 +1098,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
 
                               <div className="space-y-4 flex flex-col">
                                    <Label>Eligible Attendees</Label>
-                                   {/* <Input 
+                                   {/* <Input
                                                                    placeholder="Search clusters, courses, and sections..."
                                                                    value={searchQuery}
                                                                    onChange={(e) => setSearchQuery(e.target.value)}

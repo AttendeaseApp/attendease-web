@@ -13,7 +13,7 @@ import {
      AcademicYear,
      updateAcademicYear,
      UpdateAcademicYearRequest,
-} from "@/services/api/academic/academic-year"
+} from "@/services/api/academic/academic-year-management-service"
 import { useEffect, useState } from "react"
 
 interface UpdateAcademicYearDialogProps {
@@ -181,7 +181,7 @@ export function UpdateAcademicYearDialog({
                                    onClick={onClose}
                                    disabled={loading}
                               >
-                                   Cancel
+                                   Close
                               </Button>
                               <Button type="submit" disabled={loading}>
                                    {loading ? "Updating..." : "Update Academic Year"}

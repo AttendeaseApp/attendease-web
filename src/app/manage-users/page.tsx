@@ -22,14 +22,14 @@ import { UserStudentResponse } from "@/interface/UserStudent"
 import {
      deleteStudentAccountBySection,
      getAllUsers,
-} from "@/services/api/user/management/user-management-services"
+} from "@/services/api/user/management/account/user-management-services"
 import { ChevronDown, Search } from "lucide-react"
-import { useEffect, useState } from "react"
-import { bulkActivateStudents } from "@/services/api/user/management/bulk-activate-students-service"
-import { bulkDeactivateStudents } from "@/services/api/user/management/bulk-deactivate-students-service"
+import { useEffect, useState, useCallback } from "react"
+import { bulkActivateStudents } from "@/services/api/user/management/account/bulk-activate-students-service"
+import { bulkDeactivateStudents } from "@/services/api/user/management/account/bulk-deactivate-students-service"
 import { StudentStatusFilter } from "@/interface/users/account/status/AccountStatus"
-import { getActiveStudents } from "@/services/api/user/management/retrive-all-active-students"
-import { getInactiveStudents } from "@/services/api/user/management/retrive-all-inactive-students"
+import { getActiveStudents } from "@/services/api/user/management/account/retrive-all-active-students"
+import { getInactiveStudents } from "@/services/api/user/management/account/retrive-all-inactive-students"
 import { toast } from "sonner"
 
 export default function RetrieveAllUsers() {
@@ -92,7 +92,7 @@ export default function RetrieveAllUsers() {
           }
      }
 
-     const loadStudents = async () => {
+     const loadStudents = useCallback(async () => {
           setLoading(true)
           try {
                let data: UserStudentResponse[] = []
@@ -114,11 +114,11 @@ export default function RetrieveAllUsers() {
           } finally {
                setLoading(false)
           }
-     }
+     }, [statusFilter])
 
      useEffect(() => {
           loadStudents()
-     }, [statusFilter])
+     }, [statusFilter, loadStudents])
 
      useEffect(() => {
           const uniqueSections = Array.from(

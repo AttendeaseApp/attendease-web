@@ -12,15 +12,7 @@ import {
      DialogDescription,
      DialogFooter,
 } from "@/components/ui/dialog"
-import {
-     AlertDialog,
-     AlertDialogAction,
-     AlertDialogDescription,
-     AlertDialogFooter,
-     AlertDialogHeader,
-     AlertDialogTitle,
-     AlertDialogContent,
-} from "@/components/ui/alert-dialog"
+
 import { createLocation } from "@/services/locations-service"
 import { EventLocation, EventLocationRequest } from "@/interface/location-interface"
 import { toast } from "sonner"
@@ -59,14 +51,6 @@ export default function CreateLocationDialog({
      const [polygon, setPolygon] = useState<number[][]>([])
      const [loading, setLoading] = useState(false)
      const [tileType, setTileType] = useState<"esri" | "osm">("esri")
-     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-     const [createStatus, setCreateStatus] = useState<"success" | "error">("success")
-     const [createMessage, setCreateMessage] = useState("")
-     const showStatus = (status: "success" | "error", message: string) => {
-          setCreateStatus(status)
-          setCreateMessage(message)
-          setStatusDialogOpen(true)
-     }
 
      useEffect(() => {
           if (!open) {
@@ -116,7 +100,9 @@ export default function CreateLocationDialog({
                setLoading(true)
                const newLocation = await createLocation(payload)
                onSuccess(newLocation)
-               showStatus("success", "Successfully created location")
+               toast.success("SUCCESS", {
+                    description: `Location created successfully`,
+               })
                onClose()
           } catch (err) {
                toast.error("Failed to create location.")
@@ -143,9 +129,7 @@ export default function CreateLocationDialog({
      const onDeleted = () => {
           setPolygon([])
      }
-     const isSuccess = createStatus === "success"
-     const title = isSuccess ? "Create Successful" : "Create Failed"
-     const titleColor = isSuccess ? "text-green-600" : "text-red-600"
+
      return (
           <Dialog open={open} onOpenChange={onClose}>
                <DialogContent_ className="max-w-7xl max-h-[90vh] overflow-auto">
@@ -251,21 +235,6 @@ export default function CreateLocationDialog({
                          </Button>
                     </DialogFooter>
                </DialogContent_>
-               <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
-                    <AlertDialogContent className="sm:max-w-md">
-                         <AlertDialogHeader>
-                              <AlertDialogTitle className={titleColor}>{title}</AlertDialogTitle>
-                              <AlertDialogDescription className="text-sm text-muted-foreground">
-                                   {createMessage}
-                              </AlertDialogDescription>
-                         </AlertDialogHeader>
-                         <AlertDialogFooter>
-                              <AlertDialogAction onClick={() => setStatusDialogOpen(false)}>
-                                   OK
-                              </AlertDialogAction>
-                         </AlertDialogFooter>
-                    </AlertDialogContent>
-               </AlertDialog>
           </Dialog>
      )
 }

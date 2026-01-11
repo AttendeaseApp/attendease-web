@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import { updateUser } from "@/services/edit-user-details"
+import { updateUser } from "@/services/api/user/management/information/edit-user-details"
 import { UpdateUserDetailsInterface } from "@/interface/management/update/UpdateUserDetailsInterface"
-import { getOSAProfile } from "@/services/api/user/management/user-management-services"
+import { getOSAProfile } from "@/services/api/user/management/account/user-management-services"
 import {
      Breadcrumb,
      BreadcrumbItem,
