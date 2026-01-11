@@ -5,7 +5,9 @@ export const formatEligibility = (criteria: EligibilityCriteria | null | undefin
      if (criteria.allStudents) return "All Students"
      const parts: string[] = []
      if (criteria.clusters?.length) {
-          parts.push(`${criteria.clusters.length} Cluster${criteria.clusters.length > 1 ? "s" : ""}`)
+          parts.push(
+               `${criteria.clusters.length} Cluster${criteria.clusters.length > 1 ? "s" : ""}`
+          )
      }
      if (criteria.courses?.length) {
           parts.push(`${criteria.courses.length} Course${criteria.courses.length > 1 ? "s" : ""}`)

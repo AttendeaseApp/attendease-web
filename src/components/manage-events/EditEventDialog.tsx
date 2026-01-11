@@ -235,11 +235,12 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     registrationLocationId: event.registrationLocationId || "",
                     venueLocationId: event.venueLocationId || "",
                     facialVerificationEnabled: !!event.facialVerificationEnabled,
-                    attendanceLocationMonitoringEnabled: !!event.attendanceLocationMonitoringEnabled,
+                    attendanceLocationMonitoringEnabled:
+                         !!event.attendanceLocationMonitoringEnabled,
                     strictLocationValidation: !!event.strictLocationValidation,
                })
 
-                const tempElig = {
+               const tempElig = {
                     allStudents: event.eligibleStudents?.allStudents ?? true,
                     selectedClusters: event.eligibleStudents?.clusters ?? [],
                     selectedCourses: event.eligibleStudents?.courses ?? [],

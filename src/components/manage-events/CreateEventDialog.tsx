@@ -120,7 +120,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           return items.filter(opts.predicate)
      }
      const [createNewLocation, setCreateNewLocation] = useState(false)
-     const [newLocationPurpose, setNewLocationPurpose] = useState<"EVENT_VENUE" | "REGISTRATION_AREA">()
+     const [newLocationPurpose, setNewLocationPurpose] = useState<
+          "EVENT_VENUE" | "REGISTRATION_AREA"
+     >()
 
      const getCoursesUnderCluster = (clId: string) => {
           return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
@@ -381,17 +383,16 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           setError("")
 
           const cleaned = cleanEligibility(
-                    eligibility.selectedClusters,
-                    eligibility.selectedCourses,
-                    eligibility.selectedSections
-               )
+               eligibility.selectedClusters,
+               eligibility.selectedCourses,
+               eligibility.selectedSections
+          )
 
           const isAllStudents =
                eligibility.allStudents ||
                (cleaned.selectedClusters.length === 0 &&
                     cleaned.selectedCourses.length === 0 &&
-                    cleaned.selectedSections.length === 0
-               )
+                    cleaned.selectedSections.length === 0)
 
           if (
                !isAllStudents &&
@@ -890,12 +891,16 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
                                                             onClick={() => {
-                                                                 setNewLocationPurpose("REGISTRATION_AREA")
+                                                                 setNewLocationPurpose(
+                                                                      "REGISTRATION_AREA"
+                                                                 )
                                                                  setCreateNewLocation(true)
                                                             }}
                                                        >
                                                             <Plus className="w-4 h-4" />
-                                                            <span>Create New Registration Venue </span>
+                                                            <span>
+                                                                 Create New Registration Venue{" "}
+                                                            </span>
                                                        </div>
                                                   </SelectGroup>
                                              </SelectContent>
@@ -945,7 +950,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
                                                             onClick={() => {
-                                                                 setNewLocationPurpose("EVENT_VENUE")
+                                                                 setNewLocationPurpose(
+                                                                      "EVENT_VENUE"
+                                                                 )
                                                                  setCreateNewLocation(true)
                                                             }}
                                                        >

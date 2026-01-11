@@ -104,7 +104,7 @@ export const createEvent = async (
      }
 ): Promise<EventSession> => {
      try {
-          const payload = { ...newEventData}
+          const payload = { ...newEventData }
           payload.description = newEventData.description ?? ""
           if (payload.registrationDateTime) {
                payload.registrationDateTime = format(

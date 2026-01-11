@@ -48,7 +48,9 @@ export default function CreateLocationDialog({
 }: CreateLocationModalProps) {
      const [locationName, setLocationName] = useState("")
      const [locationType, setLocationType] = useState("INDOOR")
-     const [locationPurpose, setLocationPurpose] = useState<"EVENT_VENUE" | "REGISTRATION_AREA">("EVENT_VENUE")
+     const [locationPurpose, setLocationPurpose] = useState<"EVENT_VENUE" | "REGISTRATION_AREA">(
+          "EVENT_VENUE"
+     )
      const [description, setDescription] = useState("")
      const [polygon, setPolygon] = useState<number[][]>([])
      const [loading, setLoading] = useState(false)
@@ -167,10 +169,13 @@ export default function CreateLocationDialog({
                                    <select
                                         className="border rounded-md px-3 py-2"
                                         value={locationPurpose}
-                                        onChange={(e) => 
+                                        onChange={(e) =>
                                              setLocationPurpose(
-                                                  e.target.value as "EVENT_VENUE" | "REGISTRATION_AREA"
-                                             )}
+                                                  e.target.value as
+                                                       | "EVENT_VENUE"
+                                                       | "REGISTRATION_AREA"
+                                             )
+                                        }
                                    >
                                         <option value="EVENT_VENUE">Event Venue</option>
                                         <option value="REGISTRATION_AREA">Registration Area</option>
