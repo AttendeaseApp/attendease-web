@@ -1,27 +1,6 @@
 import { USER_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { authFetch } from "@/services/auth-fetch"
-
-export interface importCSVDetail {
-     row: number
-     errors: string[]
-}
-
-export interface importCSVSummary {
-     totalRows: number
-     successfulRows: number
-     failedRows: number
-     missingSections: string[]
-     duplicateStudentNumbers: string[]
-     errorTypes: Record<string, number>
-}
-
-export interface importCSVResult {
-     errorCode?: string
-     message?: string
-     summary: importCSVSummary
-     details: importCSVDetail[]
-     timestamp?: string
-}
+import { importCSVResult } from "@/interface/import-stud-interface"
 
 export const uploadStudentCSV = async (file: File) => {
      const formData = new FormData()
@@ -34,13 +13,22 @@ export const uploadStudentCSV = async (file: File) => {
           })
 
           const text = await res.text()
+          let data: importCSVResult
 
           try {
-               const jsonResult: importCSVResult = JSON.parse(text)
-               return jsonResult
-          } catch (parseError) {
-               throw new Error(`Invalid CSV upload response`)
+               data = JSON.parse(text)
+          } catch {
+               throw new Error("Invalid JSON response from server")
           }
+
+          if (
+               data.errorCode ||
+               (data.summary.failedRows > 0 && data.summary.successfulRows === 0)
+          ) {
+               throw data
+          }
+
+          return data
      } catch (error) {
           console.error("Error in uploadStudentCSV:", error)
           throw error
