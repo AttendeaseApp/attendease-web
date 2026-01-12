@@ -55,7 +55,7 @@ export default function CreateOsaAccountDialog({
 
           setLoading(true)
           try {
-               const { confirmPassword: _, ...payload } = form
+               const { confirmPassword, ...payload } = form
 
                await createOSAAccount(payload)
                toast.success("SUCCESS", {

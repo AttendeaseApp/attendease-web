@@ -72,7 +72,7 @@ export default function EditUserDetailsDialog({
           setLoading(true)
           try {
                const { userId, confirmPassword, ...rest } = form
-               const body: any = {}
+               const body = {} as UpdateUserDetailsInterface
                if (rest.firstName) body.firstName = rest.firstName
                if (rest.lastName) body.lastName = rest.lastName
                if (rest.contactNumber) body.contactNumber = rest.contactNumber
