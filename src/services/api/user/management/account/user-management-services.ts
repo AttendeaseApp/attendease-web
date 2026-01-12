@@ -1,10 +1,10 @@
 import { authFetch } from "../../../../auth-fetch"
 import {
-     API_BASE,
      OSA_PROFILE_ENDPOINT,
      USER_MANAGEMENT_API_ENDPOINTS,
      ACCOUNT_REGISTRATION_ENDPOINTS,
      USER_INFORMATION_MANAGEMENT_ENDPOINTS,
+     SECTION_MANAGEMENT_ENDPOINTS,
 } from "../../../../../constants/api"
 import { UserStudentResponse } from "@/interface/UserStudent"
 import { Section } from "@/interface/academic/section/SectionInterface"
@@ -150,7 +150,7 @@ export const createStudentAccount = async (payload: StudentRegistrationInterface
  */
 export const getSections = async (): Promise<Section[]> => {
      try {
-          const res = await authFetch(`${API_BASE}/api/sections`)
+          const res = await authFetch(SECTION_MANAGEMENT_ENDPOINTS.GET_ALL_SECTIONS)
           if (!res.ok) {
                let errorMsg = `Failed to fetch sections: ${res.status}`
                try {
@@ -177,17 +177,17 @@ export const getSections = async (): Promise<Section[]> => {
 /**
  * Delete students by section
  */
-export const deleteStudentAccountBySection = async (section: string) => {
+export const deleteStudentAccountBySection = async (sectionName: string) => {
      try {
           const res = await authFetch(
-               `${API_BASE}/api/users/management/section/${encodeURIComponent(section)}`,
+               USER_MANAGEMENT_API_ENDPOINTS.DELETE_STUDENTS_BY_THEIR_SECTION_NAME(sectionName),
                {
                     method: "DELETE",
                }
           )
 
           if (!res.ok) {
-               let errorMsg = `Failed to delete users for section: ${section}`
+               let errorMsg = `Failed to delete users for section: ${sectionName}`
                try {
                     const errorBody = await res.json()
                     errorMsg =
@@ -208,7 +208,7 @@ export const deleteStudentAccountBySection = async (section: string) => {
                ? await res.json()
                : await res.text()
      } catch (err) {
-          console.error(`Error deleting users for section ${section}:`, err)
+          console.error(`Error deleting users for section ${sectionName}:`, err)
           throw err
      }
 }
