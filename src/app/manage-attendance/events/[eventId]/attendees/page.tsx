@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { useSortedEventAttendees } from "@/services/api/attendance/records/management/useSortedEventAttendees"
 import { AttendanceSortCriteria } from "@/interface/enums/attendance/AttendanceSortCriteria"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, UserCheck, UserX, Clock, FileText } from "lucide-react"
 import Link from "next/link"
 
@@ -164,16 +164,16 @@ export default function EventAttendeesPage() {
 
                          <div id="print-content" className="print-layout space-y-6">
                               {event && (
-                                   <Card>
-                                        <CardHeader>
-                                             <CardTitle className="text-2xl md:text-3xl">
+                                   <div className="space-y-3">
+                                        <div>
+                                             <h1 className="text-2xl md:text-3xl font-semibold">
                                                   {event.eventName}
-                                             </CardTitle>
-                                             <CardDescription className="text-sm">
+                                             </h1>
+                                             <p className="text-sm text-muted-foreground mt-1">
                                                   {event.description || "No description provided"}
-                                             </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                             </p>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border rounded-lg p-4">
                                              <div>
                                                   <p className="text-muted-foreground text-xs">
                                                        Academic Year
@@ -235,41 +235,42 @@ export default function EventAttendeesPage() {
                                                        onClick={() => window.print()}
                                                        className="w-full"
                                                        variant="outline"
+                                                       size="sm"
                                                   >
                                                        Print
                                                   </Button>
                                              </div>
-                                        </CardContent>
-                                   </Card>
+                                        </div>
+                                   </div>
                               )}
 
                               {stats && (
-                                   <div className="print-hide grid gap-4 md:grid-cols-5">
+                                   <div className="print-hide grid gap-3 md:grid-cols-5">
                                         <Card>
-                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                                  <CardTitle className="text-sm font-medium">
+                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                                                  <CardTitle className="text-xs font-medium">
                                                        Total Attendees
                                                   </CardTitle>
-                                                  <Users className="h-4 w-4 text-muted-foreground" />
+                                                  <Users className="h-3.5 w-3.5 text-muted-foreground" />
                                              </CardHeader>
-                                             <CardContent>
-                                                  <div className="text-2xl font-bold">
+                                             <CardContent className="px-4 pb-4">
+                                                  <div className="text-xl font-bold">
                                                        {stats.total}
                                                   </div>
                                              </CardContent>
                                         </Card>
                                         <Card>
-                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                                  <CardTitle className="text-sm font-medium">
+                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                                                  <CardTitle className="text-xs font-medium">
                                                        Present
                                                   </CardTitle>
-                                                  <UserCheck className="h-4 w-4 text-green-600" />
+                                                  <UserCheck className="h-3.5 w-3.5 text-green-600" />
                                              </CardHeader>
-                                             <CardContent>
-                                                  <div className="text-2xl font-bold text-green-600">
+                                             <CardContent className="px-4 pb-4">
+                                                  <div className="text-xl font-bold text-green-600">
                                                        {stats.present}
                                                   </div>
-                                                  <p className="text-xs text-muted-foreground">
+                                                  <p className="text-[10px] text-muted-foreground">
                                                        {(
                                                             (stats.present / stats.total) *
                                                             100
@@ -279,17 +280,17 @@ export default function EventAttendeesPage() {
                                              </CardContent>
                                         </Card>
                                         <Card>
-                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                                  <CardTitle className="text-sm font-medium">
+                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                                                  <CardTitle className="text-xs font-medium">
                                                        Absent
                                                   </CardTitle>
-                                                  <UserX className="h-4 w-4 text-red-600" />
+                                                  <UserX className="h-3.5 w-3.5 text-red-600" />
                                              </CardHeader>
-                                             <CardContent>
-                                                  <div className="text-2xl font-bold text-red-600">
+                                             <CardContent className="px-4 pb-4">
+                                                  <div className="text-xl font-bold text-red-600">
                                                        {stats.absent}
                                                   </div>
-                                                  <p className="text-xs text-muted-foreground">
+                                                  <p className="text-[10px] text-muted-foreground">
                                                        {(
                                                             (stats.absent / stats.total) *
                                                             100
@@ -299,17 +300,17 @@ export default function EventAttendeesPage() {
                                              </CardContent>
                                         </Card>
                                         <Card>
-                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                                  <CardTitle className="text-sm font-medium">
+                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                                                  <CardTitle className="text-xs font-medium">
                                                        Late
                                                   </CardTitle>
-                                                  <Clock className="h-4 w-4 text-yellow-600" />
+                                                  <Clock className="h-3.5 w-3.5 text-yellow-600" />
                                              </CardHeader>
-                                             <CardContent>
-                                                  <div className="text-2xl font-bold text-yellow-600">
+                                             <CardContent className="px-4 pb-4">
+                                                  <div className="text-xl font-bold text-yellow-600">
                                                        {stats.late}
                                                   </div>
-                                                  <p className="text-xs text-muted-foreground">
+                                                  <p className="text-[10px] text-muted-foreground">
                                                        {((stats.late / stats.total) * 100).toFixed(
                                                             1
                                                        )}
@@ -318,17 +319,17 @@ export default function EventAttendeesPage() {
                                              </CardContent>
                                         </Card>
                                         <Card>
-                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                                  <CardTitle className="text-sm font-medium">
+                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+                                                  <CardTitle className="text-xs font-medium">
                                                        Excused
                                                   </CardTitle>
-                                                  <FileText className="h-4 w-4 text-purple-600" />
+                                                  <FileText className="h-3.5 w-3.5 text-purple-600" />
                                              </CardHeader>
-                                             <CardContent>
-                                                  <div className="text-2xl font-bold text-purple-600">
+                                             <CardContent className="px-4 pb-4">
+                                                  <div className="text-xl font-bold text-purple-600">
                                                        {stats.excused}
                                                   </div>
-                                                  <p className="text-xs text-muted-foreground">
+                                                  <p className="text-[10px] text-muted-foreground">
                                                        {(
                                                             (stats.excused / stats.total) *
                                                             100
@@ -340,52 +341,48 @@ export default function EventAttendeesPage() {
                                    </div>
                               )}
 
-                              <Card>
-                                   <CardHeader>
-                                        <div className="flex items-center justify-between">
-                                             <div>
-                                                  <CardTitle>Attendance Records</CardTitle>
-                                                  <CardDescription>
-                                                       View and manage student attendance
-                                                  </CardDescription>
-                                             </div>
-                                             <Select
-                                                  value={sortBy}
-                                                  onValueChange={(v) =>
-                                                       setSortBy(v as AttendanceSortCriteria)
-                                                  }
-                                             >
-                                                  <SelectTrigger className="w-[180px]">
-                                                       <SelectValue placeholder="Group by" />
-                                                  </SelectTrigger>
-                                                  <SelectContent>
-                                                       <SelectItem
-                                                            value={AttendanceSortCriteria.SECTION}
-                                                       >
-                                                            By Section
-                                                       </SelectItem>
-                                                       <SelectItem
-                                                            value={AttendanceSortCriteria.COURSE}
-                                                       >
-                                                            By Course
-                                                       </SelectItem>
-                                                       <SelectItem
-                                                            value={AttendanceSortCriteria.CLUSTER}
-                                                       >
-                                                            By Cluster
-                                                       </SelectItem>
-                                                       <SelectItem
-                                                            value={
-                                                                 AttendanceSortCriteria.YEAR_LEVEL
-                                                            }
-                                                       >
-                                                            By Year Level
-                                                       </SelectItem>
-                                                  </SelectContent>
-                                             </Select>
+                              <div className="space-y-4">
+                                   <div className="flex items-center justify-between">
+                                        <div>
+                                             <h2 className="text-xl font-semibold">
+                                                  Attendance Records
+                                             </h2>
+                                             <p className="text-sm text-muted-foreground">
+                                                  View and manage student attendance
+                                             </p>
                                         </div>
-                                   </CardHeader>
-                                   <CardContent>
+                                        <Select
+                                             value={sortBy}
+                                             onValueChange={(v) =>
+                                                  setSortBy(v as AttendanceSortCriteria)
+                                             }
+                                        >
+                                             <SelectTrigger className="w-[180px]">
+                                                  <SelectValue placeholder="Group by" />
+                                             </SelectTrigger>
+                                             <SelectContent>
+                                                  <SelectItem
+                                                       value={AttendanceSortCriteria.SECTION}
+                                                  >
+                                                       By Section
+                                                  </SelectItem>
+                                                  <SelectItem value={AttendanceSortCriteria.COURSE}>
+                                                       By Course
+                                                  </SelectItem>
+                                                  <SelectItem
+                                                       value={AttendanceSortCriteria.CLUSTER}
+                                                  >
+                                                       By Cluster
+                                                  </SelectItem>
+                                                  <SelectItem
+                                                       value={AttendanceSortCriteria.YEAR_LEVEL}
+                                                  >
+                                                       By Year Level
+                                                  </SelectItem>
+                                             </SelectContent>
+                                        </Select>
+                                   </div>
+                                   <div>
                                         {sortedData && (
                                              <EventAttendeesTable
                                                   groupedAttendees={sortedData.groupedAttendees}
@@ -393,8 +390,8 @@ export default function EventAttendeesPage() {
                                                   onOpenDialog={handleOpenDialog}
                                              />
                                         )}
-                                   </CardContent>
-                              </Card>
+                                   </div>
+                              </div>
                          </div>
                     </div>
 

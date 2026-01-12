@@ -12,6 +12,9 @@ import {
      ChevronsRight,
      ChevronDown,
      FilePenLine,
+     ChevronRight as ChevronRightIcon,
+     UserX,
+     Loader2,
 } from "lucide-react"
 import {
      Table,
@@ -29,6 +32,7 @@ import {
      SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 
 interface GroupedAttendees {
@@ -136,25 +140,40 @@ export function EventAttendeesTable({
 
      if (loading) {
           return (
-               <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                    <p className="mt-2 text-sm text-muted-foreground">Loading attendance data...</p>
-               </div>
+               <Empty>
+                    <EmptyHeader>
+                         <EmptyMedia variant="icon">
+                              <Loader2 className="animate-spin" />
+                         </EmptyMedia>
+                         <EmptyTitle>Loading attendance data...</EmptyTitle>
+                         <EmptyDescription>
+                              Please wait while we fetch the attendance records.
+                         </EmptyDescription>
+                    </EmptyHeader>
+               </Empty>
           )
      }
 
      if (groups.length === 0) {
           return (
-               <div className="text-center py-8 text-muted-foreground">
-                    No attendance records found
-               </div>
+               <Empty>
+                    <EmptyHeader>
+                         <EmptyMedia variant="icon">
+                              <UserX />
+                         </EmptyMedia>
+                         <EmptyTitle>No attendance records found</EmptyTitle>
+                         <EmptyDescription>
+                              There are no attendance records available for this event yet.
+                         </EmptyDescription>
+                    </EmptyHeader>
+               </Empty>
           )
      }
 
      return (
           <div className="space-y-4">
                {/*search and filters*/}
-               <div className="flex flex-wrap gap-3 items-center">
+               <div className="flex flex-wrap gap-3 items-center print-hide">
                     <div className="relative flex-1 min-w-[200px]">
                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                          <Input
@@ -207,17 +226,18 @@ export function EventAttendeesTable({
                               <div
                                    key={group.groupName}
                                    className="border rounded-lg overflow-hidden"
+                                   data-accordion-item
                               >
-                                   {/*header of gropued data*/}
+                                   {/*header of grouped data*/}
                                    <button
                                         onClick={() => toggleGroup(group.groupName)}
-                                        className="w-full px-4 py-3 bg-muted hover:bg-muted/80 transition-colors flex items-center justify-between"
+                                        className="accordion-trigger w-full px-4 py-3 bg-muted hover:bg-muted/80 transition-colors flex items-center justify-between"
                                    >
                                         <div className="flex items-center gap-3">
                                              {isExpanded ? (
                                                   <ChevronDown className="h-5 w-5" />
                                              ) : (
-                                                  <ChevronRight className="h-5 w-5" />
+                                                  <ChevronRightIcon className="h-5 w-5" />
                                              )}
                                              <span className="font-semibold text-lg">
                                                   {group.groupName}
@@ -309,7 +329,7 @@ export function EventAttendeesTable({
                                              </div>
 
                                              {/*results*/}
-                                             <div className="text-sm text-muted-foreground">
+                                             <div className="text-sm text-muted-foreground print-hide">
                                                   Showing{" "}
                                                   {paginatedData.length > 0
                                                        ? (currentPage - 1) * ITEMS_PER_PAGE + 1
@@ -324,45 +344,54 @@ export function EventAttendeesTable({
 
                                              {/* Table */}
                                              <div className="overflow-hidden">
-                                                  <Table>
-                                                       <TableHeader>
-                                                            <TableRow>
-                                                                 <TableHead className="w-[200px]">
-                                                                      Name
-                                                                 </TableHead>
-                                                                 <TableHead>Status</TableHead>
-                                                                 <TableHead className="hidden md:table-cell">
-                                                                      Section
-                                                                 </TableHead>
-                                                                 <TableHead className="hidden lg:table-cell">
-                                                                      Course
-                                                                 </TableHead>
-                                                                 <TableHead className="hidden xl:table-cell">
-                                                                      Cluster
-                                                                 </TableHead>
-                                                                 <TableHead>Time In</TableHead>
-                                                                 <TableHead>Time Out</TableHead>
-                                                                 <TableHead className="hidden lg:table-cell">
-                                                                      Reason
-                                                                 </TableHead>
-                                                                 <TableHead className="text-right">
-                                                                      Update
-                                                                 </TableHead>
-                                                            </TableRow>
-                                                       </TableHeader>
-                                                       <TableBody>
-                                                            {paginatedData.length === 0 ? (
+                                                  {paginatedData.length === 0 ? (
+                                                       <Empty>
+                                                            <EmptyHeader>
+                                                                 <EmptyMedia variant="icon">
+                                                                      <UserX />
+                                                                 </EmptyMedia>
+                                                                 <EmptyTitle>
+                                                                      No attendees found
+                                                                 </EmptyTitle>
+                                                                 <EmptyDescription>
+                                                                      No attendees match your
+                                                                      current search or filter
+                                                                      criteria. Try adjusting your
+                                                                      filters.
+                                                                 </EmptyDescription>
+                                                            </EmptyHeader>
+                                                       </Empty>
+                                                  ) : (
+                                                       <Table>
+                                                            <TableHeader>
                                                                  <TableRow>
-                                                                      <TableCell
-                                                                           colSpan={9}
-                                                                           className="text-center py-8 text-muted-foreground"
-                                                                      >
-                                                                           No attendees found
-                                                                           matching filters
-                                                                      </TableCell>
+                                                                      <TableHead className="w-[200px]">
+                                                                           Name
+                                                                      </TableHead>
+                                                                      <TableHead>Status</TableHead>
+                                                                      <TableHead className="hidden md:table-cell">
+                                                                           Section
+                                                                      </TableHead>
+                                                                      <TableHead className="hidden lg:table-cell">
+                                                                           Course
+                                                                      </TableHead>
+                                                                      <TableHead className="hidden xl:table-cell">
+                                                                           Cluster
+                                                                      </TableHead>
+                                                                      <TableHead>Time In</TableHead>
+                                                                      <TableHead>
+                                                                           Time Out
+                                                                      </TableHead>
+                                                                      <TableHead className="hidden lg:table-cell">
+                                                                           Reason
+                                                                      </TableHead>
+                                                                      <TableHead className="text-right print-hide">
+                                                                           Update
+                                                                      </TableHead>
                                                                  </TableRow>
-                                                            ) : (
-                                                                 paginatedData.map((attendee) => (
+                                                            </TableHeader>
+                                                            <TableBody>
+                                                                 {paginatedData.map((attendee) => (
                                                                       <TableRow
                                                                            key={
                                                                                 attendee.attendanceRecordId
@@ -431,7 +460,7 @@ export function EventAttendeesTable({
                                                                                 {attendee.reason ||
                                                                                      "N/A"}
                                                                            </TableCell>
-                                                                           <TableCell className="text-right">
+                                                                           <TableCell className="text-right print-hide">
                                                                                 <Button
                                                                                      variant="ghost"
                                                                                      size="sm"
@@ -445,14 +474,14 @@ export function EventAttendeesTable({
                                                                                 </Button>
                                                                            </TableCell>
                                                                       </TableRow>
-                                                                 ))
-                                                            )}
-                                                       </TableBody>
-                                                  </Table>
+                                                                 ))}
+                                                            </TableBody>
+                                                       </Table>
+                                                  )}
                                              </div>
 
                                              {totalPages > 1 && (
-                                                  <div className="flex items-center justify-between">
+                                                  <div className="flex items-center justify-between print-hide">
                                                        <div className="text-sm text-muted-foreground">
                                                             Page {currentPage} of {totalPages}
                                                        </div>
