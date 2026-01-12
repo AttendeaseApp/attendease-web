@@ -520,6 +520,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           e.preventDefault()
           if (!validateForm()) return
           setIsSubmitting(true)
+
           try {
                let eligibleStudents: EligibilityCriteria | undefined
                if (eligibility.isDirty || !eligibility.allStudents) {
@@ -537,31 +538,54 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                      courses: cleaned.selectedCourses,
                                      sections: cleaned.selectedSections,
                                 }),
-                    } as EligibilityCriteria
+                    }
                }
 
+               //original dates from created events
+               const originalRegistrationDate = new Date(event.registrationDateTime)
+               const originalStartDate = new Date(event.startingDateTime)
+               const originalEndDate = new Date(event.endingDateTime)
+
+               //prevents resending old date & time
                const updatedData: Partial<EventSession> = {
                     eventName: formData.eventName,
                     description: formData.description || undefined,
-                    registrationDateTime: format(
-                         formData.registrationDateTime,
-                         "yyyy-MM-dd hh:mm:ss a"
-                    ),
-                    startingDateTime: format(formData.startingDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    endingDateTime: format(formData.endingDateTime, "yyyy-MM-dd hh:mm:ss a"),
-                    eligibleStudents: formData.eligibleStudents || undefined,
                     registrationLocationId: formData.registrationLocationId || undefined,
                     venueLocationId: formData.venueLocationId || undefined,
                     ...(eligibleStudents && { eligibleStudents }),
                }
 
+               //only include date & time fields if they were changed
+               if (formData.registrationDateTime.getTime() !== originalRegistrationDate.getTime()) {
+                    updatedData.registrationDateTime = format(
+                         formData.registrationDateTime,
+                         "yyyy-MM-dd HH:mm:ss"
+                    )
+               }
+
+               if (formData.startingDateTime.getTime() !== originalStartDate.getTime()) {
+                    updatedData.startingDateTime = format(
+                         formData.startingDateTime,
+                         "yyyy-MM-dd HH:mm:ss"
+                    )
+               }
+
+               if (formData.endingDateTime.getTime() !== originalEndDate.getTime()) {
+                    updatedData.endingDateTime = format(
+                         formData.endingDateTime,
+                         "yyyy-MM-dd HH:mm:ss"
+                    )
+               }
+
                await updateEvent(event.eventId, updatedData)
-               toast.success("Successfully updated the event.")
+               toast.success("SUCCESS", {
+                    description: `Event updated successfully`,
+               })
                onUpdate()
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
-               toast.error("Failed to update the event. Please verify time and location" + error)
+               toast.error("Failed to update the event. Please verify time and location.")
           } finally {
                setIsSubmitting(false)
           }
@@ -1413,6 +1437,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                    <Button
                                         type="submit"
                                         disabled={isSubmitting || loadingHierarchy || !hasChanges}
+                                        onClick={handleSubmit}
                                    >
                                         <Save className="mr-2 h-4 w-4" />
                                         {isSubmitting ? "Saving..." : "Save Changes"}
