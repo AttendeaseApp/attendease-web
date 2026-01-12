@@ -112,6 +112,10 @@ export const OSA_PROFILE_ENDPOINT = {
 export const ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS = {
      GET_ALL_ATTENDANCE_RECORDS:                             `${API_BASE}/api/osa/attendance-records/management/all`,
      GET_FINALIZED_EVENT_SUMMARY:                            `${API_BASE}/api/osa/attendance-records/management/finalized/summary`,
+     GET_FINALIZED_EVENTS_BY_ACADEMIC_YEAR: (academicYearId: string) =>
+                                                             `${API_BASE}/api/osa/attendance-records/management/finalized/academic-year/${academicYearId}`,
+     GET_FINALIZED_EVENTS_BY_SEMESTER: (academicYearId: string, semester: number) =>
+                                                             `${API_BASE}/api/osa/attendance-records/management/finalized/academic-year/${academicYearId}/semester/${semester}`,
      GET_SORTED_ATTENDANCE_RECORDS: (eventId: string) =>     `${API_BASE}/api/osa/attendance-records/management/event/${eventId}/sorted`,
      GET_ATTENDEES_BY_EVENT_ID: (id: string) =>              `${API_BASE}/api/osa/attendance-records/management/event/${id}/attendees`,
      GET_ATTENDANCE_RECORDS_BY_STUDENT_ID: (id: string) =>   `${API_BASE}/api/osa/attendance-records/management/student/${id}/records`,
@@ -119,4 +123,6 @@ export const ATTENDANCE_RECORDS_MANAGEMENT_ENPOINTS = {
         (studentId: string,eventId: string) =>               `${API_BASE}/api/osa/attendance-records/management/${studentId}/event/${eventId}/update-status`,
      DELETE_ATTENDANCE_RECORD_BY_ID: (id: string) =>         `${API_BASE}/api/osa/attendance-records/management/${id}/delete`,
      DELETE_ALL_ATTENDANCE_RECORDS:                          `${API_BASE}/api/osa/attendance-records/management/delete/all`,
+     DELETE_ATTENDANCE_RECORDS_BY_ACADEMIC_YEAR: (academicYearId: string) =>
+                                                             `${API_BASE}/api/osa/attendance-records/management/delete/academic-year/${academicYearId}`,
 }
