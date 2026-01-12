@@ -58,7 +58,9 @@ export default function CreateOsaAccountDialog({
                const { confirmPassword: _, ...payload } = form
 
                await createOSAAccount(payload)
-               toast.success("OSA account created successfully")
+               toast.success("SUCCESS", {
+                    description: `OSA account created successfully!`,
+               })
 
                setForm({
                     firstName: "",

@@ -86,7 +86,7 @@ export default function ManageEventsPage() {
           setSelectedEvent(null)
           loadEvents()
           toast.success("SUCCESS", {
-               description: `Event updated successfully`,
+               description: `Event updated successfully!`,
           })
      }
 
@@ -96,7 +96,7 @@ export default function ManageEventsPage() {
           setIsCreateOpen(false)
           loadEvents()
           toast.success("SUCCESS", {
-               description: `Event created successfully`,
+               description: `Event created successfully!`,
           })
      }
 

@@ -90,7 +90,7 @@ export default function UpdateLocationDialog({
                await updateLocation(location.locationId, payload)
                onSuccess()
                toast.success("SUCCESS", {
-                    description: `Location updated successfully`,
+                    description: `Location updated successfully!`,
                })
                onClose()
           } catch (err) {

@@ -143,12 +143,14 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
      }
 
      const cleanEligibility = (selClusters: string[], selCourses: string[], selSecs: string[]) => {
+          let newCourses = [...selCourses]
           const newSecs = [...selSecs]
-          const newCourses = selCourses.filter((coId) => {
+          let newClusters = [...selClusters]
+          newCourses = newCourses.filter((coId) => {
                const coSecs = getSectionsUnderCourse(coId)
                return coSecs.length === 0 || coSecs.every((seId) => selSecs.includes(seId))
           })
-          const newClusters = selClusters.filter((clId) => {
+          newClusters = newClusters.filter((clId) => {
                const clCourses = getCoursesUnderCluster(clId)
                return clCourses.length === 0 || clCourses.every((coId) => newCourses.includes(coId))
           })
@@ -382,20 +384,8 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           e.preventDefault()
           setError("")
 
-          const cleaned = cleanEligibility(
-               eligibility.selectedClusters,
-               eligibility.selectedCourses,
-               eligibility.selectedSections
-          )
-
-          const isAllStudents =
-               eligibility.allStudents ||
-               (cleaned.selectedClusters.length === 0 &&
-                    cleaned.selectedCourses.length === 0 &&
-                    cleaned.selectedSections.length === 0)
-
           if (
-               !isAllStudents &&
+               !eligibility.allStudents &&
                eligibility.selectedClusters.length === 0 &&
                eligibility.selectedCourses.length === 0 &&
                eligibility.selectedSections.length === 0
@@ -406,9 +396,15 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
 
           setIsSubmitting(true)
           try {
+               const cleaned = cleanEligibility(
+                    eligibility.selectedClusters,
+                    eligibility.selectedCourses,
+                    eligibility.selectedSections
+               )
+
                const newEventData = {
-                    eventName: formData.eventName.trim(),
-                    description: formData.description.trim() || undefined,
+                    eventName: formData.eventName,
+                    description: formData.description || undefined,
                     registrationDateTime: format(
                          formData.registrationDateTime,
                          "yyyy-MM-dd hh:mm:ss a"
@@ -417,13 +413,13 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                     endingDateTime: format(formData.endingDateTime, "yyyy-MM-dd hh:mm:ss a"),
                     registrationLocationId: formData.registrationLocationId,
                     venueLocationId: formData.venueLocationId,
-                    eligibleStudents: isAllStudents
+                    eligibleStudents: eligibility.allStudents
                          ? { allStudents: true }
                          : {
                                 allStudents: false,
-                                clusters: eligibility.selectedClusters,
-                                courses: eligibility.selectedCourses,
-                                sections: eligibility.selectedSections,
+                                clusters: cleaned.selectedClusters,
+                                courses: cleaned.selectedCourses,
+                                sections: cleaned.selectedSections,
                            },
                     facialVerificationEnabled: !!formData.facialVerificationEnabled,
                     attendanceLocationMonitoringEnabled:
@@ -438,6 +434,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           } catch (err) {
                console.error("Create failed:", err)
                const message = err instanceof Error ? err.message : "Failed to create event."
+               toast.error("FAILED", {
+                              description: `Failed to create event.`,
+                         })
                setError(message)
                toast.error(message)
           } finally {

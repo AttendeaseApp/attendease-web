@@ -106,7 +106,7 @@ export default function CreateLocationDialog({
                const newLocation = await createLocation(payload)
                onSuccess(newLocation)
                toast.success("SUCCESS", {
-                    description: `Location created successfully`,
+                    description: `Location created successfully!`,
                })
                onClose()
           } catch (err) {

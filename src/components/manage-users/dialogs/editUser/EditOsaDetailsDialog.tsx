@@ -80,7 +80,9 @@ export default function EditUserDetailsDialog({
                }
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               toast.success("Successfully updated user.")
+               toast.success("SUCCESS", {
+                    description: `Successfully updated user!`,
+               })
                onOpenChange(false)
           } catch (err) {
                const message =

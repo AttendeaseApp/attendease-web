@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/Sidebar"
@@ -11,6 +11,7 @@ import { AppSidebar } from "@/components/Sidebar"
  */
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
      const router = useRouter()
+     const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null)
 
      useEffect(() => {
           const token = localStorage.getItem("authToken")
@@ -19,8 +20,20 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
           }
      }, [router])
 
+     useEffect(() => {
+          const stored = localStorage.getItem("sidebar-open")
+          setSidebarOpen(stored !== "false")
+     }, [])
+
+     useEffect(() => {
+          if (sidebarOpen === null) return
+            localStorage.setItem("sidebar-open", String(sidebarOpen))
+     }, [sidebarOpen])
+
+     if (sidebarOpen === null) return null
+
      return (
-          <SidebarProvider>
+          <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
                <div className="flex min-h-screen bg-background w-full">
                     <AppSidebar />
                     <div className="flex-1 flex flex-col min-w-0 w-full">

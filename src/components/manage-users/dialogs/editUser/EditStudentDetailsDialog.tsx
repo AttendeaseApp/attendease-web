@@ -116,7 +116,9 @@ export default function EditStudentDetailsDialog({
                }
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               toast.success("Successfully updated student.")
+               toast.success("SUCCESS", {
+                    description: `Successfully updated student!`,
+               })
                onOpenChange(false)
           } catch (err) {
                const message =

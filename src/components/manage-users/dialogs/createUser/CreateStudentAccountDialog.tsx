@@ -96,7 +96,9 @@ export default function CreateStudentAccountDialog({
                const { confirmPassword: _, ...payload } = form
 
                await createStudentAccount(payload)
-               toast.success("Student account created successfully!")
+               toast.success("SUCCESS", {
+                    description: `Student account created successfully!`,
+               })
 
                setForm({
                     firstName: "",
