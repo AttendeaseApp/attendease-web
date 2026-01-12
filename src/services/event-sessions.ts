@@ -36,7 +36,7 @@ export const getAllEvents = async (): Promise<EventSession[]> => {
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return (data as any []).map(normalizeEvent)
+          return (data as any[]).map(normalizeEvent)
      } catch (error) {
           console.error("Error fetching events:", error)
           throw error

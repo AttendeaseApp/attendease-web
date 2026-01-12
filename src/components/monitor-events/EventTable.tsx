@@ -12,107 +12,144 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
+import { CalendarClock, Loader2 } from "lucide-react"
 
 interface EventTableProps {
      events: EventSession[]
      loading: boolean
-     onViewAttendees: (eventId: string) => void
+     onViewAttendees: (eventId: string, eventName: string) => void
 }
 
 export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewAttendees }) => {
+     if (loading) {
+          return (
+               <Empty>
+                    <EmptyHeader>
+                         <EmptyMedia variant="icon">
+                              <Loader2 className="animate-spin" />
+                         </EmptyMedia>
+                         <EmptyTitle>Loading events...</EmptyTitle>
+                         <EmptyDescription>
+                              Please wait while we fetch the event data.
+                         </EmptyDescription>
+                    </EmptyHeader>
+               </Empty>
+          )
+     }
+
      if (events.length === 0) {
-          return <p className="text-muted-foreground">No events found.</p>
+          return (
+               <Empty>
+                    <EmptyHeader>
+                         <EmptyMedia variant="icon">
+                              <CalendarClock />
+                         </EmptyMedia>
+                         <EmptyTitle>No events found</EmptyTitle>
+                         <EmptyDescription>
+                              There are no upcoming, registration, or ongoing events at this time.
+                              Check back later or adjust your search filters.
+                         </EmptyDescription>
+                    </EmptyHeader>
+               </Empty>
+          )
      }
 
      return (
           <Table>
-               <TableHeader className="bg-gray-100">
+               <TableHeader>
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
+                         <TableHead className="font-semibold text-gray-900">Event</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              REGISTRATION VENUE
+                              Registration Venue
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">EVENT VENUE</TableHead>
+                         <TableHead className="font-semibold text-gray-900">Event Venue</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              REGISTRATION (DATE-TIME)
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              START (DATE-TIME)
+                              Registration (Date-Time)
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              END (DATE-TIME)
+                              Start (Date-Time)
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">STATUS</TableHead>
-                         <TableHead className="font-semibold text-gray-900"></TableHead>
+                         <TableHead className="font-semibold text-gray-900">
+                              End (Date-Time)
+                         </TableHead>
+                         <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                         <TableHead className="text-right font-semibold text-gray-900"></TableHead>
                     </TableRow>
                </TableHeader>
                <TableBody>
-                    {loading ? (
-                         <TableRow>
-                              <TableCell colSpan={6} className="text-center py-8">
-                                   Loading events...
+                    {events.map((event) => (
+                         <TableRow key={event.eventId}>
+                              <TableCell className="font-medium">{event.eventName}</TableCell>
+                              <TableCell>
+                                   {event.registrationLocationName ?? "No location"}
                               </TableCell>
-                         </TableRow>
-                    ) : events.length === 0 ? (
-                         <TableRow>
-                              <TableCell colSpan={6} className="text-center py-8">
-                                   There are no ONGOING, UPCOMING, or even REGISTRATION events has
-                                   found
+                              <TableCell>{event.venueLocationName ?? "No location"}</TableCell>
+                              <TableCell className="text-sm">
+                                   {new Date(event.registrationDateTime).toLocaleString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                   })}
                               </TableCell>
-                         </TableRow>
-                    ) : (
-                         events.map((event) => (
-                              <TableRow key={event.eventId}>
-                                   <TableCell>{event.eventName}</TableCell>
-                                   <TableCell className="font-medium">
-                                        {event.registrationLocationName ?? "No location"}
-                                   </TableCell>
-                                   <TableCell className="font-medium">
-                                        {event.venueLocationName ?? "No location"}
-                                   </TableCell>
-                                   <TableCell>
-                                        {new Date(event.registrationDateTime).toLocaleString()}
-                                   </TableCell>
-                                   <TableCell>
-                                        {new Date(event.startingDateTime).toLocaleString()}
-                                   </TableCell>
-                                   <TableCell>
-                                        {new Date(event.endingDateTime).toLocaleString()}
-                                   </TableCell>
-                                   <TableCell>
-                                        <span
-                                             className={cn("rounded-full px-2 py-1 text-xs", {
-                                                  "bg-green-100 text-green-700":
+                              <TableCell className="text-sm">
+                                   {new Date(event.startingDateTime).toLocaleString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                   })}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                   {new Date(event.endingDateTime).toLocaleString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                   })}
+                              </TableCell>
+                              <TableCell>
+                                   <span
+                                        className={cn(
+                                             "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ring-1 ring-inset",
+                                             {
+                                                  "bg-green-100 text-green-800 ring-green-600/20":
                                                        event.eventStatus === EventStatus.ONGOING,
-                                                  "bg-yellow-100 text-yellow-700":
+                                                  "bg-yellow-100 text-yellow-800 ring-yellow-600/20":
                                                        event.eventStatus ===
                                                        EventStatus.REGISTRATION,
-                                                  "bg-blue-100 text-blue-700":
+                                                  "bg-blue-100 text-blue-800 ring-blue-600/20":
                                                        event.eventStatus === EventStatus.UPCOMING,
-                                                  "bg-red-100 text-red-700":
+                                                  "bg-red-100 text-red-800 ring-red-600/20":
                                                        event.eventStatus === EventStatus.CANCELLED,
-                                                  "bg-gray-100":
+                                                  "bg-gray-100 text-gray-800 ring-gray-600/20":
                                                        event.eventStatus ===
                                                             EventStatus.CONCLUDED ||
                                                        event.eventStatus === EventStatus.FINALIZED,
-                                             })}
-                                        >
-                                             {event.eventStatus}
-                                        </span>
-                                   </TableCell>
+                                             }
+                                        )}
+                                   >
+                                        {event.eventStatus}
+                                   </span>
+                              </TableCell>
 
-                                   <TableCell>
-                                        <Button
-                                             size="sm"
-                                             variant="ghost"
-                                             onClick={() => onViewAttendees(event.eventId)}
-                                        >
-                                             View Registered Attendees
-                                        </Button>
-                                   </TableCell>
-                              </TableRow>
-                         ))
-                    )}
+                              <TableCell className="text-right">
+                                   <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() =>
+                                             onViewAttendees(event.eventId, event.eventName)
+                                        }
+                                   >
+                                        View Attendees
+                                   </Button>
+                              </TableCell>
+                         </TableRow>
+                    ))}
                </TableBody>
           </Table>
      )

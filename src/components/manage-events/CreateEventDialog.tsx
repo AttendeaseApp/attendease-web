@@ -434,8 +434,8 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                console.error("Create failed:", err)
                const message = err instanceof Error ? err.message : "Failed to create event."
                toast.error("FAILED", {
-                              description: `Failed to create event.`,
-                         })
+                    description: `Failed to create event.`,
+               })
                setError(message)
                toast.error(message)
           } finally {

@@ -79,8 +79,8 @@ export default function EditUserDetailsDialog({
                if (rest.email) body.email = rest.email
                if (rest.password) body.password = rest.password
                if (rest.studentNumber) body.studentNumber = rest.studentNumber
-               if (rest.sectionId) body.sectionId = rest.sectionId     
-               
+               if (rest.sectionId) body.sectionId = rest.sectionId
+
                const updated = await updateUser(userId, body)
                onUpdated(updated)
                toast.success("SUCCESS", {

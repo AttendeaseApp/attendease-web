@@ -23,8 +23,9 @@ import {
      SelectValue,
 } from "@/components/ui/select"
 import { useEffect, useState } from "react"
-import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
 import { X } from "lucide-react"
+import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
+import { Textarea } from "../ui/textarea"
 
 interface UpdateAttendanceDialogProps {
      open: boolean
@@ -66,9 +67,9 @@ export function UpdateStudentAttendanceRecordDialog({
           <Dialog open={open} onOpenChange={onOpenChange}>
                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                         <DialogTitle>Edit Attendance</DialogTitle>
+                         <DialogTitle>Update Attendance Record</DialogTitle>
                          <DialogDescription>
-                              Edit status for {attendee ? getFullName(attendee) : "Student"}.
+                              Update status for {attendee ? getFullName(attendee) : "Student"}.
                          </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -92,7 +93,7 @@ export function UpdateStudentAttendanceRecordDialog({
                          </div>
                          <div>
                               <Label htmlFor="reason">Reason (Optional)</Label>
-                              <Input
+                              <Textarea
                                    id="reason"
                                    value={reason}
                                    onChange={(e) => setReason(e.target.value)}
@@ -109,7 +110,7 @@ export function UpdateStudentAttendanceRecordDialog({
                                    Close
                               </Button>
                               <Button type="submit" disabled={submitting}>
-                                   {submitting ? "Saving..." : "Save Changes"}
+                                   {submitting ? "Saving..." : "Confirm Changes"}
                               </Button>
                          </DialogFooter>
                     </form>

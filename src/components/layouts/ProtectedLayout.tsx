@@ -27,7 +27,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
      useEffect(() => {
           if (sidebarOpen === null) return
-            localStorage.setItem("sidebar-open", String(sidebarOpen))
+          localStorage.setItem("sidebar-open", String(sidebarOpen))
      }, [sidebarOpen])
 
      if (sidebarOpen === null) return null
