@@ -8,7 +8,6 @@ export interface AttendanceStatus {
      EXCUSED: "EXCUSED"
 }
 
-
 export type AttendanceStatusValue = keyof AttendanceStatus
 
 export const ATTENDANCE_STATUS_VALUES = [
