@@ -1,28 +1,26 @@
 import { USER_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { authFetch } from "@/services/auth-fetch"
 
-
-
 export interface importCSVDetail {
-    row: number
-    errors: string[]
+     row: number
+     errors: string[]
 }
 
 export interface importCSVSummary {
-    totalRows: number
-    successfulRows: number
-    failedRows: number
-    missingSections: string[]
-    duplicateStudentNumbers: string[]
-    errorTypes: Record<string, number>
+     totalRows: number
+     successfulRows: number
+     failedRows: number
+     missingSections: string[]
+     duplicateStudentNumbers: string[]
+     errorTypes: Record<string, number>
 }
 
 export interface importCSVResult {
-    errorCode?: string
-    message?: string
-    summary: importCSVSummary
-    details: importCSVDetail[]
-    timestamp?: string
+     errorCode?: string
+     message?: string
+     summary: importCSVSummary
+     details: importCSVDetail[]
+     timestamp?: string
 }
 
 export const uploadStudentCSV = async (file: File) => {
@@ -35,16 +33,14 @@ export const uploadStudentCSV = async (file: File) => {
                body: formData,
           })
 
-const text = await res.text() 
+          const text = await res.text()
 
-           try {
-            const jsonResult: importCSVResult = JSON.parse(text)
-            return jsonResult
-        } catch (parseError) {
-     
-            throw new Error(`Invalid CSV upload response`)
-        }
-        
+          try {
+               const jsonResult: importCSVResult = JSON.parse(text)
+               return jsonResult
+          } catch (parseError) {
+               throw new Error(`Invalid CSV upload response`)
+          }
      } catch (error) {
           console.error("Error in uploadStudentCSV:", error)
           throw error
