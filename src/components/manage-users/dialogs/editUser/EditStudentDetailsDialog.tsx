@@ -107,7 +107,13 @@ export default function EditStudentDetailsDialog({
           setLoading(true)
 
           try {
-               const { userId, sectionId, password, ...rest } = form
+               const {
+                    userId,
+                    sectionId,
+                    password,
+                    confirmPassword: _confirmPassword,
+                    ...rest
+               } = form
                const body: Omit<UpdateUserDetailsInterface, "userId"> & { password?: string } = {
                     ...rest,
                     sectionId: sectionId === "" ? undefined : sectionId,
