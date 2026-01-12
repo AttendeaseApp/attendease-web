@@ -483,7 +483,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           try {
                setIsSubmitting(true)
                await cancelEvent(event.eventId)
-               toast.success("Event cancelled")
+               toast.success("SUCCESS", {
+                    description: `Event cancelled!`,
+               })
                onUpdate()
           } catch (error) {
                toast.error("Failed to cancel event" + error)

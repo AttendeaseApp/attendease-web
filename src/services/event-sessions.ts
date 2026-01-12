@@ -3,6 +3,16 @@ import { authFetch } from "./auth-fetch"
 import { EVENT_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { format } from "date-fns"
 
+const normalizeEvent = (event: any): EventSession => ({
+     ...event,
+     eligibleStudents: {
+          allStudents: event.allStudents ?? true,
+          clusters: event.clusterId ?? [],
+          courses: event.courseId ?? [],
+          sections: event.sectionsId ?? [],
+     },
+})
+
 /**
  * Get all events from the API.
  * @returns Promise<EventSession[]> Array of events
@@ -26,7 +36,7 @@ export const getAllEvents = async (): Promise<EventSession[]> => {
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as EventSession[]
+          return (data as any []).map(normalizeEvent)
      } catch (error) {
           console.error("Error fetching events:", error)
           throw error
