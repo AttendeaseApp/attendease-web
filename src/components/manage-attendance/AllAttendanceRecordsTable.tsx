@@ -71,14 +71,12 @@ export function AllAttendanceRecordsTable({
                     ) : (
                          records.map((record) => (
                               <TableRow key={record.recordId}>
-                                   <TableCell className="font-medium">
+                                   <TableCell>
                                         {record.student?.user?.firstName || "N/A"}{" "}
                                         {record.student?.user?.lastName || ""}
                                    </TableCell>
                                    <TableCell>{record.student?.studentNumber || "N/A"}</TableCell>
-                                   <TableCell className="font-medium">
-                                        {record.event?.eventName || "N/A"}
-                                   </TableCell>
+                                   <TableCell>{record.event?.eventName || "N/A"}</TableCell>
                                    <TableCell>
                                         <span
                                              className={cn(

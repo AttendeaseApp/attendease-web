@@ -126,9 +126,7 @@ export function EventAttendeesTable({
                          ) : (
                               filteredData.map((attendee) => (
                                    <TableRow key={attendee.attendanceRecordId}>
-                                        <TableCell className="font-medium">
-                                             {getFullName(attendee)}
-                                        </TableCell>
+                                        <TableCell>{getFullName(attendee)}</TableCell>
                                         <TableCell>
                                              <span
                                                   className={cn(

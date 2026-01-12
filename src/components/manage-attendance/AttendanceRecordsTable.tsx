@@ -60,11 +60,9 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
                     ) : (
                          events.map((event) => (
                               <TableRow key={event.eventId}>
-                                   <TableCell className="font-medium">{event.eventName}</TableCell>
-                                   <TableCell className="font-medium">
-                                        {event.venueLocationName ?? "No location"}
-                                   </TableCell>
-                                   <TableCell className="font-medium">
+                                   <TableCell>{event.eventName}</TableCell>
+                                   <TableCell>{event.venueLocationName ?? "No location"}</TableCell>
+                                   <TableCell>
                                         {event.registrationLocationName ?? "No location"}
                                    </TableCell>
                                    <TableCell>{event.registrationDateTime}</TableCell>
