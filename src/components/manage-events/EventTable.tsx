@@ -69,7 +69,7 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
      return (
           <>
                <Table>
-                    <TableHeader className="bg-gray-100">
+                    <TableHeader>
                          <TableRow>
                               <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
                               <TableHead className="font-semibold text-gray-900">
