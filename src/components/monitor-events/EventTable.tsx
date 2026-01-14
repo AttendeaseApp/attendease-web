@@ -80,7 +80,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
                <TableBody>
                     {events.map((event) => (
                          <TableRow key={event.eventId}>
-                              <TableCell className="font-medium">{event.eventName}</TableCell>
+                              <TableCell>{event.eventName}</TableCell>
                               <TableCell>
                                    {event.registrationLocationName ?? "No location"}
                               </TableCell>

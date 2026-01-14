@@ -1,9 +1,16 @@
 "use client"
 
-import { useState } from "react"
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { Input } from "@/components/ui/input"
+import {
+     Select,
+     SelectContent,
+     SelectItem,
+     SelectTrigger,
+     SelectValue,
+} from "@/components/ui/select"
 import {
      Table,
      TableBody,
@@ -13,27 +20,12 @@ import {
      TableRow,
 } from "@/components/ui/table"
 import {
-     Select,
-     SelectContent,
-     SelectItem,
-     SelectTrigger,
-     SelectValue,
-} from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
-import {
-     Search,
-     X,
-     ChevronDown,
-     ChevronUp,
-     Users,
-     UserCheck,
-     UserX,
-     Clock,
-     Loader2,
-} from "lucide-react"
-import { EventAttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
-import { AttendeesResponse } from "@/interface/attendance/records/management/AttendeesResponse"
+     AttendeesResponse,
+     EventAttendeesResponse,
+} from "@/interface/attendance/records/management/AttendeesResponse"
+import { cn } from "@/lib/utils"
+import { ChevronDown, ChevronUp, Clock, Loader2, Search, UserCheck, Users, X } from "lucide-react"
+import { useState } from "react"
 
 interface AttendeesCardProps {
      attendeesData: EventAttendeesResponse
@@ -62,11 +54,9 @@ export const AttendeesCard: React.FC<AttendeesCardProps> = ({
      const getStatusCounts = () => {
           const counts = {
                PRESENT: 0,
-               ABSENT: 0,
                LATE: 0,
                REGISTERED: 0,
                PARTIALLY_REGISTERED: 0,
-               IDLE: 0,
           }
           attendeesData.attendees.forEach((a) => {
                if (counts.hasOwnProperty(a.attendanceStatus)) {
@@ -145,15 +135,6 @@ export const AttendeesCard: React.FC<AttendeesCardProps> = ({
                                         {statusCounts.PRESENT}
                                    </div>
                                    <div className="text-xs text-green-600">Present</div>
-                              </div>
-                              <div className="bg-red-50 rounded p-2 text-center border border-red-200">
-                                   <div className="flex items-center justify-center gap-1 text-red-600 mb-1">
-                                        <UserX className="h-3 w-3" />
-                                   </div>
-                                   <div className="text-xl font-bold text-red-700">
-                                        {statusCounts.ABSENT}
-                                   </div>
-                                   <div className="text-xs text-red-600">Absent</div>
                               </div>
                               <div className="bg-yellow-50 rounded p-2 text-center border border-yellow-200">
                                    <div className="flex items-center justify-center gap-1 text-yellow-600 mb-1">
