@@ -555,7 +555,8 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     registrationLocationId: formData.registrationLocationId || undefined,
                     venueLocationId: formData.venueLocationId || undefined,
                     facialVerificationEnabled: formData.facialVerificationEnabled,
-                    attendanceLocationMonitoringEnabled: formData.attendanceLocationMonitoringEnabled,
+                    attendanceLocationMonitoringEnabled:
+                         formData.attendanceLocationMonitoringEnabled,
                     strictLocationValidation: formData.strictLocationValidation,
                     ...(eligibleStudents && { eligibleStudents }),
                }
@@ -586,8 +587,12 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     updatedData.facialVerificationEnabled = formData.facialVerificationEnabled
                }
 
-               if (formData.attendanceLocationMonitoringEnabled !== event.attendanceLocationMonitoringEnabled) {
-                    updatedData.attendanceLocationMonitoringEnabled = formData.attendanceLocationMonitoringEnabled
+               if (
+                    formData.attendanceLocationMonitoringEnabled !==
+                    event.attendanceLocationMonitoringEnabled
+               ) {
+                    updatedData.attendanceLocationMonitoringEnabled =
+                         formData.attendanceLocationMonitoringEnabled
                }
 
                if (formData.strictLocationValidation !== event.strictLocationValidation) {
