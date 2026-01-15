@@ -598,8 +598,7 @@ export default function ManageClustersPage() {
                                              setTempClusterId("")
                                         }}
                                    >
-                                        <X className="mr-2 h-4 w-4" />
-                                        Cancel
+                                        Go Back
                                    </Button>
                                    <Button
                                         type="button"
@@ -698,8 +697,7 @@ export default function ManageClustersPage() {
                                              setTempCourseId("")
                                         }}
                                    >
-                                        <X className="mr-2 h-4 w-4" />
-                                        Cancel
+                                        Go Back
                                    </Button>
                                    <Button
                                         type="button"

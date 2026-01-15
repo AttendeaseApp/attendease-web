@@ -115,7 +115,7 @@ export default function MoreSettingsDialog({
                          </AlertDialogHeader>
 
                          <AlertDialogFooter>
-                              <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel disabled={loading}>Go Back</AlertDialogCancel>
 
                               <AlertDialogAction
                                    disabled={loading}

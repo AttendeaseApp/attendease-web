@@ -175,7 +175,9 @@ export default function AcademicYearManagementPage() {
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel disabled={actionLoading}>
+                                   Go Back
+                              </AlertDialogCancel>
                               <AlertDialogAction
                                    onClick={handleDeleteConfirm}
                                    disabled={actionLoading}
@@ -199,7 +201,9 @@ export default function AcademicYearManagementPage() {
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel disabled={actionLoading}>
+                                   Go Back
+                              </AlertDialogCancel>
                               <AlertDialogAction
                                    onClick={handleActivateConfirm}
                                    disabled={actionLoading}
@@ -222,7 +226,9 @@ export default function AcademicYearManagementPage() {
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel disabled={actionLoading}>
+                                   Go Back
+                              </AlertDialogCancel>
                               <AlertDialogAction
                                    onClick={handleDeactivateConfirm}
                                    disabled={actionLoading}

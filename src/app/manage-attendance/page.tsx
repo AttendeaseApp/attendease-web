@@ -325,7 +325,7 @@ export default function AttendanceRecordsManagementPage() {
                          )}
 
                          <AlertDialogFooter>
-                              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel disabled={isDeleting}>Go Back</AlertDialogCancel>
                               <AlertDialogAction
                                    onClick={handleConfirmDelete}
                                    disabled={

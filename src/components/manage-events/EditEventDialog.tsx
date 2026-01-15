@@ -1454,7 +1454,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         className="hover: bg-red-100 border-red-400"
                                         onClick={handleCancelEvent}
                                    >
-                                        Cancel this Event
+                                        Set Event Status to CANCELLED
                                    </Button>
                                    <Button
                                         type="submit"

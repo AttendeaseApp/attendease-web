@@ -141,7 +141,7 @@ export function ClusterTable({
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel>Go Back</AlertDialogCancel>
                               <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
                          </AlertDialogFooter>
                     </AlertDialogContent>

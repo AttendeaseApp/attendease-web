@@ -240,7 +240,7 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel>Go Back</AlertDialogCancel>
                               <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
                          </AlertDialogFooter>
                     </AlertDialogContent>

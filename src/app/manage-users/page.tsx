@@ -23,7 +23,7 @@ import {
      deleteStudentAccountBySection,
      getAllUsers,
 } from "@/services/api/user/management/account/user-management-services"
-import { ChevronDown, Search } from "lucide-react"
+import { ChevronDown, Search, X } from "lucide-react"
 import { useEffect, useState, useCallback } from "react"
 import { bulkActivateStudents } from "@/services/api/user/management/account/bulk-activate-students-service"
 import { bulkDeactivateStudents } from "@/services/api/user/management/account/bulk-deactivate-students-service"
@@ -477,7 +477,7 @@ export default function RetrieveAllUsers() {
                               className="mt-4 w-full"
                               onClick={() => closeDialog("deleteModal")}
                          >
-                              Cancel
+                              Go Back
                          </Button>
                     </DialogContent>
                </Dialog>
@@ -505,7 +505,7 @@ export default function RetrieveAllUsers() {
                                    }
                                    disabled={deleting}
                               >
-                                   Cancel
+                                   Go Back
                               </Button>
                               <Button
                                    className="bg-red-500 text-white"

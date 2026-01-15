@@ -151,7 +151,7 @@ export function CourseTable({ courses, loading, onEdit, onDelete }: CourseTableP
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel>Go Back</AlertDialogCancel>
                               <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
                          </AlertDialogFooter>
                     </AlertDialogContent>

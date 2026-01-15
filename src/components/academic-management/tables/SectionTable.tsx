@@ -318,7 +318,7 @@ export function SectionTable({ sections, loading, onEdit, onRefresh }: SectionPr
                               </AlertDialogDescription>
                          </AlertDialogHeader>
                          <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel>Go Back</AlertDialogCancel>
                               <AlertDialogAction onClick={confirmDelete} disabled={isDeleting}>
                                    {isDeleting ? "Deleting..." : "Delete"}
                               </AlertDialogAction>
@@ -366,7 +366,7 @@ export function SectionTable({ sections, loading, onEdit, onRefresh }: SectionPr
                                              variant="outline"
                                              onClick={handleCloseActivationDialog}
                                         >
-                                             Cancel
+                                             Go Back
                                         </Button>
                                         <Button onClick={handleConfirmActivate}>Activate</Button>
                                    </>

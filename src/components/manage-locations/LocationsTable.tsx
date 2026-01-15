@@ -117,7 +117,7 @@ export function LocationsTable({ locations, loading, onDelete, onEdit }: Locatio
                                                        </AlertDialogHeader>
                                                        <AlertDialogFooter>
                                                             <AlertDialogCancel>
-                                                                 Cancel
+                                                                 Go Back
                                                             </AlertDialogCancel>
                                                             <AlertDialogAction
                                                                  onClick={() =>
