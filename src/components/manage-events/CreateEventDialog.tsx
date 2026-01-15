@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Command, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
 import {
      Dialog,
      DialogContent,
@@ -120,6 +119,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           return items.filter(opts.predicate)
      }
      const [createNewLocation, setCreateNewLocation] = useState(false)
+     const [newLocationPurpose, setNewLocationPurpose] = useState<
+          "EVENT_VENUE" | "REGISTRATION_AREA"
+     >()
 
      const getCoursesUnderCluster = (clId: string) => {
           return courses.filter((c) => c.cluster?.clusterId === clId).map((c) => c.id)
@@ -431,6 +433,9 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
           } catch (err) {
                console.error("Create failed:", err)
                const message = err instanceof Error ? err.message : "Failed to create event."
+               toast.error("FAILED", {
+                    description: `Failed to create event.`,
+               })
                setError(message)
                toast.error(message)
           } finally {
@@ -883,12 +888,17 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        <SelectLabel className="mb-3" />
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
-                                                            onClick={() =>
+                                                            onClick={() => {
+                                                                 setNewLocationPurpose(
+                                                                      "REGISTRATION_AREA"
+                                                                 )
                                                                  setCreateNewLocation(true)
-                                                            }
+                                                            }}
                                                        >
                                                             <Plus className="w-4 h-4" />
-                                                            <span>Create New Venue </span>
+                                                            <span>
+                                                                 Create New Registration Venue{" "}
+                                                            </span>
                                                        </div>
                                                   </SelectGroup>
                                              </SelectContent>
@@ -937,12 +947,15 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                                        <SelectLabel className="mb-3" />
                                                        <div
                                                             className="flex items-center gap-1 px-2 py-2 text-sm cursor-pointer hover:bg-accent rounded"
-                                                            onClick={() =>
+                                                            onClick={() => {
+                                                                 setNewLocationPurpose(
+                                                                      "EVENT_VENUE"
+                                                                 )
                                                                  setCreateNewLocation(true)
-                                                            }
+                                                            }}
                                                        >
                                                             <Plus className="w-4 h-4" />
-                                                            <span>Create New Venue </span>
+                                                            <span>Create New Event Venue </span>
                                                        </div>
                                                   </SelectGroup>
                                              </SelectContent>
@@ -950,10 +963,12 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                    </div>
                               </div>
                               <CreateLocationDialog
+                                   key={newLocationPurpose}
                                    open={createNewLocation}
                                    onClose={closeDialog}
                                    onSuccess={handleCreateVenue}
                                    existingLocations={locations}
+                                   defaultLocationPurpose={newLocationPurpose}
                               />
 
                               <div className="space-y-4 flex flex-col">
@@ -1155,11 +1170,6 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         <TooltipContent side="bottom" align="center" sideOffset={8}>
                                              <p className="text-sm">
                                                   <strong>What are these checkboxes for?</strong>
-                                                  {/* This
-                                                  button runs the academic year activation scheduler
-                                                  immediately, without waiting for the nightly cron
-                                                  job.
-                                                  <br /> */}
                                                   <br />
                                                   <br />
                                                   <strong>Facial Verification:</strong>
@@ -1284,7 +1294,7 @@ export function CreateEventDialog({ isOpen, onClose, onCreate }: CreateEventDial
                                         disabled={isSubmitting}
                                    >
                                         <X className="mr-2 h-4 w-4" />
-                                        Cancel
+                                        Close
                                    </Button>
                                    <Button
                                         type="submit"

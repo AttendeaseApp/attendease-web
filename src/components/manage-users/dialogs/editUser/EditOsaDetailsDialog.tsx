@@ -8,6 +8,7 @@ import { UpdateUserDetailsInterface } from "@/interface/management/update/Update
 import { updateUser } from "@/services/api/user/management/information/edit-user-details"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { X } from "lucide-react"
 
 interface EditUserDetailsDialogProps {
      open: boolean
@@ -70,16 +71,21 @@ export default function EditUserDetailsDialog({
           }
           setLoading(true)
           try {
-               const { userId, password, ...rest } = form
-               const body: Omit<UpdateUserDetailsInterface, "userId"> & { password?: string } = {
-                    ...rest,
-                    studentNumber: undefined,
-                    sectionId: undefined,
-                    password: password || undefined,
-               }
+               const { userId, confirmPassword, ...rest } = form
+               const body = {} as UpdateUserDetailsInterface
+               if (rest.firstName) body.firstName = rest.firstName
+               if (rest.lastName) body.lastName = rest.lastName
+               if (rest.contactNumber) body.contactNumber = rest.contactNumber
+               if (rest.email) body.email = rest.email
+               if (rest.password) body.password = rest.password
+               if (rest.studentNumber) body.studentNumber = rest.studentNumber
+               if (rest.sectionId) body.sectionId = rest.sectionId
+
                const updated = await updateUser(userId, body)
                onUpdated(updated)
-               toast.success("Successfully updated user.")
+               toast.success("SUCCESS", {
+                    description: `Successfully updated user!`,
+               })
                onOpenChange(false)
           } catch (err) {
                const message =
@@ -174,7 +180,8 @@ export default function EditUserDetailsDialog({
                          </div>
                          <div className="flex justify-end gap-2">
                               <Button variant="outline" onClick={() => onOpenChange(false)}>
-                                   Cancel
+                                   <X className="mr-2 h-4 w-4" />
+                                   Close
                               </Button>
                               <Button
                                    onClick={handleSubmit}

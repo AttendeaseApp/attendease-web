@@ -17,9 +17,10 @@ export enum EventStatus {
  */
 export interface EligibilityCriteria {
      allStudents: boolean
-     cluster?: string[]
-     course?: string[]
+     clusters?: string[]
+     courses?: string[]
      sections?: string[]
+     targetYearLevels?: number[]
 }
 
 /**
@@ -34,6 +35,35 @@ export interface EventSession {
      venueLocationId?: string | null
      venueLocationName: string
      eligibleStudents?: EligibilityCriteria
+     eligibilityDescription?: string
+     registrationDateTime: string
+     startingDateTime: string
+     endingDateTime: string
+     eventStatus: EventStatus
+     academicYearName: string
+     semesterName: string
+     facialVerificationEnabled?: boolean
+     attendanceLocationMonitoringEnabled?: boolean
+     strictLocationValidation?: boolean
+     createdByUserId?: string | null
+     createdAt?: string | null
+     updatedAt?: string | null
+}
+
+export interface EventResponse {
+     eventId: string
+     eventName: string
+     description?: string | null
+     registrationLocationId?: string | null
+     registrationLocationName: string
+     venueLocationId?: string | null
+     venueLocationName: string
+     allStudents: boolean
+     clusters?: string[]
+     courses?: string[]
+     sections?: string[]
+     targetYearLevels?: number[]
+     eligibilityDescription?: string
      registrationDateTime: string
      startingDateTime: string
      endingDateTime: string

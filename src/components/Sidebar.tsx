@@ -21,7 +21,8 @@ import {
      useSidebar,
 } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
+import Link from "next/link"
 
 const menu = [
      {
@@ -65,8 +66,11 @@ const others = [
 ]
 
 export function AppSidebar() {
-     const { setOpenMobile, isMobile } = useSidebar()
+     const { open, setOpen, setOpenMobile, isMobile } = useSidebar()
      const pathname = usePathname()
+     useEffect(() => {
+          localStorage.setItem("sidebar-open", String(open))
+     }, [open])
      useEffect(() => {
           if (isMobile) {
                setOpenMobile(false)
@@ -88,10 +92,10 @@ export function AppSidebar() {
                                    {menu.map((menuItem) => (
                                         <SidebarMenuItem key={menuItem.title}>
                                              <SidebarMenuButton asChild>
-                                                  <a href={menuItem.url}>
+                                                  <Link href={menuItem.url}>
                                                        <menuItem.icon />
                                                        <span>{menuItem.title}</span>
-                                                  </a>
+                                                  </Link>
                                              </SidebarMenuButton>
                                         </SidebarMenuItem>
                                    ))}
@@ -105,10 +109,10 @@ export function AppSidebar() {
                                    {others.map((otherItem) => (
                                         <SidebarMenuItem key={otherItem.title}>
                                              <SidebarMenuButton asChild>
-                                                  <a href={otherItem.url}>
+                                                  <Link href={otherItem.url}>
                                                        <otherItem.icon />
                                                        <span>{otherItem.title}</span>
-                                                  </a>
+                                                  </Link>
                                              </SidebarMenuButton>
                                         </SidebarMenuItem>
                                    ))}

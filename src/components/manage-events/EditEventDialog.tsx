@@ -42,7 +42,7 @@ import { cancelEvent, updateEvent } from "@/services/event-sessions"
 import { getAllLocations } from "@/services/locations-service"
 import { format } from "date-fns"
 import { ChevronDownIcon, Save, X } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import EditEventStatusDialog from "./EditEventStatusDialog"
 
@@ -234,15 +234,16 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     eventStatus: event.eventStatus,
                     registrationLocationId: event.registrationLocationId || "",
                     venueLocationId: event.venueLocationId || "",
-                    facialVerificationEnabled: event.facialVerificationEnabled,
-                    attendanceLocationMonitoringEnabled: event.attendanceLocationMonitoringEnabled,
-                    strictLocationValidation: event.strictLocationValidation,
+                    facialVerificationEnabled: !!event.facialVerificationEnabled,
+                    attendanceLocationMonitoringEnabled:
+                         !!event.attendanceLocationMonitoringEnabled,
+                    strictLocationValidation: !!event.strictLocationValidation,
                })
 
                const tempElig = {
                     allStudents: event.eligibleStudents?.allStudents ?? true,
-                    selectedClusters: event.eligibleStudents?.cluster ?? [],
-                    selectedCourses: event.eligibleStudents?.course ?? [],
+                    selectedClusters: event.eligibleStudents?.clusters ?? [],
+                    selectedCourses: event.eligibleStudents?.courses ?? [],
                     selectedSections: event.eligibleStudents?.sections ?? [],
                }
 
@@ -482,7 +483,9 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           try {
                setIsSubmitting(true)
                await cancelEvent(event.eventId)
-               toast.success("Event cancelled")
+               toast.success("SUCCESS", {
+                    description: `Event cancelled!`,
+               })
                onUpdate()
           } catch (error) {
                toast.error("Failed to cancel event" + error)
@@ -551,6 +554,10 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                     description: formData.description || undefined,
                     registrationLocationId: formData.registrationLocationId || undefined,
                     venueLocationId: formData.venueLocationId || undefined,
+                    facialVerificationEnabled: formData.facialVerificationEnabled,
+                    attendanceLocationMonitoringEnabled:
+                         formData.attendanceLocationMonitoringEnabled,
+                    strictLocationValidation: formData.strictLocationValidation,
                     ...(eligibleStudents && { eligibleStudents }),
                }
 
@@ -574,6 +581,22 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                          formData.endingDateTime,
                          "yyyy-MM-dd HH:mm:ss"
                     )
+               }
+
+               if (formData.facialVerificationEnabled !== event.facialVerificationEnabled) {
+                    updatedData.facialVerificationEnabled = formData.facialVerificationEnabled
+               }
+
+               if (
+                    formData.attendanceLocationMonitoringEnabled !==
+                    event.attendanceLocationMonitoringEnabled
+               ) {
+                    updatedData.attendanceLocationMonitoringEnabled =
+                         formData.attendanceLocationMonitoringEnabled
+               }
+
+               if (formData.strictLocationValidation !== event.strictLocationValidation) {
+                    updatedData.strictLocationValidation = formData.strictLocationValidation
                }
 
                await updateEvent(event.eventId, updatedData)
@@ -1295,11 +1318,6 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         <TooltipContent side="bottom" align="center" sideOffset={8}>
                                              <p className="text-sm">
                                                   <strong>What are these checkboxes for?</strong>
-                                                  {/* This
-                                                                                button runs the academic year activation scheduler
-                                                                                immediately, without waiting for the nightly cron
-                                                                                job.
-                                                                                <br /> */}
                                                   <br />
                                                   <br />
                                                   <strong>Facial Verification:</strong>
@@ -1424,7 +1442,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
                                         disabled={isSubmitting}
                                    >
                                         <X className="mr-2 h-4 w-4" />
-                                        Cancel
+                                        Close
                                    </Button>
                                    <Button
                                         type="button"

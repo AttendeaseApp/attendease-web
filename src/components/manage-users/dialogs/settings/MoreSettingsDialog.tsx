@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { deleteAllStudentsAndBiometrics } from "@/services/api/user/management/account/user-management-services"
 import * as React from "react"
 import { toast } from "sonner"
+import { X } from "lucide-react"
 
 interface MoreSettingsDialogProps {
      open: boolean
@@ -94,7 +95,8 @@ export default function MoreSettingsDialog({
                                    className="w-fit "
                                    onClick={() => onOpenChange(false)}
                               >
-                                   Cancel
+                                   <X className="mr-2 h-4 w-4" />
+                                   Close
                               </Button>
                          </div>
                     </DialogContent>

@@ -1,7 +1,17 @@
-import { EventSession } from "@/interface/event/event-interface"
+import { EventSession, EventResponse } from "@/interface/event/event-interface"
 import { authFetch } from "./auth-fetch"
 import { EVENT_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { format } from "date-fns"
+
+const normalizeEvent = (event: EventResponse): EventSession => ({
+     ...event,
+     eligibleStudents: {
+          allStudents: event.allStudents ?? true,
+          clusters: event.clusters ?? [],
+          courses: event.courses ?? [],
+          sections: event.sections ?? [],
+     },
+})
 
 /**
  * Get all events from the API.
@@ -26,7 +36,7 @@ export const getAllEvents = async (): Promise<EventSession[]> => {
                throw new Error(errorMsg)
           }
           const data = await res.json()
-          return data as EventSession[]
+          return (data as EventResponse[]).map(normalizeEvent)
      } catch (error) {
           console.error("Error fetching events:", error)
           throw error
@@ -105,6 +115,7 @@ export const createEvent = async (
 ): Promise<EventSession> => {
      try {
           const payload = { ...newEventData }
+          payload.description = newEventData.description ?? ""
           if (payload.registrationDateTime) {
                payload.registrationDateTime = format(
                     new Date(payload.registrationDateTime),

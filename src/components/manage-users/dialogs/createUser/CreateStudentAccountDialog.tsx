@@ -21,6 +21,7 @@ import {
 import { Check } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { X } from "lucide-react"
 
 interface AddStudentAccountDialogProps {
      open: boolean
@@ -95,7 +96,9 @@ export default function CreateStudentAccountDialog({
                const { confirmPassword: _, ...payload } = form
 
                await createStudentAccount(payload)
-               toast.success("Student account created successfully!")
+               toast.success("SUCCESS", {
+                    description: `Student account created successfully!`,
+               })
 
                setForm({
                     firstName: "",
@@ -316,7 +319,8 @@ export default function CreateStudentAccountDialog({
                                         onOpenChange(false)
                                    }}
                               >
-                                   Cancel
+                                   <X className="mr-2 h-4 w-4" />
+                                   Close
                               </Button>
 
                               <Button onClick={handleSubmit} disabled={loading}>

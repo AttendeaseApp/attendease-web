@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import Link from "next/link"
 import { toast } from "sonner"
+import { Undo2 } from "lucide-react"
 
 export default function OsaEditMyProfilePage() {
      const [form, setForm] = useState<UpdateUserDetailsInterface>({
@@ -149,7 +150,8 @@ export default function OsaEditMyProfilePage() {
                                         className="rounded-sm bg-white text-black border border-slate-300"
                                         onClick={GoBackToProfilePage}
                                    >
-                                        Cancel
+                                        <Undo2 className="mr-2 h-4 w-4" />
+                                        Back
                                    </Button>
 
                                    <Button
