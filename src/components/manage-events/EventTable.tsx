@@ -12,6 +12,7 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "../ui/empty"
 import {
      AlertDialog,
      AlertDialogAction,
@@ -30,7 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
-import { formatEligibility } from "@/lib/formatEligibleStudents"
+import { CalendarDays, Loader2 } from "lucide-react"
 
 interface EventTableProps {
      events: EventSession[]
@@ -66,33 +67,63 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
           }
      }
 
+     if (loading) {
+          return (
+               <Empty>
+                    <EmptyHeader>
+                         <EmptyMedia variant="icon">
+                              <Loader2 className="animate-spin" />
+                         </EmptyMedia>
+                         <EmptyTitle>Loading events...</EmptyTitle>
+                         <EmptyDescription>
+                              Please wait while we fetch the event data.
+                         </EmptyDescription>
+                    </EmptyHeader>
+               </Empty>
+          )
+     }
+
+     if (events.length === 0) {
+          return (
+               <Empty>
+                    <EmptyHeader>
+                         <EmptyMedia variant="icon">
+                              <CalendarDays />
+                         </EmptyMedia>
+                         <EmptyTitle>No active events found</EmptyTitle>
+                         <EmptyDescription>There are no active events found.</EmptyDescription>
+                    </EmptyHeader>
+               </Empty>
+          )
+     }
+
      return (
           <>
                <Table>
                     <TableHeader>
                          <TableRow>
-                              <TableHead className="font-semibold text-gray-900">EVENT</TableHead>
+                              <TableHead className="font-semibold text-gray-900">Event</TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   REGISTRATION VENUE
+                                   Registration Location
                               </TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   EVENT VENUE
+                                   Event Venue
                               </TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   ELIGIBLE STUDENTS
+                                   Eligibliity
                               </TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   REGISTRATION (DATE-TIME)
+                                   Registration (DATE-TIME)
                               </TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   START (DATE-TIME)
+                                   Strting (DATE-TIME)
                               </TableHead>
                               <TableHead className="font-semibold text-gray-900">
-                                   END (DATE-TIME)
+                                   Ending (DATE-TIME)
                               </TableHead>
-                              <TableHead className="font-semibold text-gray-900">STATUS</TableHead>
+                              <TableHead className="font-semibold text-gray-900">Status</TableHead>
                               <TableHead className="text-right font-semibold text-gray-900">
-                                   MORE
+                                   Options
                               </TableHead>
                          </TableRow>
                     </TableHeader>
@@ -115,15 +146,13 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
                                         <TableCell className="font-medium">
                                              {event.eventName}
                                         </TableCell>
-                                        <TableCell className="font-medium">
+                                        <TableCell>
                                              {event.registrationLocationName ?? "No location"}
                                         </TableCell>
-                                        <TableCell className="font-medium">
+                                        <TableCell>
                                              {event.venueLocationName ?? "No location"}
                                         </TableCell>
-                                        <TableCell className="font-medium">
-                                             {formatEligibility(event.eligibleStudents)}
-                                        </TableCell>
+                                        <TableCell>{event.eligibilityDescription}</TableCell>
                                         <TableCell>
                                              {new Date(event.registrationDateTime).toLocaleString()}
                                         </TableCell>

@@ -61,7 +61,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
                     <TableRow>
                          <TableHead className="font-semibold text-gray-900">Event</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Registration Venue
+                              Registration Location
                          </TableHead>
                          <TableHead className="font-semibold text-gray-900">Event Venue</TableHead>
                          <TableHead className="font-semibold text-gray-900">

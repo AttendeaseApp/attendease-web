@@ -192,7 +192,7 @@ export default function EventAttendeesPage() {
                                              </div>
                                              <div>
                                                   <p className="text-muted-foreground text-xs">
-                                                       Registration Venue
+                                                       Registration Locations
                                                   </p>
                                                   <p className="font-medium">
                                                        {event.registrationLocationName || "N/A"}

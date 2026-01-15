@@ -20,6 +20,7 @@ export interface EligibilityCriteria {
      clusters?: string[]
      courses?: string[]
      sections?: string[]
+     targetYearLevels?: number[]
 }
 
 /**
@@ -34,6 +35,7 @@ export interface EventSession {
      venueLocationId?: string | null
      venueLocationName: string
      eligibleStudents?: EligibilityCriteria
+     eligibilityDescription?: string
      registrationDateTime: string
      startingDateTime: string
      endingDateTime: string
@@ -60,6 +62,8 @@ export interface EventResponse {
      clusters?: string[]
      courses?: string[]
      sections?: string[]
+     targetYearLevels?: number[]
+     eligibilityDescription?: string
      registrationDateTime: string
      startingDateTime: string
      endingDateTime: string
