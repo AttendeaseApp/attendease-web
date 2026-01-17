@@ -3,10 +3,20 @@
 import UploadDropPart from "@/components/manage-users/dialogs/importStudent/UploadDropPart"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
+import { importCSVResult } from "@/constants/import-stud-intrfac"
 import { useState } from "react"
-import { toast } from "sonner"
-import { X } from "lucide-react"
+
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogContent,
+} from "@/components/ui/alert-dialog"
+
+import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
 
 interface ImportStudentsDialogProps {
      open: boolean
@@ -17,37 +27,97 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
      const [selectedFile, setSelectedFile] = useState<File | null>(null)
      const [loading, setLoading] = useState(false)
 
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [errorMessage, setErrorMessage] = useState("")
+
+     const showResult = (message: string) => {
+          setErrorMessage(message)
+          setStatusDialogOpen(true)
+     }
+
      const handleUpload = async () => {
           if (!selectedFile) return
 
           try {
                setLoading(true)
-               const result = await uploadStudentCSV(selectedFile)
+               const result: importCSVResult = await uploadStudentCSV(selectedFile)
 
-               const jsonResult = typeof result === "string" ? JSON.parse(result) : result
+               let message = result.message || "Import completed successfully.\n"
 
-               let message = jsonResult.message || "Upload completed."
-               if (
-                    jsonResult.details &&
-                    Array.isArray(jsonResult.details) &&
-                    jsonResult.details.length > 0
-               ) {
-                    message += "\n\nErrors per row:\n"
-                    jsonResult.details.forEach((item: { row: number; errors: string[] }) => {
-                         message += `Row ${item.row}: ${item.errors.join(", ")}\n`
-                    })
+               if (result.summary) {
+                    message += `Total Rows: ${result.summary.totalRows}\n`
+                    message += `Successful: ${result.summary.successfulRows}\n`
+                    message += `Failed: ${result.summary.failedRows}\n\n`
+
+                    if (result.summary.missingSections?.length) {
+                         message +=
+                              "Missing Sections:\n" +
+                              result.summary.missingSections.map((s) => `- ${s}`).join("\n") +
+                              "\n\n"
+                    }
+
+                    if (result.summary.duplicateStudentNumbers?.length) {
+                         message +=
+                              "Duplicate Student Numbers:\n" +
+                              result.summary.duplicateStudentNumbers
+                                   .map((s) => `- ${s}`)
+                                   .join("\n") +
+                              "\n\n"
+                    }
                }
 
-               toast.info(message)
+               if (result.details?.length) {
+                    message +=
+                         "Row-specific Errors:\n" +
+                         result.details
+                              .map((d) => `Row ${d.row}: ${d.errors.join(", ")}`)
+                              .join("\n")
+               }
 
+               showResult(message)
                setSelectedFile(null)
                onOpenChange(false)
           } catch (err) {
-               const message =
-                    err instanceof Error && err.message
-                         ? err.message
-                         : "Error occurred on uploading file"
-               toast.error(`Error: ${message}`)
+               if (err && typeof err === "object" && "summary" in err && "details" in err) {
+                    const csvErr = err as importCSVResult
+                    let message = csvErr.message || "CSV import failed.\n"
+
+                    if (csvErr.summary) {
+                         message += `Total Rows: ${csvErr.summary.totalRows}\n`
+                         message += `Successful: ${csvErr.summary.successfulRows}\n`
+                         message += `Failed: ${csvErr.summary.failedRows}\n\n`
+
+                         if (csvErr.summary.missingSections?.length) {
+                              message +=
+                                   "Missing Sections:\n" +
+                                   csvErr.summary.missingSections.map((s) => `- ${s}`).join("\n") +
+                                   "\n\n"
+                         }
+
+                         if (csvErr.summary.duplicateStudentNumbers?.length) {
+                              message +=
+                                   "Duplicate Student Numbers:\n" +
+                                   csvErr.summary.duplicateStudentNumbers
+                                        .map((s) => `- ${s}`)
+                                        .join("\n") +
+                                   "\n\n"
+                         }
+                    }
+
+                    if (csvErr.details?.length) {
+                         message +=
+                              "Row-specific Errors:\n" +
+                              csvErr.details
+                                   .map((d) => `Row ${d.row}: ${d.errors.join(", ")}`)
+                                   .join("\n")
+                    }
+
+                    showResult(message)
+               } else if (err instanceof Error) {
+                    showResult(err.message)
+               } else {
+                    showResult(JSON.stringify(err))
+               }
           } finally {
                setLoading(false)
           }
@@ -74,10 +144,8 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
 
                               <div className="flex items-center justify-end pt-2 gap-1">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
-                                        <X className="mr-2 h-4 w-4" />
-                                        Close
+                                        Cancel
                                    </Button>
-
                                    <Button
                                         type="button"
                                         onClick={handleUpload}
@@ -89,6 +157,23 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                          </form>
                     </DialogContent>
                </Dialog>
+
+               <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                    <AlertDialogContent className="sm:max-w-md">
+                         <AlertDialogHeader>
+                              <AlertDialogTitle>Import Result</AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm text-muted-foreground whitespace-pre-wrap break-words max-h-60 overflow-y-auto">
+                                   {errorMessage}
+                              </AlertDialogDescription>
+                         </AlertDialogHeader>
+
+                         <AlertDialogFooter>
+                              <AlertDialogAction onClick={() => setStatusDialogOpen(false)}>
+                                   OK
+                              </AlertDialogAction>
+                         </AlertDialogFooter>
+                    </AlertDialogContent>
+               </AlertDialog>
           </>
      )
 }

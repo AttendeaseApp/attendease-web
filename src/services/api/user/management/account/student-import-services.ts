@@ -1,6 +1,7 @@
 import { USER_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { authFetch } from "@/services/auth-fetch"
 
+import { importCSVResult } from "@/constants/import-stud-intrfac"
 export const uploadStudentCSV = async (file: File) => {
      const formData = new FormData()
      formData.append("file", file)
@@ -11,13 +12,20 @@ export const uploadStudentCSV = async (file: File) => {
                body: formData,
           })
 
-          if (!res.ok) {
-               const text = await res.text()
-               console.error("Upload failed response:", text)
-               throw new Error(`Failed to upload CSV: ${text}`)
+          const text = await res.text()
+
+          let data: importCSVResult
+          try {
+               data = JSON.parse(text)
+          } catch {
+               throw new Error("Invalid JSON response from server")
           }
 
-          return res.json()
+          if (!res.ok || data.errorCode) {
+               throw data
+          }
+
+          return data
      } catch (error) {
           console.error("Error in uploadStudentCSV:", error)
           throw error

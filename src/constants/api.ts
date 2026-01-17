@@ -1,4 +1,5 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
+export const API_BASE = "http://192.168.1.9:8082"
+
 
 if (!API_BASE) {
   throw new Error("NEXT_PUBLIC_API_BASE is not defined");
