@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { EventTable } from "@/components/manage-events/EventTable"
 import { Input } from "@/components/ui/input"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
-import { Plus, Search } from "lucide-react"
+import { Plus, Search, RefreshCw } from "lucide-react"
 import { getAllEvents } from "@/services/event-sessions"
 import { deleteEvent } from "@/services/event-sessions"
 import { EventSession } from "@/interface/event/event-interface"
@@ -156,7 +156,7 @@ export default function ManageEventsPage() {
                          </Select>
 
                          <Button variant="outline" size="sm" onClick={loadEvents}>
-                              Refresh
+                              <RefreshCw className="h-4 w-4" />
                          </Button>
                     </div>
                     <EventTable

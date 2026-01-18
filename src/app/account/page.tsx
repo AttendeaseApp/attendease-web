@@ -21,10 +21,6 @@ export default function OsaProfilePage() {
           router.push("/login")
      }
 
-     const GoTochangePassword = async () => {
-          router.push("/change-password")
-     }
-
      const GoToEditMyProfile = async () => {
           router.push("/edit-my-profile")
      }
@@ -74,14 +70,6 @@ export default function OsaProfilePage() {
                               >
                                    {" "}
                                    Edit My Profile
-                              </Button>
-
-                              <Button
-                                   className="rounded-sm self-start m-2 w-35"
-                                   onClick={GoTochangePassword}
-                              >
-                                   {" "}
-                                   Change Password
                               </Button>
 
                               <Button

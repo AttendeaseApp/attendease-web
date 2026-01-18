@@ -36,6 +36,10 @@ export default function OsaEditMyProfilePage() {
           router.push("/account")
      }
 
+     const GoTochangePassword = async () => {
+          router.push("/change-password")
+     }
+
      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const { name, value } = e.target
           setForm((prev) => ({ ...prev, [name]: value }))
@@ -101,9 +105,16 @@ export default function OsaEditMyProfilePage() {
                               </BreadcrumbList>
                          </Breadcrumb>
                     </div>
-                    <Label className="block mb-2 text-2xl font-bold text-slate-900">
-                         Edit My Profile
-                    </Label>
+
+                    <div className="flex items-center justify-between mb-4">
+                         <Label className="text-2xl font-bold text-slate-900">
+                              Edit My Profile
+                         </Label>
+                         <Button className="rounded-sm" onClick={GoTochangePassword}>
+                              {" "}
+                              Change Password
+                         </Button>
+                    </div>
 
                     <div className="flex flex-col gap-6">
                          {/* <Label className="block text-xl font-semibold text-slate-900">

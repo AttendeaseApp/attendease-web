@@ -3,51 +3,74 @@
 import UploadDropPart from "@/components/manage-users/dialogs/importStudent/UploadDropPart"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
+import { importCSVResult } from "@/interface/students/import-stud-interface"
 import { useState } from "react"
-import { toast } from "sonner"
-import { X } from "lucide-react"
+import { AlertTriangle, CircleCheck } from "lucide-react"
+import {
+     AlertDialog,
+     AlertDialogAction,
+     AlertDialogDescription,
+     AlertDialogFooter,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogContent,
+} from "@/components/ui/alert-dialog"
+
+import { uploadStudentCSV } from "@/services/api/user/management/account/student-import-services"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 interface ImportStudentsDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
+     onClose: () => void
 }
 
-export default function ImportStudentsDialog({ open, onOpenChange }: ImportStudentsDialogProps) {
+export default function ImportStudentsDialog({
+     open,
+     onOpenChange,
+     onClose,
+}: ImportStudentsDialogProps) {
      const [selectedFile, setSelectedFile] = useState<File | null>(null)
      const [loading, setLoading] = useState(false)
+
+     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+     const [errorMessage, setErrorMessage] = useState("")
+     const [summary, setSummary] = useState<importCSVResult["summary"] | null>(null)
+     const [details, setDetails] = useState<importCSVResult["details"] | null>(null)
+     const [messageType, setMessageType] = useState<"success" | "error">("success")
+
+     const showResult = (message: string, type: "success" | "error" = "success") => {
+          setErrorMessage(message)
+          setMessageType(type)
+          setStatusDialogOpen(true)
+     }
 
      const handleUpload = async () => {
           if (!selectedFile) return
 
           try {
                setLoading(true)
-               const result = await uploadStudentCSV(selectedFile)
+               const result: importCSVResult = await uploadStudentCSV(selectedFile)
+               setSummary(result.summary ?? null)
+               setDetails(result.details ?? null)
 
-               const jsonResult = typeof result === "string" ? JSON.parse(result) : result
-
-               let message = jsonResult.message || "Upload completed."
-               if (
-                    jsonResult.details &&
-                    Array.isArray(jsonResult.details) &&
-                    jsonResult.details.length > 0
-               ) {
-                    message += "\n\nErrors per row:\n"
-                    jsonResult.details.forEach((item: { row: number; errors: string[] }) => {
-                         message += `Row ${item.row}: ${item.errors.join(", ")}\n`
-                    })
-               }
-
-               toast.info(message)
-
-               setSelectedFile(null)
-               onOpenChange(false)
+               const message = result.message || "Import completed successfully.\n"
+               showResult(message, "success")
           } catch (err) {
-               const message =
-                    err instanceof Error && err.message
-                         ? err.message
-                         : "Error occurred on uploading file"
-               toast.error(`Error: ${message}`)
+               setSummary(null)
+               setDetails(null)
+               if (err && typeof err === "object" && "summary" in err && "details" in err) {
+                    const csvErr = err as importCSVResult
+                    setSummary(csvErr.summary ?? null)
+                    setDetails(csvErr.details ?? null)
+                    const message = "CSV import interrupted.\n"
+
+                    showResult(message, "error")
+               } else if (err instanceof Error) {
+                    showResult(err.message, "error")
+               } else {
+                    showResult(JSON.stringify(err), "error")
+               }
           } finally {
                setLoading(false)
           }
@@ -55,7 +78,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
 
      return (
           <>
-               <Dialog open={open} onOpenChange={onOpenChange}>
+               <Dialog open={open} onOpenChange={loading ? () => {} : onOpenChange}>
                     <DialogContent className="sm:max-w-lg p-8">
                          <DialogHeader>
                               <DialogTitle>Import Student Accounts</DialogTitle>
@@ -74,10 +97,8 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
 
                               <div className="flex items-center justify-end pt-2 gap-1">
                                    <Button variant="outline" onClick={() => onOpenChange(false)}>
-                                        <X className="mr-2 h-4 w-4" />
-                                        Close
+                                        Cancel
                                    </Button>
-
                                    <Button
                                         type="button"
                                         onClick={handleUpload}
@@ -89,6 +110,92 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                          </form>
                     </DialogContent>
                </Dialog>
+
+               <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                    <AlertDialogContent className="bg-muted border-accent">
+                         <AlertDialogHeader>
+                              <AlertDialogTitle className="text-2xl">
+                                   Import Result
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm text-muted-foreground whitespace-pre-wrap wrap-break-words max-h-60 overflow-y-auto">
+                                   {errorMessage && (
+                                        <p
+                                             className={`flex items-center gap-2 ${
+                                                  messageType === "success"
+                                                       ? "text-green-600"
+                                                       : "text-orange-600"
+                                             }`}
+                                        >
+                                             {messageType === "success" ? (
+                                                  <CircleCheck className="h-5 w-5" />
+                                             ) : (
+                                                  <AlertTriangle className="h5 w-5" />
+                                             )}
+                                             <span>{errorMessage}</span>
+                                        </p>
+                                   )}
+                                   {summary && (
+                                        <>
+                                             <div className="grid grid-cols-3 gap-4 rounded-lg p-3">
+                                                  <div>
+                                                       <p className="text-lg text-black">
+                                                            Total Rows:
+                                                            <strong>{summary.totalRows}</strong>
+                                                       </p>
+                                                  </div>
+                                                  <div>
+                                                       <p className="text-lg text-black">
+                                                            Successful:
+                                                            <strong>
+                                                                 {summary.successfulRows}
+                                                            </strong>
+                                                       </p>
+                                                  </div>
+                                                  <div>
+                                                       <p className="text-lg text-black">
+                                                            Failed:
+                                                            <strong>{summary.failedRows}</strong>
+                                                       </p>
+                                                  </div>
+                                             </div>
+                                             {details && details.length > 0 && (
+                                                  <Card className="mt-4 mb-4 relative w-full p-3">
+                                                       <div className="mt-2">
+                                                            <p className="font-semibold text-lg">
+                                                                 Row-specific Error:
+                                                            </p>
+                                                            <ul className="list-disc pl-3 text-sm">
+                                                                 {details.map((d) => (
+                                                                      <li key={d.row}>
+                                                                           Row {d.row}:
+                                                                           {d.errors.join(", ")}
+                                                                      </li>
+                                                                 ))}
+                                                            </ul>
+                                                       </div>
+                                                  </Card>
+                                             )}
+                                        </>
+                                   )}
+                              </AlertDialogDescription>
+                         </AlertDialogHeader>
+
+                         <AlertDialogFooter>
+                              <AlertDialogAction
+                                   onClick={() => {
+                                        setStatusDialogOpen(false)
+                                        onOpenChange(false)
+                                        onClose()
+                                        setSelectedFile(null)
+                                        setSummary(null)
+                                        setDetails(null)
+                                   }}
+                              >
+                                   OK
+                              </AlertDialogAction>
+                         </AlertDialogFooter>
+                    </AlertDialogContent>
+               </AlertDialog>
           </>
      )
 }

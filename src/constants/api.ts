@@ -1,5 +1,6 @@
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
 
+
 if (!API_BASE) {
   throw new Error("NEXT_PUBLIC_API_BASE is not defined");
 }
@@ -96,7 +97,7 @@ export const ACCOUNT_REGISTRATION_ENDPOINTS = {
 export const USER_INFORMATION_MANAGEMENT_ENDPOINTS = {
     UPDATE_USER_DETAILS: (userId: string) =>       `${API_BASE}/api/osa/user/information/management/${userId}`,
     BULK_UPDATE_STUDENTS_SECTIONS:                 `${API_BASE}/api/osa/user/information/management/student/section/bulk`,
-    DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/osa/user/information/management/students/remove-all`,
+    DELETE_ALL_STUDENTS_AND_ASSOCIATED_BIOMETRICS: `${API_BASE}/api/osa/user/information/management/student/remove-all`,
 }
 
 export const EVENT_MONITORING_API_ENDPOINTS = {

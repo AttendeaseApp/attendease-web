@@ -29,8 +29,8 @@ export default function OsaChangePasswordPage() {
      const [loading, setLoading] = useState(false)
 
      const router = useRouter()
-     const GoBackToProfilePage = async () => {
-          router.push("/account")
+     const GoBackToPreviousPage = async () => {
+          router.push("/edit-my-profile")
      }
 
      const handleResetPassword = async () => {
@@ -77,6 +77,12 @@ export default function OsaChangePasswordPage() {
                                    </BreadcrumbItem>
                                    <BreadcrumbSeparator />
                                    <BreadcrumbItem>
+                                        <BreadcrumbLink asChild>
+                                             <Link href="/edit-my-profile">Edit My Profile</Link>
+                                        </BreadcrumbLink>
+                                   </BreadcrumbItem>
+                                   <BreadcrumbSeparator />
+                                   <BreadcrumbItem>
                                         <BreadcrumbLink>{"Change Password"}</BreadcrumbLink>
                                    </BreadcrumbItem>
                               </BreadcrumbList>
@@ -107,7 +113,7 @@ export default function OsaChangePasswordPage() {
                                                   oldPassword: e.target.value,
                                              }))
                                         }
-                                        className="w-full pr-10 border border-sky-300 focus:border-sky-500"
+                                        // className="w-full pr-10 border border-sky-300 focus:border-sky-500"
                                    />
                                    <button
                                         type="button"
@@ -137,7 +143,7 @@ export default function OsaChangePasswordPage() {
                                                   newPassword: e.target.value,
                                              }))
                                         }
-                                        className="w-full pr-10 border border-sky-300 focus:border-sky-500"
+                                        // className="w-full pr-10 border border-sky-300 focus:border-sky-500"
                                    />
                                    <button
                                         type="button"
@@ -167,7 +173,7 @@ export default function OsaChangePasswordPage() {
                                                   confirmPassword: e.target.value,
                                              }))
                                         }
-                                        className="w-full pr-10 border border-sky-300 focus:border-sky-500"
+                                        // className="w-full pr-10 border border-sky-300 focus:border-sky-500"
                                    />
                                    <button
                                         type="button"
@@ -187,7 +193,7 @@ export default function OsaChangePasswordPage() {
                                    <Button
                                         variant="outline"
                                         className="rounded-sm bg-white text-black border border-slate-300"
-                                        onClick={GoBackToProfilePage}
+                                        onClick={GoBackToPreviousPage}
                                    >
                                         <Undo2 className="mr-2 h-4 w-4" />
                                         Back

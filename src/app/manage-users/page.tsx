@@ -23,7 +23,7 @@ import {
      deleteStudentAccountBySection,
      getAllUsers,
 } from "@/services/api/user/management/account/user-management-services"
-import { ChevronDown, Search } from "lucide-react"
+import { ChevronDown, Search, RefreshCw, X } from "lucide-react"
 import { useEffect, useState, useCallback } from "react"
 import { bulkActivateStudents } from "@/services/api/user/management/account/bulk-activate-students-service"
 import { bulkDeactivateStudents } from "@/services/api/user/management/account/bulk-deactivate-students-service"
@@ -46,6 +46,7 @@ export default function RetrieveAllUsers() {
      const [deleting, setDeleting] = useState(false)
      const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
      const [statusFilter, setStatusFilter] = useState<StudentStatusFilter>("ALL")
+     const sectionFilterOptions = ["All Sections", ...sections]
 
      const [currentPage, setCurrentPage] = useState(1)
      const [dialogState, setDialogState] = useState({
@@ -122,13 +123,13 @@ export default function RetrieveAllUsers() {
 
      useEffect(() => {
           const uniqueSections = Array.from(
-               new Set(users.map((u) => u.section).filter((s): s is string => !!s))
+               new Set(users.map((u) => u.section).filter((s): s is string => !!s && s !== "N/A"))
           )
           const uniqueCourses = Array.from(
                new Set(users.map((u) => u.course).filter((c): c is string => !!c))
           )
 
-          setSections(["All Sections", ...uniqueSections])
+          setSections(uniqueSections)
           setCourses(["All Courses", ...uniqueCourses])
      }, [users])
 
@@ -208,30 +209,26 @@ export default function RetrieveAllUsers() {
                const sectionToDelete =
                     dialogState.confirmDelete === "N/A" ? "" : dialogState.confirmDelete
                await deleteStudentAccountBySection(sectionToDelete)
-               loadUsers()
+               ;(toast.success("SUCCESS", {
+                    description: `Section deleted successfully!`,
+               }),
+                    loadUsers())
                setDialogState((prev) => ({
                     ...prev,
-                    deleteResult: {
-                         success: true,
-                         message: `All users in section "${prev.confirmDelete}" deleted successfully.`,
-                    },
                     confirmDelete: null,
                     deleteModal: false,
                     moreSettings: false,
                }))
           } catch (err) {
-               setDialogState((prev) => ({
-                    ...prev,
-                    deleteResult: {
-                         success: false,
-                         message: `Failed to delete users in section "${prev.confirmDelete}": ${
-                              err instanceof Error ? err.message : "Unknown error"
-                         }`,
-                    },
-                    confirmDelete: null,
-                    deleteModal: false,
-                    moreSettings: false,
-               }))
+               ;(toast.error("FAILED", {
+                    description: `Failed to delete section!`,
+               }),
+                    setDialogState((prev) => ({
+                         ...prev,
+                         confirmDelete: null,
+                         deleteModal: false,
+                         moreSettings: false,
+                    })))
           } finally {
                setDeleting(false)
           }
@@ -365,7 +362,7 @@ export default function RetrieveAllUsers() {
                                    </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
-                                   {sections.map((sec) => (
+                                   {sectionFilterOptions.map((sec) => (
                                         <DropdownMenuItem
                                              key={sec}
                                              onClick={() =>
@@ -421,7 +418,7 @@ export default function RetrieveAllUsers() {
                          </DropdownMenu>
 
                          <Button variant="outline" size="sm" onClick={loadStudents}>
-                              Refresh
+                              <RefreshCw className="h-4 w-4" />
                          </Button>
                     </div>
 
@@ -472,13 +469,16 @@ export default function RetrieveAllUsers() {
                                    </Button>
                               ))}
                          </div>
-                         <Button
-                              variant="ghost"
-                              className="mt-4 w-full"
-                              onClick={() => closeDialog("deleteModal")}
-                         >
-                              Cancel
-                         </Button>
+                         <div className="flex justify-end mt-4 w-full">
+                              <Button
+                                   variant="outline"
+                                   className="mt-4 w-fit"
+                                   onClick={() => closeDialog("deleteModal")}
+                              >
+                                   <X className="mr-2 h-4 w-4" />
+                                   Close
+                              </Button>
+                         </div>
                     </DialogContent>
                </Dialog>
 
@@ -512,7 +512,7 @@ export default function RetrieveAllUsers() {
                                    onClick={handleDeleteSection}
                                    disabled={deleting}
                               >
-                                   {deleting ? "Deleting..." : "Delete"}
+                                   {deleting ? "Deleting..." : "Yes, delete section"}
                               </Button>
                          </div>
                     </DialogContent>
@@ -568,6 +568,7 @@ export default function RetrieveAllUsers() {
                     onOpenChange={(val) =>
                          setDialogState((prev) => ({ ...prev, importStudents: val }))
                     }
+                    onClose={loadStudents}
                />
                <EditUserDetailsDialog
                     open={dialogState.updateUser}
