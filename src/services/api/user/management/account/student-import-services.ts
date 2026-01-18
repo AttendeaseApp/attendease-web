@@ -1,7 +1,7 @@
 import { USER_MANAGEMENT_API_ENDPOINTS } from "@/constants/api"
 import { authFetch } from "@/services/auth-fetch"
 
-import { importCSVResult } from "@/constants/import-stud-intrfac"
+import { importCSVResult } from "@/interface/students/import-stud-interface"
 export const uploadStudentCSV = async (file: File) => {
      const formData = new FormData()
      formData.append("file", file)
