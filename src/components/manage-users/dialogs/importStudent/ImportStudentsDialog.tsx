@@ -22,9 +22,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 interface ImportStudentsDialogProps {
      open: boolean
      onOpenChange: (open: boolean) => void
+     onClose: () => void
 }
 
-export default function ImportStudentsDialog({ open, onOpenChange }: ImportStudentsDialogProps) {
+export default function ImportStudentsDialog({
+     open,
+     onOpenChange,
+     onClose,
+}: ImportStudentsDialogProps) {
      const [selectedFile, setSelectedFile] = useState<File | null>(null)
      const [loading, setLoading] = useState(false)
 
@@ -49,7 +54,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                setSummary(result.summary ?? null)
                setDetails(result.details ?? null)
 
-               let message = result.message || "Import completed successfully.\n"
+               const message = result.message || "Import completed successfully.\n"
                showResult(message, "success")
           } catch (err) {
                setSummary(null)
@@ -58,7 +63,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                     const csvErr = err as importCSVResult
                     setSummary(csvErr.summary ?? null)
                     setDetails(csvErr.details ?? null)
-                    let message = "CSV import interrupted.\n"
+                    const message = "CSV import interrupted.\n"
 
                     showResult(message, "error")
                } else if (err instanceof Error) {
@@ -73,7 +78,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
 
      return (
           <>
-               <Dialog open={open} onOpenChange={onOpenChange}>
+               <Dialog open={open} onOpenChange={loading ? () => {} : onOpenChange}>
                     <DialogContent className="sm:max-w-lg p-8">
                          <DialogHeader>
                               <DialogTitle>Import Student Accounts</DialogTitle>
@@ -162,7 +167,7 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                                                             <ul className="list-disc pl-3 text-sm">
                                                                  {details.map((d) => (
                                                                       <li key={d.row}>
-                                                                           Row ${d.row}: $
+                                                                           Row {d.row}:
                                                                            {d.errors.join(", ")}
                                                                       </li>
                                                                  ))}
@@ -176,7 +181,16 @@ export default function ImportStudentsDialog({ open, onOpenChange }: ImportStude
                          </AlertDialogHeader>
 
                          <AlertDialogFooter>
-                              <AlertDialogAction onClick={() => setStatusDialogOpen(false)}>
+                              <AlertDialogAction
+                                   onClick={() => {
+                                        setStatusDialogOpen(false)
+                                        onOpenChange(false)
+                                        onClose()
+                                        setSelectedFile(null)
+                                        setSummary(null)
+                                        setDetails(null)
+                                   }}
+                              >
                                    OK
                               </AlertDialogAction>
                          </AlertDialogFooter>

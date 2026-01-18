@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import ProtectedLayout from "@/components/layouts/ProtectedLayout"
-import { Plus, Search } from "lucide-react"
+import { Plus, Search, RefreshCw } from "lucide-react"
 import { LocationsTable } from "@/components/manage-locations/LocationsTable"
 import { EventLocation } from "@/interface/location-interface"
 import { deleteLocation, getAllLocations } from "@/services/locations-service"
@@ -122,7 +122,7 @@ export default function ManageLocationsPage() {
                               />
                          </div>
                          <Button variant="outline" size="sm" onClick={loadLocations}>
-                              Refresh
+                              <RefreshCw className="h-4 w-4" />
                          </Button>
                     </div>
 
