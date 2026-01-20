@@ -182,7 +182,7 @@ export default function AttendanceRecordsManagementPage() {
                     <div className="flex items-start justify-between">
                          <div className="space-y-1">
                               <h1 className="text-2xl font-semibold md:text-3xl">
-                                   Manage Attendance Records
+                                   Attendance Records Management
                               </h1>
                               <p className="text-sm text-muted-foreground">
                                    View and manage finalized attendance records for events.

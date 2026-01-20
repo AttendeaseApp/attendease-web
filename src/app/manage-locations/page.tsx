@@ -11,12 +11,11 @@ import { deleteLocation, getAllLocations } from "@/services/locations-service"
 import CreateLocationDialog from "@/components/manage-locations/CreateLocationDialog"
 import UpdateLocationDialog from "@/components/manage-locations/UpdateLocationDialog"
 import { toast } from "sonner"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Info } from "lucide-react"
 
 /**
  * ManageLocationsPage component for managing event locations (CREATE, READ, UPDATE, DELETE).
- *
- * Displays a table of existing locations with search, refresh, create, edit, and delete functionality.
- * Uses conditional rendering to show either create or update modals based on state.
  */
 export default function ManageLocationsPage() {
      const [locations, setLocations] = useState<EventLocation[]>([])
@@ -43,6 +42,7 @@ export default function ManageLocationsPage() {
      useEffect(() => {
           loadLocations()
      }, [])
+
      const [selectedType] = useState("all")
      const filteredEvents = locations.filter((location) => {
           const lowerSearch = searchTerm.trim().toLowerCase()
@@ -100,16 +100,56 @@ export default function ManageLocationsPage() {
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                          <div>
-                              <h1 className="text-2xl font-bold md:text-3xl">Manage Locations</h1>
-                              <p className="text-muted-foreground mt-1">
+                              <h1 className="text-2xl font-semibold md:text-3xl">
+                                   Locations Management
+                              </h1>
+                              <p className="text-sm text-muted-foreground">
                                    Define physical locations available for future event venues and
                                    registration areas.
                               </p>
                          </div>
-                         <Button className="sm:w-auto" onClick={() => setOpenModal(true)}>
-                              <Plus className="mr-2 h-4 w-4" />
-                              Create New Location
-                         </Button>
+
+                         <div className="flex items-center gap-2">
+                              <Button className="sm:w-auto" onClick={() => setOpenModal(true)}>
+                                   <Plus className="mr-2 h-4 w-4" />
+                                   Create New Location
+                              </Button>
+
+                              {/* Tooltip */}
+                              <Tooltip>
+                                   <TooltipTrigger asChild>
+                                        <button className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-muted">
+                                             <Info className="h-4 w-4 text-muted-foreground" />
+                                        </button>
+                                   </TooltipTrigger>
+
+                                   <TooltipContent className="max-w-sm">
+                                        <div className="space-y-2">
+                                             <div className="font-semibold">
+                                                  Location Purpose Help
+                                             </div>
+
+                                             <div>
+                                                  <strong>Registration Area</strong>
+                                                  <div className="text-sm ">
+                                                       Used for initial attendee check-in or
+                                                       registration. Examples: gate, lobby,
+                                                       reception booth.
+                                                  </div>
+                                             </div>
+
+                                             <div>
+                                                  <strong>Event Venue</strong>
+                                                  <div className="text-sm ">
+                                                       Used for the main event location where
+                                                       attendees stay during the event. Examples:
+                                                       auditorium, gym, classroom.
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </TooltipContent>
+                              </Tooltip>
+                         </div>
                     </div>
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
                          <div className="relative flex-1">

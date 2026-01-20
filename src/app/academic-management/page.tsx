@@ -316,11 +316,11 @@ export default function ManageClustersPage() {
                <div className="flex flex-col w-full gap-6">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                          <div>
-                              <h1 className="text-2xl md:text-3xl font-bold">
+                              <h1 className="text-2xl font-semibold md:text-3xl">
                                    Academic Management
                               </h1>
-                              <p className="text-muted-foreground mt-1">
-                                   Manage academic years, clusters, courses, and sections
+                              <p className="text-sm text-muted-foreground">
+                                   Configure academic years, clusters, courses, and sections
                               </p>
                          </div>
                          <Button variant="outline" onClick={handleRefreshAll}>

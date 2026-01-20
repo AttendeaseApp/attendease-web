@@ -29,7 +29,7 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
                          <EmptyMedia variant="icon">
                               <Loader2 className="animate-spin" />
                          </EmptyMedia>
-                         <EmptyTitle>Loading events...</EmptyTitle>
+                         <EmptyTitle>Loading attendance records...</EmptyTitle>
                          <EmptyDescription>
                               Please wait while we fetch the attendance records.
                          </EmptyDescription>
@@ -45,7 +45,7 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
                          <EmptyMedia variant="icon">
                               <CalendarX2 />
                          </EmptyMedia>
-                         <EmptyTitle>No events found</EmptyTitle>
+                         <EmptyTitle>No attendance records found</EmptyTitle>
                          <EmptyDescription>
                               There are no finalized attendance records matching your current
                               filters. Try adjusting your search criteria or filters.
@@ -56,55 +56,101 @@ export function AttendanceRecordsTable({ events, loading }: AttendanceRecordsTab
      }
 
      return (
-          <Table>
+          <Table className="w-full rounded-lg">
+               {/* HEADER */}
                <TableHeader>
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">Event</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Venue</TableHead>
                          <TableHead className="font-semibold text-gray-900">
-                              Registration Location
+                              Attendance Records
                          </TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              Registration (DATE-TIME)
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              Started (DATE-TIME)
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              Ended (DATE-TIME)
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">Present</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Absentees</TableHead>
-                         <TableHead className="font-semibold text-gray-900">Late</TableHead>
-                         <TableHead className="text-right font-semibold text-gray-900"></TableHead>
                     </TableRow>
                </TableHeader>
+
+               {/* BODY */}
                <TableBody>
                     {events.map((event) => (
-                         <TableRow key={event.eventId}>
-                              <TableCell>{event.eventName}</TableCell>
-                              <TableCell>{event.venueLocationName ?? "No location"}</TableCell>
-                              <TableCell>
-                                   {event.registrationLocationName ?? "No location"}
-                              </TableCell>
-                              <TableCell>{event.registrationDateTime}</TableCell>
-                              <TableCell>{event.startingDateTime}</TableCell>
-                              <TableCell>{event.endingDateTime}</TableCell>
-                              <TableCell>{event.totalPresent}</TableCell>
-                              <TableCell>{event.totalAbsent}</TableCell>
-                              <TableCell>{event.totalLate}</TableCell>
-                              <TableCell className="text-right">
-                                   <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() =>
-                                             router.push(
-                                                  `manage-attendance/events/${event.eventId}/attendees`
-                                             )
-                                        }
-                                   >
-                                        View records
-                                   </Button>
+                         <TableRow key={event.eventId} className="align-top">
+                              <TableCell className="py-4">
+                                   <div>
+                                        <div className="flex items-start justify-between gap-4">
+                                             <div className="space-y-1">
+                                                  <div className="font-semibold text-gray-900 text-lg">
+                                                       {event.eventName}
+                                                  </div>
+                                                  <div className="text-sm text-muted-foreground">
+                                                       {event.venueLocationName ?? "No venue"}
+                                                  </div>
+                                             </div>
+
+                                             <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  onClick={() =>
+                                                       router.push(
+                                                            `manage-attendance/events/${event.eventId}/attendees`
+                                                       )
+                                                  }
+                                             >
+                                                  View records
+                                             </Button>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                                             <div className="text-sm text-gray-700">
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Registration Location:
+                                                       </span>{" "}
+                                                       {event.registrationLocationName ??
+                                                            "No location"}
+                                                  </div>
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Registration:
+                                                       </span>{" "}
+                                                       {event.registrationDateTime}
+                                                  </div>
+                                             </div>
+
+                                             <div className="text-sm text-gray-700">
+                                                  <div>
+                                                       <span className="font-medium">Started:</span>{" "}
+                                                       {event.startingDateTime}
+                                                  </div>
+                                                  <div>
+                                                       <span className="font-medium">Ended:</span>{" "}
+                                                       {event.endingDateTime}
+                                                  </div>
+                                             </div>
+
+                                             <div className="grid grid-cols-3 gap-2">
+                                                  <div className="p-2 rounded border bg-green-50">
+                                                       <div className="text-xs text-green-700">
+                                                            Present
+                                                       </div>
+                                                       <div className="font-bold text-lg text-green-800">
+                                                            {event.totalPresent}
+                                                       </div>
+                                                  </div>
+                                                  <div className="p-2 rounded border bg-red-50">
+                                                       <div className="text-xs text-red-700">
+                                                            Absentees
+                                                       </div>
+                                                       <div className="font-bold text-lg text-red-800">
+                                                            {event.totalAbsent}
+                                                       </div>
+                                                  </div>
+                                                  <div className="p-2 rounded border bg-yellow-50">
+                                                       <div className="text-xs text-yellow-700">
+                                                            Late
+                                                       </div>
+                                                       <div className="font-bold text-lg text-yellow-800">
+                                                            {event.totalLate}
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
                               </TableCell>
                          </TableRow>
                     ))}

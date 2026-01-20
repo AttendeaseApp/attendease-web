@@ -118,8 +118,10 @@ export default function ManageEventsPage() {
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                          <div>
-                              <h1 className="text-2xl font-bold md:text-3xl">Manage Events</h1>
-                              <p className="text-muted-foreground mt-1">
+                              <h1 className="text-2xl font-semibold md:text-3xl">
+                                   Events Management
+                              </h1>
+                              <p className="text-sm text-muted-foreground">
                                    View, schedule, and edit all event details.
                               </p>
                          </div>

@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { EventSession, EventStatus } from "@/interface/event/event-interface"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
      Table,
@@ -29,9 +28,9 @@ import {
      DropdownMenuContent,
      DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { Pencil, Trash, CalendarDays, Loader2 } from "lucide-react"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
-import { CalendarDays, Loader2 } from "lucide-react"
+import { EventStatusText } from "../event/event-status-text"
 
 interface EventTableProps {
      events: EventSession[]
@@ -40,27 +39,23 @@ interface EventTableProps {
      onDelete: (event: EventSession) => void
 }
 
-/**
- * EventTable component for displaying a table of event sessions.
- *
- * @param param0 as EventTableProps
- * @returns JSX.Element The EventTable component.
- */
 export function EventTable({ events, loading, onEdit, onDelete }: EventTableProps) {
+     const [deleteTarget, setDeleteTarget] = useState<EventSession | null>(null)
+     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
      const handleEdit = (event: EventSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           onEdit(event)
      }
 
-     const [deleteTarget, setDeleteTarget] = useState<EventSession | null>(null)
-     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
      const openDeleteDialog = (event: EventSession, e: React.MouseEvent) => {
           e.preventDefault()
           e.stopPropagation()
           setDeleteTarget(event)
           setDeleteDialogOpen(true)
      }
+
      const confirmDelete = async () => {
           if (deleteTarget) {
                onDelete(deleteTarget)
@@ -99,134 +94,136 @@ export function EventTable({ events, loading, onEdit, onDelete }: EventTableProp
 
      return (
           <>
-               <Table>
+               <Table className="w-full">
+                    {/* HEADER */}
                     <TableHeader>
                          <TableRow>
-                              <TableHead className="font-semibold text-gray-900">Event</TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   Registration Location
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   Event Venue
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   Eligibliity
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   Registration (DATE-TIME)
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   Strting (DATE-TIME)
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">
-                                   Ending (DATE-TIME)
-                              </TableHead>
-                              <TableHead className="font-semibold text-gray-900">Status</TableHead>
-                              <TableHead className="text-right font-semibold text-gray-900">
-                                   Options
-                              </TableHead>
+                              <TableHead className="font-semibold text-gray-900">Events</TableHead>
                          </TableRow>
                     </TableHeader>
-                    <TableBody>
-                         {loading ? (
-                              <TableRow>
-                                   <TableCell colSpan={9} className="text-center py-8">
-                                        Loading events...
-                                   </TableCell>
-                              </TableRow>
-                         ) : events.length === 0 ? (
-                              <TableRow>
-                                   <TableCell colSpan={6} className="text-center py-8">
-                                        No events found
-                                   </TableCell>
-                              </TableRow>
-                         ) : (
-                              events.map((event) => (
-                                   <TableRow key={event.eventId}>
-                                        <TableCell className="font-medium">
-                                             {event.eventName}
-                                        </TableCell>
-                                        <TableCell>
-                                             {event.registrationLocationName ?? "No location"}
-                                        </TableCell>
-                                        <TableCell>
-                                             {event.venueLocationName ?? "No location"}
-                                        </TableCell>
-                                        <TableCell>{event.eligibilityDescription}</TableCell>
-                                        <TableCell>
-                                             {new Date(event.registrationDateTime).toLocaleString()}
-                                        </TableCell>
-                                        <TableCell>
-                                             {new Date(event.startingDateTime).toLocaleString()}
-                                        </TableCell>
-                                        <TableCell>
-                                             {new Date(event.endingDateTime).toLocaleString()}
-                                        </TableCell>
-                                        <TableCell>
-                                             <span
-                                                  className={cn("rounded-full px-2 py-1 text-xs", {
-                                                       "bg-green-100 text-green-700":
-                                                            event.eventStatus ===
-                                                            EventStatus.ONGOING,
-                                                       "bg-yellow-100 text-yellow-700":
-                                                            event.eventStatus ===
-                                                            EventStatus.REGISTRATION,
-                                                       "bg-blue-100 text-blue-700":
-                                                            event.eventStatus ===
-                                                            EventStatus.UPCOMING,
-                                                       "bg-red-100 text-red-700":
-                                                            event.eventStatus ===
-                                                            EventStatus.CANCELLED,
-                                                       "bg-gray-100":
-                                                            event.eventStatus ===
-                                                                 EventStatus.CONCLUDED ||
-                                                            event.eventStatus ===
-                                                                 EventStatus.FINALIZED,
-                                                  })}
-                                             >
-                                                  {event.eventStatus}
-                                             </span>
-                                        </TableCell>
 
-                                        <TableCell className="text-right">
-                                             <DropdownMenu>
-                                                  <DropdownMenuTrigger asChild>
-                                                       <Button variant="ghost" size="sm">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">
-                                                                 Open menu
-                                                            </span>
-                                                       </Button>
-                                                  </DropdownMenuTrigger>
-                                                  <DropdownMenuContent align="end">
-                                                       {event.eventStatus !==
-                                                            EventStatus.FINALIZED &&
-                                                            event.eventStatus !==
-                                                                 EventStatus.CANCELLED && (
-                                                                 <DropdownMenuItem
-                                                                      onClick={(e) =>
-                                                                           handleEdit(event, e)
-                                                                      }
-                                                                 >
-                                                                      <Pencil className="mr-2 h-4 w-4" />
-                                                                      Edit
-                                                                 </DropdownMenuItem>
-                                                            )}
-                                                       <DropdownMenuItem
-                                                            onClick={(e) =>
-                                                                 openDeleteDialog(event, e)
-                                                            }
-                                                       >
-                                                            <Trash className="mr-2 h-4 w-4" />
-                                                            Delete
-                                                       </DropdownMenuItem>
-                                                       <DropdownMenuSeparator />
-                                                  </DropdownMenuContent>
-                                             </DropdownMenu>
-                                        </TableCell>
-                                   </TableRow>
-                              ))
-                         )}
+                    {/* BODY */}
+                    <TableBody>
+                         {events.map((event) => (
+                              <TableRow key={event.eventId} className="align-top">
+                                   <TableCell className="py-4">
+                                        <div>
+                                             {/* Top row */}
+                                             <div className="flex items-start justify-between gap-4">
+                                                  <div className="space-y-1">
+                                                       <EventStatusText
+                                                            status={event.eventStatus}
+                                                       />
+                                                       <div className="font-semibold text-gray-900 text-lg">
+                                                            {event.eventName}
+                                                       </div>
+                                                  </div>
+
+                                                  <DropdownMenu>
+                                                       <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="sm">
+                                                                 Options
+                                                            </Button>
+                                                       </DropdownMenuTrigger>
+                                                       <DropdownMenuContent align="end">
+                                                            {event.eventStatus !==
+                                                                 EventStatus.FINALIZED &&
+                                                                 event.eventStatus !==
+                                                                      EventStatus.CANCELLED && (
+                                                                      <DropdownMenuItem
+                                                                           onClick={(e) =>
+                                                                                handleEdit(event, e)
+                                                                           }
+                                                                      >
+                                                                           <Pencil className="mr-2 h-4 w-4" />
+                                                                           Edit
+                                                                      </DropdownMenuItem>
+                                                                 )}
+                                                            <DropdownMenuItem
+                                                                 className="text-red-600"
+                                                                 onClick={(e) =>
+                                                                      openDeleteDialog(event, e)
+                                                                 }
+                                                            >
+                                                                 <Trash className="mr-2 h-4 w-4" />
+                                                                 Delete
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                       </DropdownMenuContent>
+                                                  </DropdownMenu>
+                                             </div>
+
+                                             {/* Details */}
+                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 text-sm text-gray-700">
+                                                  <div className="space-y-1">
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Academic Year:
+                                                            </span>{" "}
+                                                            {event.academicYearName}
+                                                       </div>
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Semester:
+                                                            </span>{" "}
+                                                            {event.semesterName}
+                                                       </div>
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Eligibility:
+                                                            </span>{" "}
+                                                            {event.eligibilityDescription}
+                                                       </div>
+                                                  </div>
+
+                                                  <div className="space-y-1">
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Registration Location:
+                                                            </span>{" "}
+                                                            {event.registrationLocationName ??
+                                                                 "No location"}
+                                                       </div>
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Event Venue:
+                                                            </span>{" "}
+                                                            {event.venueLocationName ??
+                                                                 "No location"}
+                                                       </div>
+                                                  </div>
+
+                                                  <div className="space-y-1">
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Registration:
+                                                            </span>{" "}
+                                                            {new Date(
+                                                                 event.registrationDateTime
+                                                            ).toLocaleString()}
+                                                       </div>
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Starting:
+                                                            </span>{" "}
+                                                            {new Date(
+                                                                 event.startingDateTime
+                                                            ).toLocaleString()}
+                                                       </div>
+                                                       <div>
+                                                            <span className="font-medium">
+                                                                 Ending:
+                                                            </span>{" "}
+                                                            {new Date(
+                                                                 event.endingDateTime
+                                                            ).toLocaleString()}
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </TableCell>
+                              </TableRow>
+                         ))}
                     </TableBody>
                </Table>
                <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

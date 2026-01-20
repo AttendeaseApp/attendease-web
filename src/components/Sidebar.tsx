@@ -26,20 +26,21 @@ import Link from "next/link"
 
 const menu = [
      {
-          title: "Monitor Events",
+          title: "Event Monitoring",
           url: "/monitor-events",
           icon: TicketCheck,
-     },
-     {
-          title: "Attendance Records",
-          url: "/manage-attendance",
-          icon: Library,
      },
      {
           title: "Events",
           url: "/manage-events",
           icon: Calendar,
      },
+     {
+          title: "Attendance Records",
+          url: "/manage-attendance",
+          icon: Library,
+     },
+
      {
           title: "Locations",
           url: "/manage-locations",
@@ -51,7 +52,7 @@ const menu = [
           icon: Users,
      },
      {
-          title: "Academic Management",
+          title: "Academic",
           url: "/academic-management",
           icon: GraduationCap,
      },
