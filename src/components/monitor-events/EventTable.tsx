@@ -1,8 +1,6 @@
 "use client"
 
-import React from "react"
-import { cn } from "@/lib/utils"
-import { EventSession, EventStatus } from "@/interface/event/event-interface"
+import { EventSession } from "@/interface/event/event-interface"
 import { Button } from "@/components/ui/button"
 import {
      Table,
@@ -12,8 +10,9 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table"
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
-import { CalendarClock, Loader2 } from "lucide-react"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
+import { CalendarDays, Loader2 } from "lucide-react"
+import { EventStatusText } from "../event/event-status-text"
 
 interface EventTableProps {
      events: EventSession[]
@@ -21,7 +20,7 @@ interface EventTableProps {
      onViewAttendees: (eventId: string, eventName: string) => void
 }
 
-export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewAttendees }) => {
+export function EventTable({ events, loading, onViewAttendees }: EventTableProps) {
      if (loading) {
           return (
                <Empty>
@@ -43,110 +42,116 @@ export const EventTable: React.FC<EventTableProps> = ({ events, loading, onViewA
                <Empty>
                     <EmptyHeader>
                          <EmptyMedia variant="icon">
-                              <CalendarClock />
+                              <CalendarDays />
                          </EmptyMedia>
-                         <EmptyTitle>No events found</EmptyTitle>
-                         <EmptyDescription>
-                              There are no upcoming, registration, or ongoing events at this time.
-                              Check back later or adjust your search filters.
-                         </EmptyDescription>
+                         <EmptyTitle>No active events found</EmptyTitle>
+                         <EmptyDescription>There are no active events found.</EmptyDescription>
                     </EmptyHeader>
                </Empty>
           )
      }
 
      return (
-          <Table>
+          <Table className="w-full">
                <TableHeader>
                     <TableRow>
-                         <TableHead className="font-semibold text-gray-900">Event</TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              Registration Location
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">Event Venue</TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              Registration (Date-Time)
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              Start (Date-Time)
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">
-                              End (Date-Time)
-                         </TableHead>
-                         <TableHead className="font-semibold text-gray-900">Status</TableHead>
-                         <TableHead className="text-right font-semibold text-gray-900"></TableHead>
+                         <TableHead className="font-semibold text-gray-900">Events</TableHead>
                     </TableRow>
                </TableHeader>
+
                <TableBody>
                     {events.map((event) => (
-                         <TableRow key={event.eventId}>
-                              <TableCell>{event.eventName}</TableCell>
-                              <TableCell>
-                                   {event.registrationLocationName ?? "No location"}
-                              </TableCell>
-                              <TableCell>{event.venueLocationName ?? "No location"}</TableCell>
-                              <TableCell className="text-sm">
-                                   {new Date(event.registrationDateTime).toLocaleString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                   })}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                   {new Date(event.startingDateTime).toLocaleString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                   })}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                   {new Date(event.endingDateTime).toLocaleString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                   })}
-                              </TableCell>
-                              <TableCell>
-                                   <span
-                                        className={cn(
-                                             "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ring-1 ring-inset",
-                                             {
-                                                  "bg-green-100 text-green-800 ring-green-600/20":
-                                                       event.eventStatus === EventStatus.ONGOING,
-                                                  "bg-yellow-100 text-yellow-800 ring-yellow-600/20":
-                                                       event.eventStatus ===
-                                                       EventStatus.REGISTRATION,
-                                                  "bg-blue-100 text-blue-800 ring-blue-600/20":
-                                                       event.eventStatus === EventStatus.UPCOMING,
-                                                  "bg-red-100 text-red-800 ring-red-600/20":
-                                                       event.eventStatus === EventStatus.CANCELLED,
-                                                  "bg-gray-100 text-gray-800 ring-gray-600/20":
-                                                       event.eventStatus ===
-                                                            EventStatus.CONCLUDED ||
-                                                       event.eventStatus === EventStatus.FINALIZED,
-                                             }
-                                        )}
-                                   >
-                                        {event.eventStatus}
-                                   </span>
-                              </TableCell>
+                         <TableRow key={event.eventId} className="align-top">
+                              <TableCell className="py-4">
+                                   <div>
+                                        {/* Header */}
+                                        <div className="flex items-start justify-between gap-4">
+                                             <div className="space-y-1">
+                                                  <EventStatusText status={event.eventStatus} />
+                                                  <div className="font-semibold text-gray-900 text-lg">
+                                                       {event.eventName}
+                                                  </div>
+                                             </div>
 
-                              <TableCell className="text-right">
-                                   <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() =>
-                                             onViewAttendees(event.eventId, event.eventName)
-                                        }
-                                   >
-                                        View Attendees
-                                   </Button>
+                                             <Button
+                                                  size="sm"
+                                                  variant="outline"
+                                                  onClick={() =>
+                                                       onViewAttendees(
+                                                            event.eventId,
+                                                            event.eventName
+                                                       )
+                                                  }
+                                             >
+                                                  View attendees
+                                             </Button>
+                                        </div>
+
+                                        {/* Details */}
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 text-sm text-gray-700">
+                                             <div className="space-y-1">
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Academic Year:
+                                                       </span>{" "}
+                                                       {event.academicYearName}
+                                                  </div>
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Semester:
+                                                       </span>{" "}
+                                                       {event.semesterName}
+                                                  </div>
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Eligibility:
+                                                       </span>{" "}
+                                                       {event.eligibilityDescription}
+                                                  </div>
+                                             </div>
+
+                                             <div className="space-y-1">
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Registration Location:
+                                                       </span>{" "}
+                                                       {event.registrationLocationName ??
+                                                            "No location"}
+                                                  </div>
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Event Venue:
+                                                       </span>{" "}
+                                                       {event.venueLocationName ?? "No location"}
+                                                  </div>
+                                             </div>
+
+                                             <div className="space-y-1">
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Registration:
+                                                       </span>{" "}
+                                                       {new Date(
+                                                            event.registrationDateTime
+                                                       ).toLocaleString()}
+                                                  </div>
+                                                  <div>
+                                                       <span className="font-medium">
+                                                            Starting:
+                                                       </span>{" "}
+                                                       {new Date(
+                                                            event.startingDateTime
+                                                       ).toLocaleString()}
+                                                  </div>
+                                                  <div>
+                                                       <span className="font-medium">Ending:</span>{" "}
+                                                       {new Date(
+                                                            event.endingDateTime
+                                                       ).toLocaleString()}
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
                               </TableCell>
                          </TableRow>
                     ))}

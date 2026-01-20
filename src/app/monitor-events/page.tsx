@@ -59,6 +59,16 @@ export default function EventMonitoringPage() {
           loadEvents()
      }, [])
 
+     useEffect(() => {
+          if (events.length > 0) {
+               const first = events[0]
+               loadAttendees(first.eventId, first.eventName)
+          } else {
+               setAttendees(null)
+               setSelectedEventName("")
+          }
+     }, [events])
+
      const filteredEvents = events.filter((event) => {
           const term = searchTerm.toLowerCase()
 
@@ -75,6 +85,13 @@ export default function EventMonitoringPage() {
           return fields.some((value) => value?.toString().toLowerCase().includes(term))
      })
 
+     useEffect(() => {
+          if (filteredEvents.length === 0) {
+               setAttendees(null)
+               setSelectedEventName("")
+          }
+     }, [filteredEvents])
+
      const clearSearch = () => {
           setSearchTerm("")
      }
@@ -88,7 +105,7 @@ export default function EventMonitoringPage() {
           <ProtectedLayout>
                <div className="flex flex-col w-full h-full min-w-0 gap-6">
                     <div>
-                         <h1 className="text-2xl font-semibold md:text-3xl">Monitor Events</h1>
+                         <h1 className="text-2xl font-semibold md:text-3xl">Event Monitoring</h1>
                          <p className="text-sm text-muted-foreground mt-1">
                               Track the status of upcoming, registration, and ongoing events.
                          </p>
@@ -126,14 +143,6 @@ export default function EventMonitoringPage() {
                          </div>
                     )}
 
-                    <div>
-                         <EventTable
-                              events={filteredEvents}
-                              onViewAttendees={loadAttendees}
-                              loading={loading}
-                         />
-                    </div>
-
                     {attendees && selectedEventName && (
                          <AttendeesCard
                               attendeesData={attendees}
@@ -142,6 +151,14 @@ export default function EventMonitoringPage() {
                               loading={loadingAttendees}
                          />
                     )}
+
+                    <div>
+                         <EventTable
+                              events={filteredEvents}
+                              onViewAttendees={loadAttendees}
+                              loading={loading}
+                         />
+                    </div>
                </div>
           </ProtectedLayout>
      )

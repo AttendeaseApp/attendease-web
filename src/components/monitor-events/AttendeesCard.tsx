@@ -25,13 +25,22 @@ import {
 } from "@/interface/attendance/records/management/AttendeesResponse"
 import { cn } from "@/lib/utils"
 import { ChevronDown, ChevronUp, Clock, Loader2, Search, UserCheck, Users, X } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import {
+     Pagination,
+     PaginationContent,
+     PaginationItem,
+     PaginationLink,
+     PaginationNext,
+     PaginationPrevious,
+} from "@/components/ui/pagination"
 
 interface AttendeesCardProps {
      attendeesData: EventAttendeesResponse
      eventName: string
      onClose: () => void
      loading?: boolean
+     defaultExpanded?: boolean
 }
 
 export const AttendeesCard: React.FC<AttendeesCardProps> = ({
@@ -39,17 +48,33 @@ export const AttendeesCard: React.FC<AttendeesCardProps> = ({
      eventName,
      onClose,
      loading = false,
+     defaultExpanded = false,
 }) => {
      const [searchTerm, setSearchTerm] = useState("")
      const [statusFilter, setStatusFilter] = useState<string>("ALL")
-     const [isExpanded, setIsExpanded] = useState(true)
+     const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
-     const filteredAttendees = attendeesData.attendees.filter((attendee) => {
-          const fullName = `${attendee.firstName} ${attendee.lastName}`.toLowerCase()
-          const matchesSearch = fullName.includes(searchTerm.toLowerCase())
-          const matchesStatus = statusFilter === "ALL" || attendee.attendanceStatus === statusFilter
-          return matchesSearch && matchesStatus
-     })
+     const [currentPage, setCurrentPage] = useState(1)
+     const perPage = 10
+
+     const filteredAttendees = useMemo(() => {
+          const filtered = attendeesData.attendees.filter((attendee) => {
+               const fullName = `${attendee.firstName} ${attendee.lastName}`.toLowerCase()
+               const matchesSearch = fullName.includes(searchTerm.toLowerCase())
+               const matchesStatus =
+                    statusFilter === "ALL" || attendee.attendanceStatus === statusFilter
+               return matchesSearch && matchesStatus
+          })
+          setCurrentPage(1)
+          return filtered
+     }, [attendeesData.attendees, searchTerm, statusFilter])
+
+     const totalPages = Math.ceil(filteredAttendees.length / perPage)
+
+     const currentAttendees = filteredAttendees.slice(
+          (currentPage - 1) * perPage,
+          currentPage * perPage
+     )
 
      const getStatusCounts = () => {
           const counts = {
@@ -199,8 +224,8 @@ export const AttendeesCard: React.FC<AttendeesCardProps> = ({
                          </div>
 
                          <div className="text-sm text-muted-foreground">
-                              Showing {filteredAttendees.length} of {attendeesData.totalAttendees}{" "}
-                              attendees
+                              Showing {currentAttendees.length} of {filteredAttendees.length}{" "}
+                              filtered attendees
                          </div>
 
                          {loading ? (
@@ -242,7 +267,7 @@ export const AttendeesCard: React.FC<AttendeesCardProps> = ({
                                              </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                             {filteredAttendees.map((a: AttendeesResponse) => (
+                                             {currentAttendees.map((a: AttendeesResponse) => (
                                                   <TableRow
                                                        key={a.attendanceRecordId}
                                                        className="hover:bg-muted/50"
@@ -290,6 +315,51 @@ export const AttendeesCard: React.FC<AttendeesCardProps> = ({
                                              ))}
                                         </TableBody>
                                    </Table>
+
+                                   {/* PAGINATION */}
+                                   {totalPages > 1 && (
+                                        <div className="p-4">
+                                             <Pagination>
+                                                  <PaginationContent>
+                                                       <PaginationItem>
+                                                            <PaginationPrevious
+                                                                 onClick={() =>
+                                                                      setCurrentPage((p) => p - 1)
+                                                                 }
+                                                            />
+                                                       </PaginationItem>
+
+                                                       {Array.from({ length: totalPages }).map(
+                                                            (_, idx) => (
+                                                                 <PaginationItem key={idx}>
+                                                                      <PaginationLink
+                                                                           isActive={
+                                                                                currentPage ===
+                                                                                idx + 1
+                                                                           }
+                                                                           onClick={() =>
+                                                                                setCurrentPage(
+                                                                                     idx + 1
+                                                                                )
+                                                                           }
+                                                                      >
+                                                                           {idx + 1}
+                                                                      </PaginationLink>
+                                                                 </PaginationItem>
+                                                            )
+                                                       )}
+
+                                                       <PaginationItem>
+                                                            <PaginationNext
+                                                                 onClick={() =>
+                                                                      setCurrentPage((p) => p + 1)
+                                                                 }
+                                                            />
+                                                       </PaginationItem>
+                                                  </PaginationContent>
+                                             </Pagination>
+                                        </div>
+                                   )}
                               </div>
                          )}
                     </div>

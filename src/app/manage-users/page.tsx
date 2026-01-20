@@ -249,8 +249,12 @@ export default function RetrieveAllUsers() {
                     {/* Header */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                          <div>
-                              <h1 className="text-2xl font-bold md:text-3xl">Manage Users</h1>
-                              <p className="text-muted-foreground mt-1">Manage all users here.</p>
+                              <h1 className="text-2xl font-semibold md:text-3xl">
+                                   Users Management
+                              </h1>
+                              <p className="text-sm text-muted-foreground">
+                                   Manage all user account details here.
+                              </p>
                          </div>
 
                          <div className="flex justify-end space-x-2">
