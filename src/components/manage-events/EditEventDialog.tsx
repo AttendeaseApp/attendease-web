@@ -607,7 +607,7 @@ export function EditEventDialog({ event, onUpdate, isOpen, onClose }: EditEventD
           } catch (error) {
                console.error("Update failed:", error)
                setErrors({ general: "Failed to update event. Please try again." })
-               toast.error("Failed to update the event. Please verify time and location.")
+               toast.error("Failed to update the event. Please verify time and location." + error)
           } finally {
                setIsSubmitting(false)
           }
